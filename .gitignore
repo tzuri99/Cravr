@@ -1,0 +1,10 @@
+# Python & Virtual Environment
+venv/
+*.pyc
+__pycache__/
+
+# Database & Local Settings
+db.sqlite3
+
+# System Files
+.DS_Store
