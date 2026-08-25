@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from .models import OTP
+from django.contrib.auth.models import User
 
 def register_view(request):
     if request.method == 'POST':
@@ -38,4 +39,25 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+def verify_otp_view(request):
+    user_id = request.session.get('otp_user_id')
+    
+    if not user_id:
+        return redirect('register')
+    
+    if request.method == 'POST':
+        entered_code = request.POST.get('otp_code')
+        
+        try:
+            otp = OTP.objects.filter(user_id=user_id, code=entered_code, is_used=False).latest('created_at')
+            otp.is_used = True
+            otp.save()
+            
+            del request.session['otp_user_id']
+            return redirect('login')
+        except OTP.DoesNotExist:
+            return render(request, 'accounts/verify_otp.html', {'error': 'Invalid or expired code.'})
+    
+    return render(request, 'accounts/verify_otp.html')
 
