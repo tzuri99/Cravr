@@ -1,17 +1,26 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
+from .models import OTP
 
 def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')  
+            user = form.save()
+            
+            code = OTP.generate_code()
+            OTP.objects.create(user=user, code=code)
+            
+            print(f"[DEBUG] OTP for {user.username}: {code}")
+            
+            request.session['otp_user_id'] = user.id
+            return redirect('verify_otp')
     else:
         form = UserCreationForm()
     
     return render(request, 'accounts/register.html', {'form': form})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -19,7 +28,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')  
+            return redirect('home')
     else:
         form = AuthenticationForm()
 
@@ -29,5 +38,4 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
 
