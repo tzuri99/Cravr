@@ -3,22 +3,37 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from .models import OTP
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django import forms
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = UserCreationForm.Meta.model
+        fields = ('username', 'email', 'password1', 'password2')
 
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             
             code = OTP.generate_code()
             OTP.objects.create(user=user, code=code)
             
-            print(f"[DEBUG] OTP for {user.username}: {code}")
+            send_mail(
+    subject='Your Cravr Verification Code',
+    message=f'Your OTP verification code is: {code}',
+    from_email=None,  
+    recipient_list=[user.email],
+    fail_silently=False,
+)
             
             request.session['otp_user_id'] = user.id
             return redirect('verify_otp')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     
     return render(request, 'accounts/register.html', {'form': form})
 
