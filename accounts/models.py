@@ -12,4 +12,8 @@ class OTP(models.Model):
     def generate_code():
         return str(random.randint(100000, 999999))
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_verified = models.BooleanField(default=False)
+
 # Create your models here.

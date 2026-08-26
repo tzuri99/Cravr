@@ -18,6 +18,9 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+
+            from .models import Profile
+            Profile.objects.create(user=user, is_verified=False)
             
             code = OTP.generate_code()
             OTP.objects.create(user=user, code=code)
@@ -43,6 +46,12 @@ def login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            if not user.profile.is_verified:
+             return render(request, 'accounts/login.html', {
+        'form': form,
+        'error': 'Please verify your email before logging in.'
+    })
+        
             login(request, user)
             return redirect('home')
     else:
@@ -63,11 +72,15 @@ def verify_otp_view(request):
     
     if request.method == 'POST':
         entered_code = request.POST.get('otp_code')
+        user = User.objects.get(id=user_id)
         
         try:
             otp = OTP.objects.filter(user_id=user_id, code=entered_code, is_used=False).latest('created_at')
             otp.is_used = True
             otp.save()
+
+            user.profile.is_verified = True
+            user.profile.save()
             
             del request.session['otp_user_id']
             return redirect('login')
