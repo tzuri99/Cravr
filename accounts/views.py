@@ -5,6 +5,8 @@ from .models import OTP
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django import forms
+from django.utils import timezone
+from datetime import timedelta
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -76,6 +78,9 @@ def verify_otp_view(request):
         
         try:
             otp = OTP.objects.filter(user_id=user_id, code=entered_code, is_used=False).latest('created_at')
+
+            if timezone.now() > otp.created_at + timedelta(minutes=5):
+             return render(request, 'accounts/verify_otp.html', {'error': 'Code expired. Please request a new one.'})
             otp.is_used = True
             otp.save()
 
