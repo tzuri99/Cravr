@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant
 from .forms import RestaurantForm
@@ -13,6 +14,7 @@ def add_restaurant(request):
         form = RestaurantForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Restaurant added.")
             return redirect("restaurant_list")
     else:
         form = RestaurantForm()

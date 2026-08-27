@@ -20,7 +20,8 @@ class Command(BaseCommand):
                         "longitude": float(row["longitude"]),
                         "address": row.get("address", ""),
                         "cuisine": row.get("cuisine", ""),
-                        "opening_hours": row.get("opening_hours", ""),
+                        "opening_time": row.get("opening_time") or None,
+                        "closing_time": row.get("closing_time") or None,
                     },
                 )
                 if was_new:

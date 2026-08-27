@@ -4,6 +4,10 @@
     <title>Restaurants</title>
 </head>
 <body>
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    
     <h1>Restaurants</h1>
     <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
 
