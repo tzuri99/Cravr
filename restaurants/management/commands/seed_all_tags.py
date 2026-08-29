@@ -27,7 +27,7 @@ class Command(BaseCommand):
             raw_cuisine = getattr(restaurant, 'cuisine', '')
             cuisines_found = []
             if raw_cuisine:
-                tokens = re.split(r'[,/&]|\band\b', raw_cuisine, flags=re.IGNORECASE)
+                tokens = re.split(r'[,/&;]|\band\b', raw_cuisine, flags=re.IGNORECASE)
                 for token in tokens:
                     c_name = token.strip().title()
                     if c_name:

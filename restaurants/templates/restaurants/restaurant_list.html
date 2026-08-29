@@ -2,20 +2,68 @@
 <html>
 <head>
     <title>Restaurants</title>
+    <style>
+        .tag-group { margin-bottom: 12px; }
+        .tag-btn { 
+            display: inline-block; 
+            padding: 5px 12px; 
+            margin: 3px; 
+            border: 1px solid #ccc; 
+            border-radius: 15px; 
+            text-decoration: none; 
+            color: #333; 
+            font-size: 14px;
+        }
+        .tag-btn.active { background-color: #007bff; color: white; border-color: #007bff; }
+        .tag-badge { background: #e0e0e0; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 4px; }
+    </style>
 </head>
 <body>
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-    
     <h1>Restaurants</h1>
     <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
+    <hr>
 
+   <!-- Tag Filtering Area -->
+    <div style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+        <p><a href="?" class="tag-btn {% if not selected_tag_id %}active{% endif %}">Show All</a></p>
+
+        <div class="tag-group">
+            <strong>Cuisine:</strong>
+            {% for tag in cuisine_tags %}
+                <a href="?tag={{ tag.id }}" class="tag-btn {% if selected_tag_id == tag.id %}active{% endif %}">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="tag-group">
+            <strong>Meal Type:</strong>
+            {% for tag in meal_type_tags %}
+                <a href="?tag={{ tag.id }}" class="tag-btn {% if selected_tag_id == tag.id %}active{% endif %}">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="tag-group">
+            <strong>Dietary Options:</strong>
+            {% for tag in dietary_tags %}
+                <a href="?tag={{ tag.id }}" class="tag-btn {% if selected_tag_id == tag.id %}active{% endif %}">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Restaurant List -->
     <ul>
         {% for restaurant in restaurants %}
-            <li>{{ restaurant.name }} ({{ restaurant.cuisine }})</li>
+            <li style="margin-bottom: 10px;">
+                <strong>{{ restaurant.name }}</strong>
+                {% if restaurant.tags.all %}
+                    <div>
+                        {% for tag in restaurant.tags.all %}
+                            <span class="tag-badge">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </li>
         {% empty %}
-            <li>No restaurants yet.</li>
+            <li>No restaurants found for this tag.</li>
         {% endfor %}
     </ul>
 </body>
