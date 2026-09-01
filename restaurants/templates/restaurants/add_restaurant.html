@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add a restaurant</title>
+</head>
+<body>
+    <h1>Add a restaurant</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <h2>Opening hours</h2>
+        {{ formset.management_form }}
+
+        <table>
+            <tr>
+                <th>Day</th>
+                <th>Opens</th>
+                <th>Closes</th>
+                <th>Closed all day</th>
+            </tr>
+            {% for hour_form in formset %}
+                <tr>
+                    <td>{{ hour_form.day }}</td>
+                    <td>{{ hour_form.opening_time }}</td>
+                    <td>{{ hour_form.closing_time }}</td>
+                    <td>{{ hour_form.is_closed }}</td>
+                    {{ hour_form.id }}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url 'restaurant_list' %}">Back to list</a>
+</body>
+</html>
