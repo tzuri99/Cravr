@@ -54,5 +54,19 @@
 
         <button type="submit" style="padding: 8px 16px; margin-top: 10px;">Pick For Me!</button>
     </form>
+
+    <!-- Result Display Section -->
+    {% if picked_restaurant %}
+        <div class="result-box">
+            <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
+            <p><strong>Address:</strong> {{ picked_restaurant.address }}</p>
+            <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours|default:"Not specified" }}</p>
+        </div>
+    {% elif no_matches %}
+        <div class="error-box">
+            <h3>⚠️ No Matching Restaurants Found</h3>
+            <p>No restaurants match all of your selected filter criteria. Try relaxing some filters!</p>
+        </div>
+    {% endif %}
 </body>
 </html>
