@@ -63,5 +63,22 @@ def add_restaurant(request):
     return render(request, "restaurants/add_restaurant.html", {"form": form})
 
 def restaurant_picker(request):
-    
-    return render(request, 'restaurants/restaurant_picker.html')
+    # Fetch tag categories for form selection
+    cuisine_tags = Tag.objects.filter(tag_type__iexact='cuisine')
+    meal_type_tags = Tag.objects.filter(tag_type__iexact='meal_type')
+    dietary_tags = Tag.objects.filter(tag_type='dietary')
+
+    selected_cuisine_id = request.GET.get('cuisine')
+    selected_meal_id = request.GET.get('meal_type')
+    selected_dietary_id = request.GET.get('dietary')
+
+    context = {
+        'cuisine_tags': cuisine_tags,
+        'meal_type_tags': meal_type_tags,
+        'dietary_tags': dietary_tags,
+        'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
+        'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
+        'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
+    }
+
+    return render(request, 'restaurants/restaurant_picker.html', context)
