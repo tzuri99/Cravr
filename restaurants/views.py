@@ -1,3 +1,4 @@
+import random
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
@@ -60,3 +61,7 @@ def add_restaurant(request):
         form = RestaurantForm()
 
     return render(request, "restaurants/add_restaurant.html", {"form": form})
+
+def restaurant_picker(request):
+    
+    return render(request, 'restaurants/restaurant_picker.html')
