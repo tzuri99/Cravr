@@ -10,13 +10,27 @@
     
     <h1>Restaurants</h1>
     <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
-
     <ul>
         {% for restaurant in restaurants %}
-            <li>{{ restaurant.name }} ({{ restaurant.cuisine }})</li>
+            <li>
+                <strong>{{ restaurant.name }}</strong> ({{ restaurant.cuisine }})
+                <ul>
+                    {% for hour in restaurant.hours.all %}
+                        <li>
+                            {{ hour.get_day_display }}:
+                            {% if hour.is_closed %}
+                                Closed
+                            {% else %}
+                                {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
         {% empty %}
             <li>No restaurants yet.</li>
         {% endfor %}
     </ul>
 </body>
 </html>
+
