@@ -1,4 +1,5 @@
 import csv
+import re
 from pathlib import Path
 
 import requests
@@ -9,15 +10,21 @@ OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter"
 HEADERS = {"User-Agent": "Cravr-student-project/1.0"}
 
 # The four numbers are: south, west, north, east.
-# Currently covers Cyberjaya.
+# Currently covers Cyberjaya
 QUERY = """
-[out:json][timeout:60];
-node["amenity"="restaurant"](2.90,101.62,2.95,101.68);
+[out:json][timeout:180];
+node["amenity"="restaurant"](3.10,101.68,3.18,101.73);
 out body;
 """
 
 MAX_ROWS = 50
-COLUMNS = ["name", "latitude", "longitude", "address", "cuisine", "opening_hours"]
+COLUMNS = ["name", "latitude", "longitude", "address", "cuisine", "opening_time", "closing_time"]
+
+def parse_hours(text):
+    match = re.search(r"(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})", text or "")
+    if match:
+        return match.group(1), match.group(2)
+    return "", ""
 
 
 class Command(BaseCommand):
@@ -39,6 +46,7 @@ class Command(BaseCommand):
             house = tags.get("addr:housenumber", "")
             street = tags.get("addr:street", "")
             address = " ".join(part for part in [house, street] if part)
+            opening, closing = parse_hours(tags.get("opening_hours", ""))
 
             rows.append({
                 "name": name,
@@ -46,7 +54,8 @@ class Command(BaseCommand):
                 "longitude": element["lon"],
                 "address": address,
                 "cuisine": tags.get("cuisine", ""),
-                "opening_hours": tags.get("opening_hours", ""),
+                "opening_time": opening,
+                "closing_time": closing,
             })
 
         rows = rows[:MAX_ROWS]

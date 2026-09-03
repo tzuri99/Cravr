@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
 from .forms import RestaurantForm, OpeningHourFormSet
 
-
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
     selected_cuisine_id = request.GET.get('cuisine')
@@ -49,7 +48,6 @@ def restaurant_list(request):
     }
     
     return render(request, "restaurants/restaurant_list.html", context)
-
 
 def add_restaurant(request):
     # Preserved main branch logic with OpeningHourFormSet
