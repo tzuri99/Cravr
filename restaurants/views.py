@@ -2,13 +2,8 @@ import random
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
-<<<<<<< HEAD
 from .forms import RestaurantForm, OpeningHourFormSet
 
-=======
-from .forms import RestaurantForm
-from .forms import RestaurantForm, OpeningHourFormSet
->>>>>>> origin/main
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -76,7 +71,6 @@ def add_restaurant(request):
         request,
         "restaurants/add_restaurant.html",
         {"form": form, "formset": formset},
-<<<<<<< HEAD
     )
 
 
@@ -129,6 +123,3 @@ def restaurant_picker(request):
     }
 
     return render(request, 'restaurants/restaurant_picker.html', context)
-=======
-    )
->>>>>>> origin/main
