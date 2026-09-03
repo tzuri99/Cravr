@@ -4,11 +4,9 @@ from .models import Restaurant
 from .forms import RestaurantForm
 from .forms import RestaurantForm, OpeningHourFormSet
 
-
 def restaurant_list(request):
     restaurants = Restaurant.objects.all()
     return render(request, "restaurants/restaurant_list.html", {"restaurants": restaurants})
-
 
 def add_restaurant(request):
     if request.method == "POST":
