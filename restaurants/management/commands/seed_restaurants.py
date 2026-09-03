@@ -42,14 +42,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Added {created} restaurants"))
 
         # ---------------------------------------------------------
-        # Part 2: Your seed_all_tags logic (Preserved original code & notes)
+        # Part 2: Intelligent Tag Generation Logic
         # ---------------------------------------------------------
-        # [Key New Feature]: First, clear all old tags in the database.
+        # Clear all old tags in the database before seeding fresh ones
         Tag.objects.all().delete()
 
         # 1. Preset basic tags
-        meal_types = ['Breakfast', 'Lunch', 'Dinner', 'Supper', 
-                      'Coffee Shop', 'Tea', 'Dessert', 'Noodle', 'Seafood', 'Kebab']
+        meal_types = [
+            'Breakfast', 'Lunch', 'Dinner', 'Supper', 
+            'Coffee Shop', 'Tea', 'Dessert', 'Noodle', 'Seafood', 'Kebab'
+        ]
         dietary_options = ['Halal', 'Vegetarian', 'No Pork No Lard', 'Vegan']
 
         for name in meal_types:

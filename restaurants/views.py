@@ -1,8 +1,14 @@
+import random
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
+<<<<<<< HEAD
+from .forms import RestaurantForm, OpeningHourFormSet
+
+=======
 from .forms import RestaurantForm
 from .forms import RestaurantForm, OpeningHourFormSet
+>>>>>>> origin/main
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -51,6 +57,7 @@ def restaurant_list(request):
 
 
 def add_restaurant(request):
+    # Preserved main branch logic with OpeningHourFormSet
     if request.method == "POST":
         form = RestaurantForm(request.POST)
         formset = OpeningHourFormSet(request.POST)
@@ -69,4 +76,59 @@ def add_restaurant(request):
         request,
         "restaurants/add_restaurant.html",
         {"form": form, "formset": formset},
+<<<<<<< HEAD
     )
+
+
+def restaurant_picker(request):
+    # Branch feature: Random restaurant selection logic
+    cuisine_tags = Tag.objects.filter(tag_type__iexact='cuisine')
+    meal_type_tags = Tag.objects.filter(tag_type__iexact='meal_type')
+    dietary_tags = Tag.objects.filter(tag_type__iexact='dietary')
+
+    selected_cuisine_id = request.GET.get('cuisine')
+    selected_meal_id = request.GET.get('meal_type')
+    selected_dietary_id = request.GET.get('dietary')
+
+    # Start with all restaurants
+    restaurants = Restaurant.objects.all()
+
+    # Apply tag filters (AND logic)
+    if selected_cuisine_id and selected_cuisine_id.isdigit():
+        restaurants = restaurants.filter(tags__id=int(selected_cuisine_id))
+        
+    if selected_meal_id and selected_meal_id.isdigit():
+        restaurants = restaurants.filter(tags__id=int(selected_meal_id))
+        
+    # Dietary restriction acts as a hard filter
+    if selected_dietary_id and selected_dietary_id.isdigit():
+        restaurants = restaurants.filter(tags__id=int(selected_dietary_id))
+
+    restaurants = restaurants.distinct()
+
+    # Random selection logic
+    picked_restaurant = None
+    no_matches = False
+
+    # Trigger selection if form is submitted
+    if request.GET:
+        if restaurants.exists():
+            picked_restaurant = random.choice(list(restaurants))
+        else:
+            no_matches = True
+
+    context = {
+        'cuisine_tags': cuisine_tags,
+        'meal_type_tags': meal_type_tags,
+        'dietary_tags': dietary_tags,
+        'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
+        'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
+        'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
+        'picked_restaurant': picked_restaurant,
+        'no_matches': no_matches,
+    }
+
+    return render(request, 'restaurants/restaurant_picker.html', context)
+=======
+    )
+>>>>>>> origin/main
