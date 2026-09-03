@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile - Cravr</title>
+</head>
+<body>
+    <h2>My Profile</h2>
+
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" width="120" height="120">
+    {% else %}
+        <p>No profile picture yet.</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>
+            <label>Profile Picture:</label><br>
+            <input type="file" name="profile_picture">
+        </p>
+        <p>
+            <label>Bio:</label><br>
+            <textarea name="bio" rows="4" cols="40">{{ profile.bio }}</textarea>
+        </p>
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
