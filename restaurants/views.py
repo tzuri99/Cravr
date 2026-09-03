@@ -2,7 +2,8 @@ import random
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
-from .forms import RestaurantForm
+from .forms import RestaurantForm, OpeningHourFormSet
+
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -51,19 +52,30 @@ def restaurant_list(request):
 
 
 def add_restaurant(request):
+    # Preserved main branch logic with OpeningHourFormSet
     if request.method == "POST":
         form = RestaurantForm(request.POST)
-        if form.is_valid():
-            form.save()
+        formset = OpeningHourFormSet(request.POST)
+
+        if form.is_valid() and formset.is_valid():
+            restaurant = form.save()
+            formset.instance = restaurant
+            formset.save()
             messages.success(request, "Restaurant added.")
             return redirect("restaurant_list")
     else:
         form = RestaurantForm()
+        formset = OpeningHourFormSet(initial=[{"day": day} for day in range(7)])
 
-    return render(request, "restaurants/add_restaurant.html", {"form": form})
+    return render(
+        request,
+        "restaurants/add_restaurant.html",
+        {"form": form, "formset": formset},
+    )
+
 
 def restaurant_picker(request):
-    # Fetch tag categories for form selection
+    # Branch feature: Random restaurant selection logic
     cuisine_tags = Tag.objects.filter(tag_type__iexact='cuisine')
     meal_type_tags = Tag.objects.filter(tag_type__iexact='meal_type')
     dietary_tags = Tag.objects.filter(tag_type__iexact='dietary')
@@ -106,8 +118,8 @@ def restaurant_picker(request):
         'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
-        'picked_restaurant': picked_restaurant,  # Added result variable
-        'no_matches': no_matches,                # Added fallback status flag
+        'picked_restaurant': picked_restaurant,
+        'no_matches': no_matches,
     }
 
     return render(request, 'restaurants/restaurant_picker.html', context)

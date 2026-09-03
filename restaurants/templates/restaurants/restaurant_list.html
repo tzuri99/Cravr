@@ -37,13 +37,11 @@
             <strong>Cuisine:</strong>
             {% for tag in cuisine_tags %}
                 {% if selected_cuisine_id == tag.id %}
-                    <!-- Deselect active Cuisine tag while keeping Meal Type & Dietary filters -->
                     <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
                        class="tag-btn active">
                         {{ tag.name }}
                     </a>
                 {% else %}
-                    <!-- Select Cuisine tag and append existing Meal Type & Dietary filters -->
                     <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
                        class="tag-btn">
                         {{ tag.name }}
@@ -57,13 +55,11 @@
             <strong>Meal Type:</strong>
             {% for tag in meal_type_tags %}
                 {% if selected_meal_id == tag.id %}
-                    <!-- Deselect active Meal Type tag while keeping Cuisine & Dietary filters -->
                     <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
                        class="tag-btn active">
                         {{ tag.name }}
                     </a>
                 {% else %}
-                    <!-- Select Meal Type tag and append existing Cuisine & Dietary filters -->
                     <a href="?meal_type={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
                        class="tag-btn">
                         {{ tag.name }}
@@ -77,13 +73,11 @@
             <strong>Dietary Options:</strong>
             {% for tag in dietary_tags %}
                 {% if selected_dietary_id == tag.id %}
-                    <!-- Deselect active Dietary tag while keeping Cuisine & Meal Type filters -->
                     <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
                        class="tag-btn active">
                         {{ tag.name }}
                     </a>
                 {% else %}
-                    <!-- Select Dietary tag and append existing Cuisine & Meal Type filters -->
                     <a href="?dietary={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}" 
                        class="tag-btn">
                         {{ tag.name }}
@@ -96,14 +90,35 @@
     <!-- Restaurant List -->
     <ul>
         {% for restaurant in restaurants %}
-            <li style="margin-bottom: 10px;">
+            <li style="margin-bottom: 15px;">
                 <strong>{{ restaurant.name }}</strong>
+                {% if restaurant.cuisine %}
+                    ({{ restaurant.cuisine }})
+                {% endif %}
+
+                <!-- Tags Badges -->
                 {% if restaurant.tags.all %}
-                    <div>
+                    <div style="margin: 5px 0;">
                         {% for tag in restaurant.tags.all %}
                             <span class="tag-badge">{{ tag.name }}</span>
                         {% endfor %}
                     </div>
+                {% endif %}
+
+                <!-- Opening Hours -->
+                {% if restaurant.hours.all %}
+                    <ul>
+                        {% for hour in restaurant.hours.all %}
+                            <li>
+                                {{ hour.get_day_display }}:
+                                {% if hour.is_closed %}
+                                    Closed
+                                {% else %}
+                                    {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             </li>
         {% empty %}
