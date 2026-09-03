@@ -5,13 +5,12 @@ from pathlib import Path
 from django.core.management.base import BaseCommand
 from restaurants.models import Restaurant, OpeningHour, Tag
 
-
 class Command(BaseCommand):
     help = "Load restaurants from data/restaurants.csv and generate intelligent tags"
 
     def handle(self, *args, **options):
         # ---------------------------------------------------------
-        # Part 1: Original main seed_restaurants logic (UNCHANGED)
+        # Part 1: Original seed_restaurants logic (UNCHANGED)
         # ---------------------------------------------------------
         csv_path = Path("data/restaurants.csv")
         created = 0
@@ -83,13 +82,14 @@ class Command(BaseCommand):
                         else:
                             correct_type = 'cuisine'
 
-                        tag, created_tag = Tag.objects.get_or_create(
+                        tag, created = Tag.objects.get_or_create(
                             name=c_name, 
                             defaults={'tag_type': correct_type}
                         )
 
-                        # If tag exists with wrong classification, update it
-                        if not created_tag and tag.tag_type != correct_type:
+                        # If the label already exists but the type is incorrect 
+                        # (e.g., old data was mistakenly classified as cuisine), correct it.
+                        if not created and tag.tag_type != correct_type:
                             tag.tag_type = correct_type
                             tag.save()
 
