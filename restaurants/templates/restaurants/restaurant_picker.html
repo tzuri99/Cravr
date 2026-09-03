@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Picker</title>
+    <style>
+        .filter-section { margin-bottom: 15px; }
+        .hard-filter { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Random Restaurant Picker</h1>
+    <a href="{% url 'restaurant_list' %}">Back to List</a>
+    <hr>
+
+    <form method="GET" action="{% url 'restaurant_picker' %}">
+        <!-- Cuisine Selection -->
+        <div class="filter-section">
+            <label for="cuisine"><strong>Cuisine:</strong></label>
+            <select name="cuisine" id="cuisine">
+                <option value="">Any Cuisine</option>
+                {% for tag in cuisine_tags %}
+                    <option value="{{ tag.id }}" {% if selected_cuisine_id == tag.id %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Meal Type Selection -->
+        <div class="filter-section">
+            <label for="meal_type"><strong>Meal Type:</strong></label>
+            <select name="meal_type" id="meal_type">
+                <option value="">Any Meal Type</option>
+                {% for tag in meal_type_tags %}
+                    <option value="{{ tag.id }}" {% if selected_meal_id == tag.id %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Dietary Restrictions (Hard Filter) -->
+        <div class="filter-section">
+            <label for="dietary" class="hard-filter"><strong>Dietary Restriction (Mandatory):</strong></label>
+            <select name="dietary" id="dietary">
+                <option value="">No Strict Restriction</option>
+                {% for tag in dietary_tags %}
+                    <option value="{{ tag.id }}" {% if selected_dietary_id == tag.id %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" style="padding: 8px 16px; margin-top: 10px;">Pick For Me!</button>
+    </form>
+
+    <!-- Result Display Section -->
+    {% if picked_restaurant %}
+        <div class="result-box">
+            <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
+            <p><strong>Address:</strong> {{ picked_restaurant.address }}</p>
+            <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours|default:"Not specified" }}</p>
+        </div>
+    {% elif no_matches %}
+        <div class="error-box">
+            <h3>⚠️ No Matching Restaurants Found</h3>
+            <p>No restaurants match all of your selected filter criteria. Try relaxing some filters!</p>
+        </div>
+    {% endif %}
+</body>
+</html>
