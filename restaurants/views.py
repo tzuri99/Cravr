@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
 from .forms import RestaurantForm, OpeningHourFormSet
-
+from django.http import JsonResponse
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -123,3 +123,21 @@ def restaurant_picker(request):
     }
 
     return render(request, 'restaurants/restaurant_picker.html', context)
+
+def restaurants_json(request):
+    data = [
+        {
+            "id": r.id,
+            "name": r.name,
+            "latitude": r.latitude,
+            "longitude": r.longitude,
+            "cuisine": r.cuisine,
+            "address": r.address,
+        }
+        for r in Restaurant.objects.all()
+    ]
+    return JsonResponse(data, safe=False)
+
+
+def map_view(request):
+    return render(request, "restaurants/map.html")
