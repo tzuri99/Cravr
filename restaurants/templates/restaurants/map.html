@@ -25,14 +25,29 @@
             maxZoom: 20,
         }).addTo(map);
 
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                map.setView([position.coords.latitude, position.coords.longitude], 15);
+                L.marker([position.coords.latitude, position.coords.longitude])
+                    .addTo(map)
+                    .bindPopup("You are here")
+                    .openPopup();
+            });
+        }
+
         fetch("{% url 'restaurants_json' %}")
             .then(function (response) { return response.json(); })
             .then(function (restaurants) {
                 restaurants.forEach(function (r) {
+                    const directionsUrl =
+                        "https://www.google.com/maps/dir/?api=1&destination=" +
+                        r.latitude + "," + r.longitude;
+
                     const popup =
                         "<strong>" + r.name + "</strong><br>" +
                         (r.cuisine || "") + "<br>" +
-                        (r.address || "");
+                        (r.address || "") + "<br>" +
+                        '<a href="' + directionsUrl + '" target="_blank">Get directions</a>';
                     L.marker([r.latitude, r.longitude])
                         .addTo(map)
                         .bindPopup(popup);
