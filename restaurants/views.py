@@ -50,7 +50,6 @@ def restaurant_list(request):
     
     return render(request, "restaurants/restaurant_list.html", context)
 
-
 def add_restaurant(request):
     # Preserved main branch logic with OpeningHourFormSet
     if request.method == "POST":
