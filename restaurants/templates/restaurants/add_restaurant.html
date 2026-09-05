@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add a restaurant</title>
+</head>
+<body>
+    <h1>Add a restaurant</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <h2>Opening hours</h2>
+        {{ formset.management_form }}
+
+        <table>
+            <tr>
+                <th>Day</th>
+                <th>Opens</th>
+                <th>Closes</th>
+                <th>Closed all day</th>
+            </tr>
+            {% for hour_form in formset %}
+                <tr class="hour-row">
+                    <td>{{ hour_form.day }}</td>
+                    <td>{{ hour_form.opening_time }}</td>
+                    <td>{{ hour_form.closing_time }}</td>
+                    <td>{{ hour_form.is_closed }}</td>
+                    {{ hour_form.id }}
+                    {% if hour_form.errors %}
+                        <td style="color: red;">{{ hour_form.non_field_errors }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url 'restaurant_list' %}">Back to list</a>
+
+    <script>
+        document.querySelectorAll(".hour-row").forEach(function (row) {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const timeInputs = row.querySelectorAll('input[type="time"]');
+
+            function updateFields() {
+                timeInputs.forEach(function (input) {
+                    input.disabled = checkbox.checked;
+                });
+            }
+
+            checkbox.addEventListener("change", updateFields);
+            updateFields();
+        });
+    </script>
+</body>
+</html>

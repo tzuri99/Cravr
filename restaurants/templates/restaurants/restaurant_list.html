@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurants</title>
+    <style>
+        .tag-group { margin-bottom: 12px; }
+        .tag-btn { 
+            display: inline-block; 
+            padding: 5px 12px; 
+            margin: 3px; 
+            border: 1px solid #ccc; 
+            border-radius: 15px; 
+            text-decoration: none; 
+            color: #333; 
+            font-size: 14px;
+        }
+        .tag-btn.active { background-color: #007bff; color: white; border-color: #007bff; }
+        .tag-badge { background: #e0e0e0; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Restaurants</h1>
+    <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
+    <hr>
+
+    <!-- Tag Filtering Area -->
+    <div style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+        <!-- Show All button clears all URL parameters -->
+        <p>
+            <a href="?" class="tag-btn {% if not selected_cuisine_id and not selected_meal_id and not selected_dietary_id and not selected_tag_id %}active{% endif %}">
+                Show All
+            </a>
+        </p>
+
+        <!-- Cuisine Tag Group -->
+        <div class="tag-group">
+            <strong>Cuisine:</strong>
+            {% for tag in cuisine_tags %}
+                {% if selected_cuisine_id == tag.id %}
+                    <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                       class="tag-btn active">
+                        {{ tag.name }}
+                    </a>
+                {% else %}
+                    <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                       class="tag-btn">
+                        {{ tag.name }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Meal Type Tag Group -->
+        <div class="tag-group">
+            <strong>Meal Type:</strong>
+            {% for tag in meal_type_tags %}
+                {% if selected_meal_id == tag.id %}
+                    <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                       class="tag-btn active">
+                        {{ tag.name }}
+                    </a>
+                {% else %}
+                    <a href="?meal_type={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                       class="tag-btn">
+                        {{ tag.name }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Dietary Options Tag Group -->
+        <div class="tag-group">
+            <strong>Dietary Options:</strong>
+            {% for tag in dietary_tags %}
+                {% if selected_dietary_id == tag.id %}
+                    <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
+                       class="tag-btn active">
+                        {{ tag.name }}
+                    </a>
+                {% else %}
+                    <a href="?dietary={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}" 
+                       class="tag-btn">
+                        {{ tag.name }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Restaurant List -->
+    <ul>
+        {% for restaurant in restaurants %}
+            <li style="margin-bottom: 15px;">
+                <strong>{{ restaurant.name }}</strong>
+                {% if restaurant.cuisine %}
+                    ({{ restaurant.cuisine }})
+                {% endif %}
+
+                <!-- Tags Badges -->
+                {% if restaurant.tags.all %}
+                    <div style="margin: 5px 0;">
+                        {% for tag in restaurant.tags.all %}
+                            <span class="tag-badge">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Opening Hours -->
+                {% if restaurant.hours.all %}
+                    <ul>
+                        {% for hour in restaurant.hours.all %}
+                            <li>
+                                {{ hour.get_day_display }}:
+                                {% if hour.is_closed %}
+                                    Closed
+                                {% else %}
+                                    {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No restaurants found for the selected filter(s).</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
