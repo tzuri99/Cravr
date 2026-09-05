@@ -7,6 +7,8 @@ from django import forms
 from django.utils import timezone
 from datetime import timedelta
 from .models import OTP, Profile
+from django.contrib.admin.views.decorators import staff_member_required
+
 
 
 # ==========================================
@@ -128,6 +130,10 @@ def login_view(request):
 
             # Login
             login(request, user)
+#help system to differentiate whether the acc is user acc or admin acc
+            if user.is_staff:
+
+              return redirect('admin_dashboard')
 
             return redirect('home')
 
@@ -276,3 +282,36 @@ def resend_otp_view(request):
                 'A new verification code has been sent to your email.'
         }
     )
+
+
+
+# ==========================================
+# Admin Dashboard (Review Restaurant Submissions)
+# ==========================================
+
+@staff_member_required
+def admin_dashboard_view(request):
+
+    # TODO: 等 restaurants app 的 Restaurant model 完成后，
+    # 取消注释下面这段，改去用真实数据
+
+    # from restaurants.models import Restaurant
+    # pending_submissions = Restaurant.objects.filter(status='pending')
+
+    # if request.method == 'POST':
+    #     submission_id = request.POST.get('submission_id')
+    #     action = request.POST.get('action')  # 'approve' 或 'reject'
+    #     submission = Restaurant.objects.get(id=submission_id)
+    #     if action == 'approve':
+    #         submission.status = 'approved'
+    #     elif action == 'reject':
+    #         submission.status = 'rejected'
+    #     submission.save()
+    #     return redirect('admin_dashboard')
+
+    return render(
+        request,
+        'accounts/admin_dashboard.html',
+        {'submissions': []}  # 暂时给空列表，避免报错
+    )
+

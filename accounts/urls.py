@@ -77,4 +77,13 @@ urlpatterns = [
         ),
         name='password_reset_complete'
     ),
+    
+        # =========================
+    # Admin
+    # =========================
+    path(
+        'admin-dashboard/',
+        views.admin_dashboard_view,
+        name='admin_dashboard'
+    ),
 ]
