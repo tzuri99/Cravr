@@ -19,10 +19,33 @@
     </style>
 </head>
 <body>
+
     <h1>Restaurants</h1>
     <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
     <a href="{% url 'map_view' %}">View on map</a>
     <hr>
+    {% if pending_restaurants %}
+        <h2>Your pending submissions</h2>
+        <ul>
+            {% for restaurant in pending_restaurants %}
+                <li>{{ restaurant.name }} — waiting for admin approval</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <form method="get" style="margin: 15px 0;">
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search restaurants..."
+            style="padding: 6px; width: 300px; border: 1px solid #ccc; border-radius: 4px;"
+        />
+        <button type="submit" style="padding: 6px 12px;">Search</button>
+        {% if query %}
+            <a href="{% url 'restaurant_list' %}" style="margin-left: 10px;">Clear</a>
+        {% endif %}
+    </form>
 
     <!-- Tag Filtering Area -->
     <div style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px;">

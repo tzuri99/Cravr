@@ -6,6 +6,10 @@
 <body>
     <h1>Add a restaurant</h1>
 
+    <p style="padding: 10px; background: #fff4e5; border-left: 4px solid #f0ad4e;">
+        Your submission will be reviewed by an admin before it appears in the app.
+    </p>
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

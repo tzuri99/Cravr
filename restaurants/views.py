@@ -3,11 +3,8 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
 from .forms import RestaurantForm, OpeningHourFormSet
-<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
-=======
 from django.http import JsonResponse
->>>>>>> main
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -20,6 +17,10 @@ def restaurant_list(request):
     
     # 2. Filter restaurants iteratively based on selected criteria
     restaurants = Restaurant.objects.filter(is_approved=True)
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        restaurants = restaurants.filter(name__icontains=query) | restaurants.filter(address__icontains=query)
 
     if selected_cuisine_id and selected_cuisine_id.isdigit():
         restaurants = restaurants.filter(tags__id=int(selected_cuisine_id))
@@ -41,6 +42,11 @@ def restaurant_list(request):
     meal_type_tags = Tag.objects.filter(tag_type='meal_type')
     dietary_tags = Tag.objects.filter(tag_type='dietary')
 
+    if request.user.is_authenticated:
+        pending_restaurants = Restaurant.objects.filter(added_by=request.user, is_approved=False)
+    else:
+        pending_restaurants = []
+
     context = {
         'restaurants': restaurants,
         'cuisine_tags': cuisine_tags,
@@ -50,6 +56,8 @@ def restaurant_list(request):
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
         'selected_tag_id': int(selected_tag_id) if selected_tag_id and selected_tag_id.isdigit() else None,
+        'pending_restaurants': pending_restaurants,
+        'query': query,
     }
     
     return render(request, "restaurants/restaurant_list.html", context)
@@ -136,7 +144,7 @@ def restaurants_json(request):
             "cuisine": r.cuisine,
             "address": r.address,
         }
-        for r in Restaurant.objects.all()
+        for r in Restaurant.objects.filter(is_approved=True)
     ]
     return JsonResponse(data, safe=False)
 
