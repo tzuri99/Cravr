@@ -9,8 +9,6 @@ from datetime import timedelta
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
 
-
-
 # ==========================================
 # Custom Registration Form
 # ==========================================
@@ -135,7 +133,7 @@ def login_view(request):
 
               return redirect('admin_dashboard')
 
-            return redirect('home')
+            return redirect('restaurant_list')
 
     else:
         form = AuthenticationForm()

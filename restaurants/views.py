@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Restaurant, Tag
 from .forms import RestaurantForm, OpeningHourFormSet
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 def restaurant_list(request):
@@ -15,7 +16,11 @@ def restaurant_list(request):
     selected_tag_id = request.GET.get('tag')
     
     # 2. Filter restaurants iteratively based on selected criteria
-    restaurants = Restaurant.objects.all()
+    restaurants = Restaurant.objects.filter(is_approved=True)
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        restaurants = restaurants.filter(name__icontains=query) | restaurants.filter(address__icontains=query)
 
     if selected_cuisine_id and selected_cuisine_id.isdigit():
         restaurants = restaurants.filter(tags__id=int(selected_cuisine_id))
@@ -37,6 +42,11 @@ def restaurant_list(request):
     meal_type_tags = Tag.objects.filter(tag_type='meal_type')
     dietary_tags = Tag.objects.filter(tag_type='dietary')
 
+    if request.user.is_authenticated:
+        pending_restaurants = Restaurant.objects.filter(added_by=request.user, is_approved=False)
+    else:
+        pending_restaurants = []
+
     context = {
         'restaurants': restaurants,
         'cuisine_tags': cuisine_tags,
@@ -46,31 +56,32 @@ def restaurant_list(request):
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
         'selected_tag_id': int(selected_tag_id) if selected_tag_id and selected_tag_id.isdigit() else None,
+        'pending_restaurants': pending_restaurants,
+        'query': query,
     }
     
     return render(request, "restaurants/restaurant_list.html", context)
 
+@login_required
 def add_restaurant(request):
-    # Preserved main branch logic with OpeningHourFormSet
     if request.method == "POST":
         form = RestaurantForm(request.POST)
         formset = OpeningHourFormSet(request.POST)
 
         if form.is_valid() and formset.is_valid():
-            restaurant = form.save()
+            restaurant = form.save(commit=False)
+            restaurant.added_by = request.user
+            restaurant.is_approved = False
+            restaurant.save()
             formset.instance = restaurant
             formset.save()
-            messages.success(request, "Restaurant added.")
+            messages.success(request, "Restaurant submitted. It will be visible once approved.")
             return redirect("restaurant_list")
     else:
         form = RestaurantForm()
         formset = OpeningHourFormSet(initial=[{"day": day} for day in range(7)])
 
-    return render(
-        request,
-        "restaurants/add_restaurant.html",
-        {"form": form, "formset": formset},
-    )
+    return render(request, "restaurants/add_restaurant.html", {"form": form, "formset": formset})
 
 
 def restaurant_picker(request):
@@ -84,7 +95,7 @@ def restaurant_picker(request):
     selected_dietary_id = request.GET.get('dietary')
 
     # Start with all restaurants
-    restaurants = Restaurant.objects.all()
+    restaurants = Restaurant.objects.filter(is_approved=True)
 
     # Apply tag filters (AND logic)
     if selected_cuisine_id and selected_cuisine_id.isdigit():
@@ -133,7 +144,7 @@ def restaurants_json(request):
             "cuisine": r.cuisine,
             "address": r.address,
         }
-        for r in Restaurant.objects.all()
+        for r in Restaurant.objects.filter(is_approved=True)
     ]
     return JsonResponse(data, safe=False)
 
