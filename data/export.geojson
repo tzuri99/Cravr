@@ -1,0 +1,765 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2026-08-26T10:41:05Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1472136337",
+        "amenity": "restaurant",
+        "name": "Al-Naz Maju",
+        "name:ms": "Al-Naz Maju"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6508942,
+          2.9152403
+        ]
+      },
+      "id": "node/1472136337"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3747300579",
+        "amenity": "restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.669734,
+          2.9004217
+        ]
+      },
+      "id": "node/3747300579"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4488395404",
+        "amenity": "restaurant",
+        "name": "Restaurant Erra",
+        "name:en": "Restaurant Erra"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6315777,
+          2.9188493
+        ]
+      },
+      "id": "node/4488395404"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4911813026",
+        "addr:city": "Putrajaya",
+        "addr:place": "ayer@8 Presint 8",
+        "amenity": "restaurant",
+        "cuisine": "thai;malay",
+        "name": "Restoran Medina",
+        "name:ms": "Restoran Medina"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6784948,
+          2.9261563
+        ]
+      },
+      "id": "node/4911813026"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4911813029",
+        "addr:city": "Putrajaya",
+        "addr:place": "ayer@8 Presint 8",
+        "amenity": "restaurant",
+        "cuisine": "mamak",
+        "name": "Shahnaz Maju",
+        "name:ms": "Shahnaz Maju",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6789241,
+          2.9258292
+        ]
+      },
+      "id": "node/4911813029"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5027680921",
+        "amenity": "restaurant",
+        "cuisine": "pakistani",
+        "name": "Traskun Pakistani Restaurant",
+        "name:en": "Traskun Pakistani Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510787,
+          2.9249185
+        ]
+      },
+      "id": "node/5027680921"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5565626150",
+        "addr:city": "Cyberjaya",
+        "addr:housenumber": "Suit 4810-0-42",
+        "addr:postcode": "63000",
+        "addr:street": "Persiaran Flora",
+        "air_conditioning": "yes",
+        "amenity": "restaurant",
+        "bar": "no",
+        "check_date": "2025-12-26",
+        "cuisine": "asian;chinese;oriental",
+        "delivery": "yes",
+        "diet:halal": "yes",
+        "highchair": "no",
+        "level": "0",
+        "name": "Salam Noodles",
+        "name:en": "Salam Noodles",
+        "operator": "My Iman Foods (M) Sdn Bhd",
+        "outdoor_seating": "yes",
+        "phone": "+60 16-220 6707",
+        "takeaway": "yes",
+        "toilets": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6514399,
+          2.926043
+        ]
+      },
+      "id": "node/5565626150"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5565626151",
+        "amenity": "restaurant",
+        "name": "Sultan Cuisine Restaurant",
+        "name:en": "Sultan Cuisine Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510533,
+          2.9263693
+        ]
+      },
+      "id": "node/5565626151"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5565638651",
+        "addr:city": "Cyberjaya",
+        "addr:full": "Suite 0-2, Block A1, Jln Perdana, CBD Perdana, Cyberjaya",
+        "addr:housenumber": "Suite 0-2, Block A1",
+        "addr:postcode": "63000",
+        "addr:street": "Jalan Perdana",
+        "amenity": "restaurant",
+        "branch": "Cyberjaya",
+        "cuisine": "middle_eastern",
+        "name": "Saba Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6513286,
+          2.9229127
+        ]
+      },
+      "id": "node/5565638651"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6557042814",
+        "amenity": "restaurant",
+        "name": "Padi House Cafeteria and Deli Cafe",
+        "name:en": "Padi House Cafeteria and Deli Cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6381612,
+          2.9206692
+        ]
+      },
+      "id": "node/6557042814"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6593977644",
+        "amenity": "restaurant",
+        "name": "Royale Nasi Kandar",
+        "name:ms": "Royale Nasi Kandar",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6792852,
+          2.9255414
+        ]
+      },
+      "id": "node/6593977644"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/7599158485",
+        "amenity": "restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6476927,
+          2.9086838
+        ]
+      },
+      "id": "node/7599158485"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/7602771285",
+        "amenity": "restaurant",
+        "name": "Deen Maju",
+        "name:ms": "Deen Maju"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.631109,
+          2.9011142
+        ]
+      },
+      "id": "node/7602771285"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/8237427639",
+        "amenity": "restaurant",
+        "cuisine": "noodle",
+        "name": "Mee Rebus Johor",
+        "name:ms": "Mee Rebus Johor",
+        "opening_hours": "Mo-Su 07:30-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6754897,
+          2.9407547
+        ]
+      },
+      "id": "node/8237427639"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9591578068",
+        "addr:city": "Cyberjaya",
+        "addr:postcode": "63000",
+        "addr:state": "Selangor",
+        "amenity": "restaurant",
+        "cuisine": "chinese",
+        "name": "Nam Heong Ipoh",
+        "name:en": "Nam Heong Ipoh"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.653911,
+          2.928627
+        ]
+      },
+      "id": "node/9591578068"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9591993029",
+        "amenity": "restaurant",
+        "cuisine": "pakistani;arab",
+        "name": "Mr. Kabab & Biryani",
+        "name:ms": "Mr. Kabab & Biryani"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6498204,
+          2.9153546
+        ]
+      },
+      "id": "node/9591993029"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9592334817",
+        "amenity": "restaurant",
+        "name": "Nasi Kandar Pelita",
+        "name:ms": "Nasi Kandar Pelita"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6560139,
+          2.9245607
+        ]
+      },
+      "id": "node/9592334817"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9592334818",
+        "amenity": "restaurant",
+        "name": "Chennai Spice",
+        "name:en": "Chennai Spice"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.655643,
+          2.9260832
+        ]
+      },
+      "id": "node/9592334818"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9593522217",
+        "amenity": "restaurant",
+        "name": "Restaurant All in All",
+        "name:en": "Restaurant All in All"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6561552,
+          2.9263007
+        ]
+      },
+      "id": "node/9593522217"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9613050435",
+        "amenity": "restaurant",
+        "cuisine": "arab;pakistani",
+        "level": "0",
+        "name": "Safaa Restaurant",
+        "name:en": "Safaa Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6516362,
+          2.922944
+        ]
+      },
+      "id": "node/9613050435"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11273571752",
+        "amenity": "restaurant",
+        "name": "Corner 23",
+        "name:en": "Corner 23"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.657011,
+          2.921322
+        ]
+      },
+      "id": "node/11273571752"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11273571753",
+        "amenity": "restaurant",
+        "name": "Power Stall",
+        "name:en": "Power Stall"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6569905,
+          2.9213732
+        ]
+      },
+      "id": "node/11273571753"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11338185208",
+        "amenity": "restaurant",
+        "cuisine": "regional",
+        "diet:halal": "yes",
+        "name": "Sifu Salai"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6514342,
+          2.9258199
+        ]
+      },
+      "id": "node/11338185208"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11338230394",
+        "addr:city": "Cyberjaya",
+        "amenity": "restaurant",
+        "cuisine": "chinese",
+        "diet:halal": "yes",
+        "level": "0",
+        "name": "Mr Mee Authentic Xinjiang Cuisine Chinese Muslim Restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6514275,
+          2.9262326
+        ]
+      },
+      "id": "node/11338230394"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11338230395",
+        "addr:city": "Cyberjaya",
+        "amenity": "restaurant",
+        "level": "0",
+        "name": "Ayam Getok Mantul"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6514201,
+          2.9263155
+        ]
+      },
+      "id": "node/11338230395"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11640545613",
+        "addr:housenumber": "D-G-6",
+        "addr:street": "Jalan GC 7",
+        "amenity": "restaurant",
+        "name": "Restoran Fu Jee Ulu Yam Loh Mee - Cyberjaya 富记正宗福建乌鲁音卤面"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.65673,
+          2.924438
+        ]
+      },
+      "id": "node/11640545613"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12194025766",
+        "addr:city": "Cyberjaya",
+        "addr:postcode": "63000",
+        "air_conditioning": "yes",
+        "amenity": "restaurant",
+        "cuisine": "seafood",
+        "diet:halal": "yes",
+        "indoor_seating": "yes",
+        "name": "Zam Ikan Bakar",
+        "outdoor_seating": "yes",
+        "payment:cash": "yes",
+        "payment:contactless": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510565,
+          2.9253933
+        ]
+      },
+      "id": "node/12194025766"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12194025767",
+        "addr:city": "Cyberjaya",
+        "addr:postcode": "63000",
+        "amenity": "restaurant",
+        "name": "Nasi Kukus Papa"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510515,
+          2.9252221
+        ]
+      },
+      "id": "node/12194025767"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12194025768",
+        "addr:city": "Cyberjaya",
+        "addr:postcode": "63000",
+        "amenity": "restaurant",
+        "cuisine": "malaysian",
+        "diet:halal": "yes",
+        "name": "Makang"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510817,
+          2.9248394
+        ]
+      },
+      "id": "node/12194025768"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12194813654",
+        "amenity": "restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6709027,
+          2.9468746
+        ]
+      },
+      "id": "node/12194813654"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12265757359",
+        "amenity": "restaurant",
+        "name": "Murni Discovery"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6367794,
+          2.9211991
+        ]
+      },
+      "id": "node/12265757359"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12697954037",
+        "addr:block": "Neo Cyber Block M",
+        "addr:city": "Cyberjaya",
+        "addr:housenumber": "M-G-95 & 96",
+        "addr:place": "Biz Avenue 2",
+        "addr:postcode": "63000",
+        "addr:street": "Lingkaran Cyber Point Barat",
+        "amenity": "restaurant",
+        "check_date": "2025-03-25",
+        "name": "Famous Bistro Cafe 2",
+        "phone": "+60 3-8320 5357; +60 12-898 6634"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6494371,
+          2.915702
+        ]
+      },
+      "id": "node/12697954037"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12714049173",
+        "addr:city": "Cyberjaya",
+        "addr:housenumber": "Unit 4800-0-1",
+        "addr:postcode": "63000",
+        "addr:section": "Cyber 12",
+        "addr:street": "Off Persiaran Multimedia",
+        "amenity": "restaurant",
+        "cuisine": "mamak",
+        "name": "Cube Bistro"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6512434,
+          2.9229169
+        ]
+      },
+      "id": "node/12714049173"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12945825801",
+        "amenity": "restaurant",
+        "name": "Aldar Lounge"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6372623,
+          2.9234323
+        ]
+      },
+      "id": "node/12945825801"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12945825901",
+        "amenity": "restaurant",
+        "name": "Barakat Hotpot"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6510244,
+          2.9257796
+        ]
+      },
+      "id": "node/12945825901"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13334960216",
+        "addr:city": "Cyberjaya",
+        "addr:housenumber": "No 1, Blok E",
+        "addr:place": "Cyber 12",
+        "addr:postcode": "63200",
+        "addr:street": "Jalan GC 4",
+        "amenity": "restaurant",
+        "check_date": "2025-11-27",
+        "cuisine": "chinese",
+        "name": "Face To Face Noodle House",
+        "operator": "JS Bestfood Sdn Bhd",
+        "phone": "+60 3-8322 1652"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6562599,
+          2.9241737
+        ]
+      },
+      "id": "node/13334960216"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13928024128",
+        "addr:city": "Cyberjaya",
+        "addr:housenumber": "E-G-6, CBD Perdana 3",
+        "addr:postcode": "63000",
+        "addr:street": "Jalan Perdana",
+        "amenity": "restaurant",
+        "cuisine": "coffee_shop;tea;dessert",
+        "name": "SenjaBrew MY",
+        "opening_hours": "Friday 21:00 - Saturday 01:00, Saturday 18:00 - Sunday 01:00, Sunday 21:00-23:00",
+        "phone": "+601113027759",
+        "website": "https://linktr.ee/senjabrew.my?utm_source=linktree_profile_share&ltsid=1a7efa19-14bd-4e82-8d75-89ce20944036"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6504221,
+          2.9258242
+        ]
+      },
+      "id": "node/13928024128"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13938650320",
+        "addr:housenumber": "19;20",
+        "amenity": "restaurant",
+        "name": "Ali Habi Nasi Arab"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6292136,
+          2.9014704
+        ]
+      },
+      "id": "node/13938650320"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13997330939",
+        "amenity": "restaurant",
+        "name": "Ceria Cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6314852,
+          2.9164709
+        ]
+      },
+      "id": "node/13997330939"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/14113919901",
+        "amenity": "restaurant",
+        "check_date": "2026-08-23",
+        "cuisine": "arab;kebab;malaysian",
+        "name": "Amir Damascus"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.6382259,
+          2.9333779
+        ]
+      },
+      "id": "node/14113919901"
+    }
+  ]
+}

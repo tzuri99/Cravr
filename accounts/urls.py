@@ -71,5 +71,13 @@ urlpatterns = [
         'profile/',
         views.profile_view,
         name='profile'
+    
+        # =========================
+    # Admin
+    # =========================
+    path(
+        'admin-dashboard/',
+        views.admin_dashboard_view,
+        name='admin_dashboard'
     ),
 ]

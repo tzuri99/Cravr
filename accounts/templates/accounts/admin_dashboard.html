@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Cravr</title>
+</head>
+<body>
+    <h2>Pending Restaurant Submissions</h2>
+
+    {% if submissions %}
+        {% for item in submissions %}
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <p><strong>{{ item.name }}</strong></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No pending submissions yet. (Restaurant module coming soon)</p>
+    {% endif %}
+</body>
+</html>

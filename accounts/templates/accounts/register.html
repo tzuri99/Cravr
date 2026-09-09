@@ -1,14 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Register</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
+ 
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+    </nav>
+ 
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+            <p class="auth-subtitle">Sign up to start exploring Cravr</p>
+ 
+            {% if error %}
+                <div class="auth-error">{{ error }}</div>
+            {% endif %}
+ 
+            <form method="POST" class="auth-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="auth-submit">Sign Up</button>
+            </form>
+ 
+            <div class="auth-links">
+                <a href="{% url 'login' %}">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+ 
 </body>
 </html>
+ 

@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('restaurants/', include('restaurants.urls')),
     path('', login_required(TemplateView.as_view(template_name='home.html')), name='home'),
 ]
 
