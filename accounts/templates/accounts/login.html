@@ -1,22 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Login</h2>
-
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-
-    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
-    <p>Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+ 
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+    </nav>
+ 
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1>Welcome Back</h1>
+            <p class="auth-subtitle">Login to continue exploring Cravr</p>
+ 
+            {% if error %}
+                <div class="auth-error">{{ error }}</div>
+            {% endif %}
+ 
+            <form method="POST" class="auth-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="auth-submit">Login</button>
+            </form>
+ 
+            <div class="auth-links">
+                <a href="{% url 'password_reset' %}">Forgot password?</a>
+                <a href="{% url 'register' %}">Don't have an account? Sign up</a>
+            </div>
+        </div>
+    </div>
+ 
 </body>
 </html>

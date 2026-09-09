@@ -203,3 +203,133 @@ a {
         align-items: stretch;
     }
 }
+
+/* ===========================
+   Auth pages (Login, Register, Verify OTP, etc.)
+   =========================== */
+
+.auth-wrapper {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+}
+
+.auth-card {
+    background-color: var(--white);
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-error {
+    background-color: #FDECEA;
+    color: #C0392B;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.auth-success {
+    background-color: #E9F9F5;
+    color: #1F9C7E;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-form p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-form label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.auth-form input {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #EFEAE0;
+    background-color: #F7F5F0;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.auth-form input:focus-visible {
+    border-color: var(--accent);
+    background-color: var(--white);
+}
+
+.auth-form ul {
+    list-style: none;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.auth-submit {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 107, 74, 0.25);
+    transition: background-color 0.15s ease;
+}
+
+.auth-submit:hover {
+    background-color: #E85A3A;
+}
+
+.auth-links {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+}
+
+.auth-links a {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
