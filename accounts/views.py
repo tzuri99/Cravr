@@ -133,7 +133,7 @@ def login_view(request):
 
               return redirect('admin_dashboard')
 
-            return redirect('restaurant_list')
+            return redirect('home')
 
     else:
         form = AuthenticationForm()
