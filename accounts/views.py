@@ -404,7 +404,7 @@ def user_profile_view(request, username):
         can_view = True
 
     elif profile.privacy == 'friends':
-        # Friends & Family = 互相关注才算
+        # Friends & Family = follow each other
         they_follow_you = Follow.objects.filter(
             follower=target_user,
             following=request.user
@@ -433,5 +433,6 @@ def user_profile_view(request, username):
             'is_following': is_following,
             'followers_count': followers_count,
             'following_count': following_count,
+            'is_own_profile': is_own_profile,
         }
     )

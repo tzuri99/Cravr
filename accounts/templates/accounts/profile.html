@@ -1,38 +1,56 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>My Profile</h2>
 
-    {% if profile.profile_picture %}
-        <img src="{{ profile.profile_picture.url }}" width="120" height="120">
-    {% else %}
-        <p>No profile picture yet.</p>
-    {% endif %}
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>
-            <label>Profile Picture:</label><br>
-            <input type="file" name="profile_picture">
-        </p>
-        <p>
-            <label>Bio:</label><br>
-            <textarea name="bio" rows="4" cols="40">{{ profile.bio }}</textarea>
-        </p>
+    <div class="auth-wrapper">
+        <div class="auth-card">
 
-        <p>
-         <label>Privacy:</label><br>
-           <select name="privacy">
-             <option value="public" {% if profile.privacy == 'public' %}selected{% endif %}>Public</option>
-             <option value="friends" {% if profile.privacy == 'friends' %}selected{% endif %}>Friends & Family</option>
-             <option value="private" {% if profile.privacy == 'private' %}selected{% endif %}>Private</option>
-           </select>
-         </p>
-         
-        <button type="submit">Save</button>
-    </form>
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" width="100" height="100" style="border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px;">
+            {% endif %}
+
+            <h1>{{ request.user.username }}</h1>
+            <p class="auth-subtitle">Manage your profile details</p>
+
+            <form method="POST" enctype="multipart/form-data" class="auth-form">
+                {% csrf_token %}
+                <p>
+                    <label>Profile Picture</label>
+                    <input type="file" name="profile_picture">
+                </p>
+                <p>
+                    <label>Bio</label>
+                    <textarea name="bio" rows="4">{{ profile.bio }}</textarea>
+                </p>
+                <p>
+                    <label>Privacy</label>
+                    <select name="privacy">
+                        <option value="public" {% if profile.privacy == 'public' %}selected{% endif %}>Public</option>
+                        <option value="friends" {% if profile.privacy == 'friends' %}selected{% endif %}>Friends & Family</option>
+                        <option value="private" {% if profile.privacy == 'private' %}selected{% endif %}>Private</option>
+                    </select>
+                </p>
+                <button type="submit" class="auth-submit">Save</button>
+            </form>
+
+        </div>
+    </div>
+
 </body>
 </html>
