@@ -1,10 +1,11 @@
 import random
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Restaurant, Tag
-from .forms import RestaurantForm, OpeningHourFormSet
+from .forms import RestaurantForm, OpeningHourFormSet, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Avg
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -151,3 +152,33 @@ def restaurants_json(request):
 
 def map_view(request):
     return render(request, "restaurants/map.html")
+
+@login_required(login_url="login")
+def restaurant_detail(request, pk):
+    restaurant = get_object_or_404(Restaurant, pk=pk, is_approved=True)
+    reviews = restaurant.reviews.all()
+    average = reviews.aggregate(Avg("stars"))["stars__avg"]
+
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = reviews.filter(author=request.user).first()
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST, instance=user_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.restaurant = restaurant
+            review.author = request.user
+            review.save()
+            messages.success(request, "Review saved.")
+            return redirect("restaurant_detail", pk=restaurant.pk)
+    else:
+        form = ReviewForm(instance=user_review)
+
+    return render(request, "restaurants/restaurant_detail.html", {
+        "restaurant": restaurant,
+        "reviews": reviews,
+        "average": average,
+        "form": form,
+        "user_review": user_review,
+    })
