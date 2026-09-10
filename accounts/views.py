@@ -376,10 +376,13 @@ def unfollow_view(request, username):
 
 
 @login_required
+@login_required
 def user_profile_view(request, username):
 
     target_user = User.objects.get(username=username)
     profile = target_user.profile
+
+    is_own_profile = (target_user == request.user)
 
     is_following = Follow.objects.filter(
         follower=request.user,
@@ -388,6 +391,38 @@ def user_profile_view(request, username):
 
     followers_count = target_user.followers.count()
     following_count = target_user.following.count()
+
+    # ===========================
+    # Visibility check
+    # ===========================
+    can_view = False
+
+    if is_own_profile:
+        can_view = True
+
+    elif profile.privacy == 'public':
+        can_view = True
+
+    elif profile.privacy == 'friends':
+        # Friends & Family = 互相关注才算
+        they_follow_you = Follow.objects.filter(
+            follower=target_user,
+            following=request.user
+        ).exists()
+        can_view = is_following and they_follow_you
+
+    elif profile.privacy == 'private':
+        can_view = False
+
+    if not can_view:
+        return render(
+            request,
+            'accounts/user_profile.html',
+            {
+                'profile_user': target_user,
+                'blocked': True,
+            }
+        )
 
     return render(
         request,
