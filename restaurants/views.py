@@ -5,6 +5,7 @@ from .models import Restaurant, Tag
 from .forms import RestaurantForm, OpeningHourFormSet
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from restaurants.utils import apply_intelligent_tags
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -75,6 +76,7 @@ def add_restaurant(request):
             restaurant.save()
             formset.instance = restaurant
             formset.save()
+            apply_intelligent_tags(restaurant)
             messages.success(request, "Restaurant submitted. It will be visible once approved.")
             return redirect("restaurant_list")
     else:

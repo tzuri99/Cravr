@@ -1,25 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Restaurant Picker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Restaurant Picker</title>
     <style>
-        .filter-section { margin-bottom: 15px; }
-        .hard-filter { color: #d9534f; font-weight: bold; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .picker-card {
+            max-width: 520px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .header-title {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            text-align: center;
+        }
+
+        .header-subtitle {
+            color: #868e96;
+            font-size: 14px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .filter-section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .filter-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .hard-filter {
+            color: #d9534f !important;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .filter-select:focus {
+            border-color: #4c6ef5;
+        }
+
+        .slot-box {
+            height: 80px;
+            line-height: 80px;
+            background: #edf2ff;
+            border: 2px dashed #bac8ff;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #364fc7;
+            margin: 24px 0;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 0 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #4c6ef5;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-submit:hover {
+            background: #3b5bdb;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: #ebfbee;
+            border: 1px solid #b2f2bb;
+            border-radius: 12px;
+            text-align: left;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .result-box h2 {
+            margin: 0 0 12px 0;
+            color: #2b8a3e;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .error-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: #fff5f5;
+            border: 1px solid #ffc9c9;
+            border-radius: 12px;
+            text-align: center;
+            color: #c92a2a;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <h1>Random Restaurant Picker</h1>
-    <a href="{% url 'restaurant_list' %}">Back to List</a>
-    <hr>
 
-    <form method="GET" action="{% url 'restaurant_picker' %}">
+<div class="picker-card">
+    <a href="{% url 'restaurant_list' %}" class="back-link">← Back to List</a>
+    
+    <h1 class="header-title">🎰 Random Restaurant Picker</h1>
+    <p class="header-subtitle">Can't decide where to eat? Set your mandatory preferences and spin!</p>
+
+    <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form">
         <!-- Cuisine Selection -->
         <div class="filter-section">
             <label for="cuisine"><strong>Cuisine:</strong></label>
-            <select name="cuisine" id="cuisine">
+            <select name="cuisine" id="cuisine" class="filter-select">
                 <option value="">Any Cuisine</option>
                 {% for tag in cuisine_tags %}
-                    <option value="{{ tag.id }}" {% if selected_cuisine_id == tag.id %}selected{% endif %}>
+                    <option value="{{ tag.id }}" {% if selected_cuisine_id == tag.id|stringformat:"s" or selected_cuisine_id == tag.id %}selected{% endif %}>
                         {{ tag.name }}
                     </option>
                 {% endfor %}
@@ -29,10 +176,10 @@
         <!-- Meal Type Selection -->
         <div class="filter-section">
             <label for="meal_type"><strong>Meal Type:</strong></label>
-            <select name="meal_type" id="meal_type">
+            <select name="meal_type" id="meal_type" class="filter-select">
                 <option value="">Any Meal Type</option>
                 {% for tag in meal_type_tags %}
-                    <option value="{{ tag.id }}" {% if selected_meal_id == tag.id %}selected{% endif %}>
+                    <option value="{{ tag.id }}" {% if selected_meal_id == tag.id|stringformat:"s" or selected_meal_id == tag.id %}selected{% endif %}>
                         {{ tag.name }}
                     </option>
                 {% endfor %}
@@ -42,31 +189,81 @@
         <!-- Dietary Restrictions (Hard Filter) -->
         <div class="filter-section">
             <label for="dietary" class="hard-filter"><strong>Dietary Restriction (Mandatory):</strong></label>
-            <select name="dietary" id="dietary">
+            <select name="dietary" id="dietary" class="filter-select">
                 <option value="">No Strict Restriction</option>
                 {% for tag in dietary_tags %}
-                    <option value="{{ tag.id }}" {% if selected_dietary_id == tag.id %}selected{% endif %}>
+                    <option value="{{ tag.id }}" {% if selected_dietary_id == tag.id|stringformat:"s" or selected_dietary_id == tag.id %}selected{% endif %}>
                         {{ tag.name }}
                     </option>
                 {% endfor %}
             </select>
         </div>
 
-        <button type="submit" style="padding: 8px 16px; margin-top: 10px;">Pick For Me!</button>
+        <!-- Slot Machine Wheel -->
+        <div class="slot-box" id="slot-display">
+            {% if picked_restaurant %}
+                🎉 {{ picked_restaurant.name }}
+            {% else %}
+                Ready to Spin?
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-submit" id="spin-btn">Pick For Me!</button>
     </form>
 
     <!-- Result Display Section -->
     {% if picked_restaurant %}
-        <div class="result-box">
+        <div class="result-box" id="result-box">
             <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
             <p><strong>Address:</strong> {{ picked_restaurant.address }}</p>
             <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours|default:"Not specified" }}</p>
         </div>
     {% elif no_matches %}
         <div class="error-box">
-            <h3>⚠️ No Matching Restaurants Found</h3>
-            <p>No restaurants match all of your selected filter criteria. Try relaxing some filters!</p>
+            <h3 style="margin-top:0;">⚠️ No Matching Restaurants Found</h3>
+            <p style="margin-bottom:0;">No restaurants match all of your selected filter criteria. Try relaxing some filters!</p>
         </div>
     {% endif %}
+</div>
+
+<script>
+document.getElementById('picker-form').addEventListener('submit', function(e) {
+    const slotDisplay = document.getElementById('slot-display');
+    const resultBox = document.getElementById('result-box');
+    const spinBtn = document.getElementById('spin-btn');
+
+    // Hide the previous card
+    if (resultBox) {
+        resultBox.style.display = 'none';
+    }
+
+    // Disable the submit button to prevent duplicate clicks
+    spinBtn.disabled = true;
+    spinBtn.innerText = "Spinning...";
+
+    // Get the text from the dropdown boxes as the spinning wheel pool
+    const options = Array.from(document.querySelectorAll('.filter-select option'))
+        .map(opt => opt.text.trim())
+        .filter(text => !text.startsWith("Any") && !text.startsWith("No Strict"));
+
+    const fallbackList = ["Mee Bandung House", "Super Mamak", "Tokyo Sushi", "Al-Farooj Arab Grill", "Restoran Banana Leaf"];
+    const spinPool = options.length > 0 ? options : fallbackList;
+
+    let counter = 0;
+    e.preventDefault(); // Temporarily prevent form submission, run animation first
+
+    const interval = setInterval(() => {
+        const randomText = spinPool[Math.floor(Math.random() * spinPool.length)];
+        slotDisplay.innerText = randomText;
+        counter++;
+
+        if (counter > 15) { // Scroll 15 times then submit the form to get real backend data
+            clearInterval(interval);
+            e.target.submit();
+        }
+    }, 80);
+});
+</script>
+
 </body>
 </html>
