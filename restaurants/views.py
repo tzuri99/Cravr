@@ -1,11 +1,12 @@
 import random
 from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Restaurant, Tag
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Restaurant, Tag, Wishlist
 from .forms import RestaurantForm, OpeningHourFormSet
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from restaurants.utils import apply_intelligent_tags
+
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -45,8 +46,11 @@ def restaurant_list(request):
 
     if request.user.is_authenticated:
         pending_restaurants = Restaurant.objects.filter(added_by=request.user, is_approved=False)
+        # Fetch IDs of restaurants bookmarked by current user
+        user_wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('restaurant_id', flat=True))
     else:
         pending_restaurants = []
+        user_wishlist_ids = []
 
     context = {
         'restaurants': restaurants,
@@ -58,10 +62,12 @@ def restaurant_list(request):
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
         'selected_tag_id': int(selected_tag_id) if selected_tag_id and selected_tag_id.isdigit() else None,
         'pending_restaurants': pending_restaurants,
+        'user_wishlist_ids': user_wishlist_ids,
         'query': query,
     }
     
     return render(request, "restaurants/restaurant_list.html", context)
+
 
 @login_required
 def add_restaurant(request):
@@ -135,6 +141,30 @@ def restaurant_picker(request):
     }
 
     return render(request, 'restaurants/restaurant_picker.html', context)
+
+
+@login_required
+def toggle_wishlist(request, restaurant_id):
+    """Add or remove restaurant from user's wishlist."""
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    wishlist_item = Wishlist.objects.filter(user=request.user, restaurant=restaurant).first()
+
+    if wishlist_item:
+        wishlist_item.delete()
+        messages.info(request, f"Removed {restaurant.name} from your wishlist.")
+    else:
+        Wishlist.objects.get_or_create(user=request.user, restaurant=restaurant)
+        messages.success(request, f"Added {restaurant.name} to your wishlist!")
+
+    return redirect(request.META.get('HTTP_REFERER', 'restaurant_list'))
+
+
+@login_required
+def wishlist_list(request):
+    """Display user's wishlisted restaurants."""
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('restaurant')
+    return render(request, 'restaurants/wishlist.html', {'wishlist_items': wishlist_items})
+
 
 def restaurants_json(request):
     data = [

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -55,3 +56,15 @@ class OpeningHour(models.Model):
 
     def __str__(self):
         return f"{self.restaurant.name} {self.get_day_display()}"
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='wishlisted_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'restaurant')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.restaurant.name}"
