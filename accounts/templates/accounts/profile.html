@@ -22,6 +22,16 @@
             <label>Bio:</label><br>
             <textarea name="bio" rows="4" cols="40">{{ profile.bio }}</textarea>
         </p>
+
+        <p>
+         <label>Privacy:</label><br>
+           <select name="privacy">
+             <option value="public" {% if profile.privacy == 'public' %}selected{% endif %}>Public</option>
+             <option value="friends" {% if profile.privacy == 'friends' %}selected{% endif %}>Friends & Family</option>
+             <option value="private" {% if profile.privacy == 'private' %}selected{% endif %}>Private</option>
+           </select>
+         </p>
+         
         <button type="submit">Save</button>
     </form>
 </body>

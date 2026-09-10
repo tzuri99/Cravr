@@ -298,6 +298,9 @@ def profile_view(request):
         bio = request.POST.get('bio', '')
         profile.bio = bio
 
+        privacy = request.POST.get('privacy', 'public')
+        profile.privacy = privacy
+
         if 'profile_picture' in request.FILES:
             profile.profile_picture = request.FILES['profile_picture']
 

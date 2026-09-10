@@ -13,9 +13,20 @@ class OTP(models.Model):
         return str(random.randint(100000, 999999))
 
 class Profile(models.Model):
+
+    PRIVACY_CHOICES = [
+        ('public', 'Public'),
+        ('friends', 'Friends & Family'),
+        ('private', 'Private'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-    bio = models.TextField(max_length=300, blank=True) 
+    bio = models.TextField(max_length=300, blank=True)
+    privacy = models.CharField(
+        max_length=10,
+        choices=PRIVACY_CHOICES,
+        default='public'
+    )
 
-# Create your models here.
