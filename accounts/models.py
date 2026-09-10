@@ -20,6 +20,7 @@ class Profile(models.Model):
         ('private', 'Private'),
     ]
 
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
@@ -29,4 +30,24 @@ class Profile(models.Model):
         choices=PRIVACY_CHOICES,
         default='public'
     )
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='followers'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'following')
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.following.username}"
 

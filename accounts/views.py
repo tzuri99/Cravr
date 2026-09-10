@@ -7,9 +7,9 @@ from django.core.mail import send_mail
 from django import forms
 from django.utils import timezone
 from datetime import timedelta
-
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
+from .models import OTP, Profile, Follow
 
 # ==========================================
 # Custom Registration Form
@@ -344,3 +344,59 @@ def admin_dashboard_view(request):
         {'submissions': []}  # 暂时给空列表，避免报错
     )
 
+# ==========================================
+# Follow / Unfollow
+# ==========================================
+
+@login_required
+def follow_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    if target_user != request.user:
+        Follow.objects.get_or_create(
+            follower=request.user,
+            following=target_user
+        )
+
+    return redirect('user_profile', username=username)
+
+
+@login_required
+def unfollow_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    Follow.objects.filter(
+        follower=request.user,
+        following=target_user
+    ).delete()
+
+    return redirect('user_profile', username=username)
+
+
+@login_required
+def user_profile_view(request, username):
+
+    target_user = User.objects.get(username=username)
+    profile = target_user.profile
+
+    is_following = Follow.objects.filter(
+        follower=request.user,
+        following=target_user
+    ).exists()
+
+    followers_count = target_user.followers.count()
+    following_count = target_user.following.count()
+
+    return render(
+        request,
+        'accounts/user_profile.html',
+        {
+            'profile_user': target_user,
+            'profile': profile,
+            'is_following': is_following,
+            'followers_count': followers_count,
+            'following_count': following_count,
+        }
+    )
