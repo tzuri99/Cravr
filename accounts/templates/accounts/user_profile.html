@@ -27,7 +27,11 @@
             {% else %}
 
                 {% if profile.profile_picture %}
-                    <img src="{{ profile.profile_picture.url }}" width="100" height="100" style="border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px;">
+                    <img src="{{ profile.profile_picture.url }}" width="140" height="140" style="border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px;">
+                {% else %}
+                    <div style="width: 140px; height: 140px; border-radius: 50%; background-color: #F5F5F5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 40px; color: #CCCCCC;">
+                        {{ profile_user.username|first|upper }}
+                    </div>
                 {% endif %}
 
                 <h1>{{ profile_user.username }}</h1>
@@ -38,7 +42,9 @@
                     <strong>{{ following_count }}</strong> Following
                 </p>
 
-                {% if is_following %}
+                {% if is_own_profile %}
+                    <a href="{% url 'profile' %}" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">Edit Profile</a>
+                {% elif is_following %}
                     <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
                         {% csrf_token %}
                         <button type="submit" class="auth-submit">Unfollow</button>
