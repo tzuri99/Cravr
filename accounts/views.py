@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django import forms
 from django.utils import timezone
@@ -9,6 +10,7 @@ from datetime import timedelta
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from .models import OTP, Profile, Follow
 
 # ==========================================
 # Custom Registration Form
@@ -283,6 +285,35 @@ def resend_otp_view(request):
     )
 
 
+# ==========================================
+# Profile
+# ==========================================
+
+@login_required
+def profile_view(request):
+
+    profile = request.user.profile
+
+    if request.method == 'POST':
+
+        bio = request.POST.get('bio', '')
+        profile.bio = bio
+
+        privacy = request.POST.get('privacy', 'public')
+        profile.privacy = privacy
+
+        if 'profile_picture' in request.FILES:
+            profile.profile_picture = request.FILES['profile_picture']
+
+        profile.save()
+
+        return redirect('profile')
+
+    return render(
+        request,
+        'accounts/profile.html',
+        {'profile': profile}
+    )
 
 # ==========================================
 # Admin Dashboard (Review Restaurant Submissions)
