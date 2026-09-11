@@ -49,6 +49,9 @@
             <p>{{ review.text|linebreaksbr }}</p>
             <p class="meta">
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
+                {% if user.is_authenticated and review.author == user %}
+                    | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
+                {% endif %}
             </p>
         </div>
     {% endfor %}

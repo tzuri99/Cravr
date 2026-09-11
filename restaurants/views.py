@@ -1,7 +1,7 @@
 import random
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Restaurant, Tag
+from .models import Restaurant, Tag, Review
 from .forms import RestaurantForm, OpeningHourFormSet, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -153,6 +153,8 @@ def restaurants_json(request):
 def map_view(request):
     return render(request, "restaurants/map.html")
 
+
+# Feat: Adding a review
 @login_required(login_url="login")
 def restaurant_detail(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk, is_approved=True)
@@ -182,3 +184,14 @@ def restaurant_detail(request, pk):
         "form": form,
         "user_review": user_review,
     })
+
+# Feat: Deleting a review
+@login_required(login_url="login")
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    restaurant_pk = review.restaurant.pk
+    if request.method == "POST":
+        review.delete()
+        messages.success(request, "Review deleted.")
+        return redirect("restaurant_detail", pk=restaurant_pk)
+    return render(request, "restaurants/delete_review.html", {"review": review})

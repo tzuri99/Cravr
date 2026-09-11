@@ -8,4 +8,5 @@ urlpatterns = [
     path("map/", views.map_view, name="map_view"),
     path("api/restaurants/", views.restaurants_json, name="restaurants_json"),
     path("<int:pk>/", views.restaurant_detail, name="restaurant_detail"),
+    path("reviews/<int:pk>/delete/", views.delete_review, name="delete_review"),
 ]
