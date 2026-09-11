@@ -20,7 +20,7 @@
     <h2>Reviews</h2>
 
     {% if user.is_authenticated %}
-        <form method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+        <form id="review-form" method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
             {% csrf_token %}
             <h3>{% if user_review %}Update your review{% else %}Write a review{% endif %}</h3>
             <p>
@@ -50,6 +50,7 @@
             <p class="meta">
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
                 {% if user.is_authenticated and review.author == user %}
+                    | <a href="#review-form">Edit</a>
                     | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
                 {% endif %}
             </p>

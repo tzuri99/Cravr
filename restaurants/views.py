@@ -5,7 +5,7 @@ from .models import Restaurant, Tag, Review
 from .forms import RestaurantForm, OpeningHourFormSet, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 def restaurant_list(request):
     # 1. Retrieve individual category filter parameters from the URL
@@ -136,6 +136,10 @@ def restaurant_picker(request):
     return render(request, 'restaurants/restaurant_picker.html', context)
 
 def restaurants_json(request):
+    restaurants = Restaurant.objects.filter(is_approved=True).annotate(
+        avg_rating=Avg("reviews__stars"),
+        review_count=Count("reviews"),
+    )
     data = [
         {
             "id": r.id,
@@ -144,8 +148,10 @@ def restaurants_json(request):
             "longitude": r.longitude,
             "cuisine": r.cuisine,
             "address": r.address,
+            "avg_rating": round(r.avg_rating, 1) if r.avg_rating else None,
+            "review_count": r.review_count,
         }
-        for r in Restaurant.objects.filter(is_approved=True)
+        for r in restaurants
     ]
     return JsonResponse(data, safe=False)
 
