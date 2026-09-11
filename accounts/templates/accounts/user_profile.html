@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile_user.username }} - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+
+            {% if blocked %}
+                <h1>{{ profile_user.username }}</h1>
+                <p class="auth-subtitle">This account is private.</p>
+            {% else %}
+
+                {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" width="140" height="140" style="border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px;">
+                {% else %}
+                    <div style="width: 140px; height: 140px; border-radius: 50%; background-color: #F5F5F5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 40px; color: #CCCCCC;">
+                        {{ profile_user.username|first|upper }}
+                    </div>
+                {% endif %}
+
+                <h1>{{ profile_user.username }}</h1>
+                <p class="auth-subtitle">{{ profile.bio|default:"No bio yet." }}</p>
+
+                <p style="text-align:center; margin-bottom: 20px;">
+                    <strong>{{ followers_count }}</strong> Followers &nbsp;&middot;&nbsp;
+                    <strong>{{ following_count }}</strong> Following
+                </p>
+
+                {% if is_own_profile %}
+                    <a href="{% url 'profile' %}" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">Edit Profile</a>
+                {% elif is_following %}
+                    <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
+                        {% csrf_token %}
+                        <button type="submit" class="auth-submit">Unfollow</button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{% url 'follow_user' username=profile_user.username %}">
+                        {% csrf_token %}
+                        <button type="submit" class="auth-submit">Follow</button>
+                    </form>
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</body>
+</html>
