@@ -8,6 +8,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 # ==========================================
 # Custom Registration Form

@@ -77,8 +77,17 @@ urlpatterns = [
         ),
         name='password_reset_complete'
     ),
-    
-        # =========================
+
+    # =========================
+    # Profile
+    # =========================
+    path(
+        'profile/',
+        views.profile_view,
+        name='profile'
+    ),
+
+    # =========================
     # Admin
     # =========================
     path(
@@ -87,7 +96,7 @@ urlpatterns = [
         name='admin_dashboard'
     ),
 
-        # =========================
+    # =========================
     # Follow / Unfollow
     # =========================
     path(
@@ -115,7 +124,5 @@ urlpatterns = [
         name='search_users'
     ),
 ]
-
-
 
 
