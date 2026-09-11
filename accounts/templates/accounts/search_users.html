@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Users - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="auth-card" style="max-width: 480px;">
+
+            <h1>Search Users</h1>
+            <p class="auth-subtitle">Find other Cravr users by username</p>
+
+            <form method="GET" class="auth-form">
+                <input type="text" name="q" placeholder="Enter a username..." value="{{ query }}">
+                <button type="submit" class="auth-submit">Search</button>
+            </form>
+
+            {% if query %}
+                <div style="margin-top: 24px;">
+                    {% if results %}
+                        {% for user in results %}
+                            <a href="{% url 'user_profile' username=user.username %}" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; margin-bottom: 8px; background-color: #F7F5F0;">
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" width="40" height="40" style="border-radius: 50%; object-fit: cover;">
+                                {% else %}
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #EFEAE0; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #999;">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <span style="font-weight: 500; color: var(--text);">{{ user.username }}</span>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="auth-subtitle">No users found for "{{ query }}"</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</body>
+</html>

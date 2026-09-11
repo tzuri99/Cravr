@@ -86,4 +86,36 @@ urlpatterns = [
         views.admin_dashboard_view,
         name='admin_dashboard'
     ),
+
+        # =========================
+    # Follow / Unfollow
+    # =========================
+    path(
+        'user/<str:username>/',
+        views.user_profile_view,
+        name='user_profile'
+    ),
+    path(
+        'user/<str:username>/follow/',
+        views.follow_view,
+        name='follow_user'
+    ),
+    path(
+        'user/<str:username>/unfollow/',
+        views.unfollow_view,
+        name='unfollow_user'
+    ),
+
+    # =========================
+    # Search
+    # =========================
+    path(
+        'search/',
+        views.search_users_view,
+        name='search_users'
+    ),
 ]
+
+
+
+

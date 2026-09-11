@@ -313,3 +313,122 @@ def admin_dashboard_view(request):
         {'submissions': []}  # 暂时给空列表，避免报错
     )
 
+# ==========================================
+# Follow / Unfollow
+# ==========================================
+
+@login_required
+def follow_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    if target_user != request.user:
+        Follow.objects.get_or_create(
+            follower=request.user,
+            following=target_user
+        )
+
+    return redirect('user_profile', username=username)
+
+
+@login_required
+def unfollow_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    Follow.objects.filter(
+        follower=request.user,
+        following=target_user
+    ).delete()
+
+    return redirect('user_profile', username=username)
+
+
+@login_required
+@login_required
+def user_profile_view(request, username):
+
+    target_user = User.objects.get(username=username)
+    profile = target_user.profile
+
+    is_own_profile = (target_user == request.user)
+
+    is_following = Follow.objects.filter(
+        follower=request.user,
+        following=target_user
+    ).exists()
+
+    followers_count = target_user.followers.count()
+    following_count = target_user.following.count()
+
+    # ===========================
+    # Visibility check
+    # ===========================
+    can_view = False
+
+    if is_own_profile:
+        can_view = True
+
+    elif profile.privacy == 'public':
+        can_view = True
+
+    elif profile.privacy == 'friends':
+        # Friends & Family = follow each other
+        they_follow_you = Follow.objects.filter(
+            follower=target_user,
+            following=request.user
+        ).exists()
+        can_view = is_following and they_follow_you
+
+    elif profile.privacy == 'private':
+        can_view = False
+
+    if not can_view:
+        return render(
+            request,
+            'accounts/user_profile.html',
+            {
+                'profile_user': target_user,
+                'blocked': True,
+            }
+        )
+
+    return render(
+        request,
+        'accounts/user_profile.html',
+        {
+            'profile_user': target_user,
+            'profile': profile,
+            'is_following': is_following,
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'is_own_profile': is_own_profile,
+        }
+    )
+
+# ==========================================
+# Search Users
+# ==========================================
+
+@login_required
+def search_users_view(request):
+
+    query = request.GET.get('q', '')
+
+    results = []
+
+    if query:
+        results = User.objects.filter(
+            username__icontains=query
+        ).exclude(
+            id=request.user.id
+        )
+
+    return render(
+        request,
+        'accounts/search_users.html',
+        {
+            'query': query,
+            'results': results,
+        }
+    )
