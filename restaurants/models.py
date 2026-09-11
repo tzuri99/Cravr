@@ -70,7 +70,6 @@ class Review(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = ("restaurant", "author")
 
     def __str__(self):
         return f"{self.stars}\u2605 {self.restaurant.name}"

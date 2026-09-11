@@ -9,6 +9,7 @@ urlpatterns = [
     path("api/restaurants/", views.restaurants_json, name="restaurants_json"),
     path("<int:pk>/", views.restaurant_detail, name="restaurant_detail"),
     path("reviews/<int:pk>/delete/", views.delete_review, name="delete_review"),
+    path("reviews/<int:pk>/edit/", views.edit_review, name="edit_review"),
     path('wishlist/', views.wishlist_list, name='wishlist_list'),
     path('wishlist/toggle/<int:restaurant_id>/', views.toggle_wishlist, name='toggle_wishlist'),
 ]

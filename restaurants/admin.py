@@ -1,16 +1,11 @@
 from django.contrib import admin
-from .models import Restaurant, Tag, OpeningHour, Review, OTP, Profile, Follow
-
-admin.site.register(OTP)
-admin.site.register(Profile)
-admin.site.register(Follow)
+from .models import Restaurant, Tag, OpeningHour, Review
 
 admin.site.register(Review)
 
 class OpeningHourInline(admin.TabularInline):
     model = OpeningHour
     extra = 7  # 7 for seven days
-
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):

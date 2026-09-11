@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit review</title>
+</head>
+<body>
+    <h1>Edit your review of {{ review.restaurant.name }}</h1>
+
+    <form method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+        {% csrf_token %}
+        <p>
+            <label>Stars:</label><br>
+            {{ form.stars }}
+        </p>
+        <p>
+            <label>Your review:</label><br>
+            {{ form.text }}
+        </p>
+        <button type="submit">Save</button>
+        <a href="{% url 'restaurant_detail' review.restaurant.pk %}" style="margin-left: 10px;">Cancel</a>
+    </form>
+</body>
+</html>

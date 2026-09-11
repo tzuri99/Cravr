@@ -199,28 +199,23 @@ def restaurant_detail(request, pk):
     reviews = restaurant.reviews.all()
     average = reviews.aggregate(Avg("stars"))["stars__avg"]
 
-    user_review = None
-    if request.user.is_authenticated:
-        user_review = reviews.filter(author=request.user).first()
-
     if request.method == "POST":
-        form = ReviewForm(request.POST, instance=user_review)
+        form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
             review.restaurant = restaurant
             review.author = request.user
             review.save()
-            messages.success(request, "Review saved.")
+            messages.success(request, "Review posted.")
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:
-        form = ReviewForm(instance=user_review)
+        form = ReviewForm()
 
     return render(request, "restaurants/restaurant_detail.html", {
         "restaurant": restaurant,
         "reviews": reviews,
         "average": average,
         "form": form,
-        "user_review": user_review,
     })
 
 # Feat: Deleting a review
@@ -233,3 +228,17 @@ def delete_review(request, pk):
         messages.success(request, "Review deleted.")
         return redirect("restaurant_detail", pk=restaurant_pk)
     return render(request, "restaurants/delete_review.html", {"review": review})
+
+# Feat: Editing a review
+@login_required(login_url="login")
+def edit_review(request, pk):
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    if request.method == "POST":
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Review updated.")
+            return redirect("restaurant_detail", pk=review.restaurant.pk)
+    else:
+        form = ReviewForm(instance=review)
+    return render(request, "restaurants/edit_review.html", {"form": form, "review": review})
