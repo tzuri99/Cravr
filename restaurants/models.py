@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
     latitude = models.FloatField()
@@ -57,6 +56,24 @@ class OpeningHour(models.Model):
     def __str__(self):
         return f"{self.restaurant.name} {self.get_day_display()}"
 
+class Review(models.Model):
+    restaurant = models.ForeignKey(
+        Restaurant, on_delete=models.CASCADE, related_name="reviews"
+    )
+    author = models.ForeignKey(
+        "auth.User", on_delete=models.CASCADE, related_name="reviews"
+    )
+    stars = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    text = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        unique_together = ("restaurant", "author")
+
+    def __str__(self):
+        return f"{self.stars}\u2605 {self.restaurant.name}"
 
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')

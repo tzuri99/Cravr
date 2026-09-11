@@ -1,10 +1,11 @@
 import random
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Restaurant, Tag, Wishlist
-from .forms import RestaurantForm, OpeningHourFormSet
+from .models import Restaurant, Tag, Review, Wishlist
+from .forms import RestaurantForm, OpeningHourFormSet, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Avg, Count
 from restaurants.utils import apply_intelligent_tags
 
 
@@ -167,6 +168,10 @@ def wishlist_list(request):
 
 
 def restaurants_json(request):
+    restaurants = Restaurant.objects.filter(is_approved=True).annotate(
+        avg_rating=Avg("reviews__stars"),
+        review_count=Count("reviews"),
+    )
     data = [
         {
             "id": r.id,
@@ -175,11 +180,56 @@ def restaurants_json(request):
             "longitude": r.longitude,
             "cuisine": r.cuisine,
             "address": r.address,
+            "avg_rating": round(r.avg_rating, 1) if r.avg_rating else None,
+            "review_count": r.review_count,
         }
-        for r in Restaurant.objects.filter(is_approved=True)
+        for r in restaurants
     ]
     return JsonResponse(data, safe=False)
 
 
 def map_view(request):
     return render(request, "restaurants/map.html")
+
+
+# Feat: Adding a review
+@login_required(login_url="login")
+def restaurant_detail(request, pk):
+    restaurant = get_object_or_404(Restaurant, pk=pk, is_approved=True)
+    reviews = restaurant.reviews.all()
+    average = reviews.aggregate(Avg("stars"))["stars__avg"]
+
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = reviews.filter(author=request.user).first()
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST, instance=user_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.restaurant = restaurant
+            review.author = request.user
+            review.save()
+            messages.success(request, "Review saved.")
+            return redirect("restaurant_detail", pk=restaurant.pk)
+    else:
+        form = ReviewForm(instance=user_review)
+
+    return render(request, "restaurants/restaurant_detail.html", {
+        "restaurant": restaurant,
+        "reviews": reviews,
+        "average": average,
+        "form": form,
+        "user_review": user_review,
+    })
+
+# Feat: Deleting a review
+@login_required(login_url="login")
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    restaurant_pk = review.restaurant.pk
+    if request.method == "POST":
+        review.delete()
+        messages.success(request, "Review deleted.")
+        return redirect("restaurant_detail", pk=restaurant_pk)
+    return render(request, "restaurants/delete_review.html", {"review": review})

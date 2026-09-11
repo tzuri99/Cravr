@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Restaurant, OpeningHour
+from .models import Restaurant, OpeningHour, Review
 
 class RestaurantForm(forms.ModelForm):
     class Meta:
@@ -38,3 +38,11 @@ OpeningHourFormSet = inlineformset_factory(
     max_num=7,
     can_delete=False,
 )
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ["stars", "text"]
+        widgets = {
+            "text": forms.Textarea(attrs={"rows": 4, "placeholder": "Share your thoughts..."}),
+        }

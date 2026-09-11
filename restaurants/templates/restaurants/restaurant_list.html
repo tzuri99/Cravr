@@ -142,7 +142,7 @@
     <ul>
         {% for restaurant in restaurants %}
             <li style="margin-bottom: 15px;">
-                <strong>{{ restaurant.name }}</strong>
+                <strong><a href="{% url 'restaurant_detail' restaurant.id %}">{{ restaurant.name }}</a></strong>
                 {% if restaurant.cuisine %}
                     ({{ restaurant.cuisine }})
                 {% endif %}
