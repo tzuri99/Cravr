@@ -2,50 +2,40 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
-
 urlpatterns = [
-
     # =========================
     # Authentication
     # =========================
-
     path(
         'register/',
         views.register_view,
         name='register'
     ),
-
     path(
         'login/',
         views.login_view,
         name='login'
     ),
-
     path(
         'logout/',
         views.logout_view,
         name='logout'
     ),
-
     # OTP verification
     path(
         'verify-otp/',
         views.verify_otp_view,
         name='verify_otp'
     ),
-
     # Resend OTP
     path(
         'resend-otp/',
         views.resend_otp_view,
         name='resend_otp'
     ),
-
-
     # =========================
     # Password Reset
     # =========================
-
     path(
         'password-reset/',
         auth_views.PasswordResetView.as_view(
@@ -53,7 +43,6 @@ urlpatterns = [
         ),
         name='password_reset'
     ),
-
     path(
         'password-reset/done/',
         auth_views.PasswordResetDoneView.as_view(
@@ -61,7 +50,6 @@ urlpatterns = [
         ),
         name='password_reset_done'
     ),
-
     path(
         'reset/<uidb64>/<token>/',
         auth_views.PasswordResetConfirmView.as_view(
@@ -69,13 +57,20 @@ urlpatterns = [
         ),
         name='password_reset_confirm'
     ),
-
     path(
         'reset/done/',
         auth_views.PasswordResetCompleteView.as_view(
             template_name='accounts/password_reset_complete.html'
         ),
         name='password_reset_complete'
+    ),
+    # =========================
+    # Profile
+    # =========================
+    path(
+        'profile/',
+        views.profile_view,
+        name='profile'
     ),
     
         # =========================
@@ -86,4 +81,27 @@ urlpatterns = [
         views.admin_dashboard_view,
         name='admin_dashboard'
     ),
+
+        # =========================
+    # Follow / Unfollow
+    # =========================
+    path(
+        'user/<str:username>/',
+        views.user_profile_view,
+        name='user_profile'
+    ),
+    path(
+        'user/<str:username>/follow/',
+        views.follow_view,
+        name='follow_user'
+    ),
+    path(
+        'user/<str:username>/unfollow/',
+        views.unfollow_view,
+        name='unfollow_user'
+    ),
 ]
+
+
+
+

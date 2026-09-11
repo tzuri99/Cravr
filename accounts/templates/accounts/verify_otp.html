@@ -1,52 +1,45 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Verify Email - Cravr</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
 <body>
 
-    <h2>Verify Your Email</h2>
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+    </nav>
 
-    <p>
-        Please enter the 6-digit verification code
-        sent to your email.
-    </p>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1>Verify Your Email</h1>
+            <p class="auth-subtitle">Enter the 6-digit code sent to your email</p>
 
-    {% if error %}
-        <p>{{ error }}</p>
-    {% endif %}
+            {% if error %}
+                <div class="auth-error">{{ error }}</div>
+            {% endif %}
 
-    {% if success %}
-        <p>{{ success }}</p>
-    {% endif %}
+            {% if success %}
+                <div class="auth-success">{{ success }}</div>
+            {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
+            <form method="POST" action="{% url 'verify_otp' %}" class="auth-form">
+                {% csrf_token %}
+                <p>
+                    <label for="otp_code">Verification Code</label>
+                    <input type="text" name="otp_code" id="otp_code" maxlength="6" placeholder="Enter 6-digit code" required>
+                </p>
+                <button type="submit" class="auth-submit">Verify</button>
+            </form>
 
-        <input
-            type="text"
-            name="otp_code"
-            maxlength="6"
-            placeholder="Enter OTP"
-            required
-        >
-
-        <button type="submit">
-            Verify
-        </button>
-    </form>
-
-    <br>
-
-    <form method="POST" action="{% url 'resend_otp' %}">
-        {% csrf_token %}
-
-        <button type="submit">
-            Resend OTP
-        </button>
-
-    </form>
+            <div class="auth-links">
+                <a href="{% url 'resend_otp' %}">Didn't receive a code? Resend</a>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
