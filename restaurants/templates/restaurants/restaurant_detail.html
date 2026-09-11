@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ restaurant.name }}</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        .review { border: 1px solid #ddd; padding: 12px; margin: 12px 0; border-radius: 6px; }
+        .stars { color: #f5a623; font-weight: bold; }
+        .meta { color: #888; font-size: 13px; }
+        .no-reviews { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <p><a href="{% url 'restaurant_list' %}">Back to list</a></p>
+
+    <h1>{{ restaurant.name }}</h1>
+    <p><strong>Cuisine:</strong> {{ restaurant.cuisine }}</p>
+    <p><strong>Address:</strong> {{ restaurant.address }}</p>
+
+    <h2>Reviews</h2>
+
+    {% if user.is_authenticated %}
+        <form id="review-form" method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+            {% csrf_token %}
+            <h3>{% if user_review %}Update your review{% else %}Write a review{% endif %}</h3>
+            <p>
+                <label>Stars:</label><br>
+                {{ form.stars }}
+            </p>
+            <p>
+                <label>Your review:</label><br>
+                {{ form.text }}
+            </p>
+            <button type="submit">{% if user_review %}Update{% else %}Post review{% endif %}</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+    {% endif %}
+
+    {% if average %}
+        <p><span class="stars">Average: {{ average|floatformat:1 }} / 5</span> from {{ reviews|length }} review{{ reviews|length|pluralize }}</p>
+    {% else %}
+        <p class="no-reviews">No reviews yet.</p>
+    {% endif %}
+
+    {% for review in reviews %}
+        <div class="review">
+            <p><span class="stars">{{ review.stars }} / 5</span></p>
+            <p>{{ review.text|linebreaksbr }}</p>
+            <p class="meta">
+                by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
+                {% if user.is_authenticated and review.author == user %}
+                    | <a href="#review-form">Edit</a>
+                    | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
+                {% endif %}
+            </p>
+        </div>
+    {% endfor %}
+
+    <h2>Opening hours</h2>
+    <ul>
+        {% for hour in restaurant.hours.all %}
+            <li>
+                {{ hour.get_day_display }}:
+                {% if hour.is_closed %}
+                    Closed
+                {% else %}
+                    {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

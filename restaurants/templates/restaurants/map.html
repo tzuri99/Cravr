@@ -14,26 +14,32 @@
 </head>
 <body>
     <h1>Restaurants</h1>
+    <button id="find-me" style="margin: 8px 16px; padding: 6px 12px;">Find my location</button>
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-            const map = L.map("map").setView([3.14, 101.70], 13);
+        const map = L.map("map").setView([3.14, 101.70], 13);
 
         L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
             attribution: "© OpenStreetMap France | © OpenStreetMap contributors",
             maxZoom: 20,
         }).addTo(map);
 
+        let userPosition = null;
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                map.setView([position.coords.latitude, position.coords.longitude], 15);
-                L.marker([position.coords.latitude, position.coords.longitude])
+                userPosition = [position.coords.latitude, position.coords.longitude];
+                map.setView(userPosition, 15);
+                L.marker(userPosition)
                     .addTo(map)
                     .bindPopup("You are here")
                     .openPopup();
             });
         }
+
+        const detailUrlBase = "{% url 'restaurant_detail' 0 %}".slice(0, -2);
 
         fetch("{% url 'restaurants_json' %}")
             .then(function (response) { return response.json(); })
@@ -43,16 +49,39 @@
                         "https://www.google.com/maps/dir/?api=1&destination=" +
                         r.latitude + "," + r.longitude;
 
+                    const ratingText = r.avg_rating
+                        ? "★ " + r.avg_rating + " (" + r.review_count + " review" + (r.review_count === 1 ? "" : "s") + ")"
+                        : "No reviews yet";
+
                     const popup =
                         "<strong>" + r.name + "</strong><br>" +
                         (r.cuisine || "") + "<br>" +
+                        ratingText + "<br>" +
                         (r.address || "") + "<br>" +
-                        '<a href="' + directionsUrl + '" target="_blank">Get directions</a>';
+                        '<a href="' + detailUrlBase + r.id + '/">See details</a>' +
+                        '<br><a href="' + directionsUrl + '" target="_blank">Get directions</a>';
                     L.marker([r.latitude, r.longitude])
                         .addTo(map)
                         .bindPopup(popup);
                 });
             });
+
+        document.getElementById("find-me").addEventListener("click", function () {
+            if (userPosition) {
+                map.setView(userPosition, 15);
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    userPosition = [position.coords.latitude, position.coords.longitude];
+                    L.marker(userPosition)
+                        .addTo(map)
+                        .bindPopup("You are here")
+                        .openPopup();
+                    map.setView(userPosition, 15);
+                });
+            } else {
+                alert("Geolocation is not available in this browser.");
+            }
+        });
     </script>
 </body>
 </html>

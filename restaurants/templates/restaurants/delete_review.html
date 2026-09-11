@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete review</title>
+</head>
+<body>
+    <h1>Delete this review?</h1>
+
+    <div style="border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin: 15px 0;">
+        <p><strong>{{ review.restaurant.name }}</strong></p>
+        <p>{{ review.stars }} / 5</p>
+        <p>{{ review.text|linebreaksbr }}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" style="background: #c00; color: white; padding: 8px 16px; border: none; border-radius: 4px;">
+            Yes, delete
+        </button>
+        <a href="{% url 'restaurant_detail' review.restaurant.pk %}" style="margin-left: 10px;">Cancel</a>
+    </form>
+</body>
+</html>
