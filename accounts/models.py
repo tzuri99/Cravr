@@ -31,6 +31,9 @@ class Profile(models.Model):
         default='public'
     )
 
+    failed_login_attempts = models.IntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+
 
 class Follow(models.Model):
     follower = models.ForeignKey(
