@@ -131,6 +131,15 @@ def login_view(request):
 
             # Login
             login(request, user)
+
+            # Remember Me logic
+            remember_me = request.POST.get('remember_me')
+
+            if remember_me:
+                request.session.set_expiry(1209600)  # 14 days
+            else:
+                request.session.set_expiry(0)  # Expires when browser closes
+
 #help system to differentiate whether the acc is user acc or admin acc
             if user.is_staff:
 

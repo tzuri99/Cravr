@@ -25,6 +25,12 @@
             <form method="POST" class="auth-form">
                 {% csrf_token %}
                 {{ form.as_p }}
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: -8px;">
+                    <input type="checkbox" name="remember_me">
+                    Remember me
+                </label>
+
                 <button type="submit" class="auth-submit">Login</button>
             </form>
  
@@ -34,6 +40,5 @@
             </div>
         </div>
     </div>
- 
 </body>
 </html>

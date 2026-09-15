@@ -145,3 +145,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+# Session settings (for Remember Me feature)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1209600  # 默认是两个星期，之后会依Remember Me动态调整，1209600是两个星期的秒数
