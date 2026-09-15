@@ -1,192 +1,321 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Restaurants</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        .tag-group { margin-bottom: 12px; }
+        .tag-group { margin-bottom: 16px; }
+        .tag-group strong {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+        }
         .tag-btn { 
             display: inline-block; 
-            padding: 5px 12px; 
-            margin: 3px; 
-            border: 1px solid #ccc; 
-            border-radius: 15px; 
+            padding: 6px 16px; 
+            margin: 4px; 
+            border: 1.5px solid #efeae0; 
+            border-radius: 20px; 
             text-decoration: none; 
-            color: #333; 
+            color: var(--text); 
             font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.15s ease;
         }
-        .tag-btn.active { background-color: #007bff; color: white; border-color: #007bff; }
-        .tag-badge { background: #e0e0e0; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 4px; }
+        .tag-btn:hover {
+            border-color: var(--accent);
+        }
+        .tag-btn.active { 
+            background-color: var(--primary); 
+            color: var(--white); 
+            border-color: var(--primary);
+        }
+        .tag-badge {
+            display: inline-block;
+            background: var(--background);
+            border: 1px solid #efeae0;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-right: 4px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+        }
         .wishlist-btn {
             display: inline-block;
             margin-left: 8px;
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
             text-decoration: none;
             font-size: 13px;
-            background-color: #f1f3f5;
-            color: #495057;
-            border: 1px solid #dee2e6;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f5f0;
+            color: var(--text);
+            border: 1.5px solid #efeae0;
         }
         .wishlist-btn.active {
-            background-color: #ffe3e3;
-            color: #e03131;
-            border-color: #ffa8a8;
+            background-color: #fdecea;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .page-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .page-links {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .page-links a {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .page-links a:hover {
+            text-decoration: underline;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+            margin: 20px 0 28px;
+        }
+        .search-form input[type="text"] {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #efeae0;
+            background-color: #f7f5f0;
+            color: var(--text);
+            outline: none;
+            width: 320px;
+        }
+        .search-form input[type="text"]:focus-visible {
+            border-color: var(--accent);
+            background-color: var(--white);
+        }
+        .search-form button {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .search-form button:hover {
+            background-color: #E85A3A;
+        }
+        .search-form .clear-link {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .filter-box {
+            background-color: var(--white);
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            margin-bottom: 28px;
+        }
+
+        .restaurant-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            list-style: none;
+        }
+        .restaurant-card strong a {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 18px;
+            color: var(--text);
+        }
+        .restaurant-list {
+            padding: 0;
+        }
+        .restaurant-hours {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 8px;
+            padding-left: 16px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Restaurants</h1>
-    <a href="{% url 'add_restaurant' %}">Add a restaurant</a> |
-    <a href="{% url 'map_view' %}">View on map</a> |
-    <a href="{% url 'restaurant_picker' %}">Restaurant Picker</a> |
-    <a href="{% url 'wishlist_list' %}">❤️ My Wishlist</a>
-    <hr>
-    
-    {% if messages %}
-        <ul style="color: green;">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <nav class="navbar">
+        <a href="/" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="{% url 'restaurant_list' %}">Find Restaurants</a>
+            <a href="{% url 'search_users' %}">Search Users</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
 
-    {% if pending_restaurants %}
-        <h2>Your pending submissions</h2>
-        <ul>
-            {% for restaurant in pending_restaurants %}
-                <li>{{ restaurant.name }} — waiting for admin approval</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    
-    <form method="get" style="margin: 15px 0;">
-        <input
-            type="text"
-            name="q"
-            value="{{ query }}"
-            placeholder="Search restaurants..."
-            style="padding: 6px; width: 300px; border: 1px solid #ccc; border-radius: 4px;"
-        />
-        <button type="submit" style="padding: 6px 12px;">Search</button>
-        {% if query %}
-            <a href="{% url 'restaurant_list' %}" style="margin-left: 10px;">Clear</a>
+    <div class="page-wrapper">
+
+        <h1>Restaurants</h1>
+
+        <div class="page-links">
+            <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
+            <a href="{% url 'map_view' %}">View on map</a>
+            <a href="{% url 'restaurant_picker' %}">Restaurant Picker</a>
+            <a href="{% url 'wishlist_list' %}">My Wishlist</a>
+        </div>
+
+        {% if messages %}
+            <ul style="color: green;">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
         {% endif %}
-    </form>
 
-    <!-- Tag Filtering Area -->
-    <div style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px;">
-        <!-- Show All button clears all URL parameters -->
-        <p>
-            <a href="?" class="tag-btn {% if not selected_cuisine_id and not selected_meal_id and not selected_dietary_id and not selected_tag_id %}active{% endif %}">
-                Show All
-            </a>
-        </p>
+        {% if pending_restaurants %}
+            <h2>Your pending submissions</h2>
+            <ul>
+                {% for restaurant in pending_restaurants %}
+                    <li>{{ restaurant.name }} — waiting for admin approval</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-        <!-- Cuisine Tag Group -->
-        <div class="tag-group">
-            <strong>Cuisine:</strong>
-            {% for tag in cuisine_tags %}
-                {% if selected_cuisine_id == tag.id %}
-                    <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
-                       class="tag-btn active">
-                        {{ tag.name }}
-                    </a>
-                {% else %}
-                    <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
-                       class="tag-btn">
-                        {{ tag.name }}
-                    </a>
-                {% endif %}
-            {% endfor %}
+        <form method="get" class="search-form">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search restaurants..."
+            />
+            <button type="submit">Search</button>
+            {% if query %}
+                <a href="{% url 'restaurant_list' %}" class="clear-link">Clear</a>
+            {% endif %}
+        </form>
+
+        <!-- Tag Filtering Area -->
+        <div class="filter-box">
+            <p>
+                <a href="?" class="tag-btn {% if not selected_cuisine_id and not selected_meal_id and not selected_dietary_id and not selected_tag_id %}active{% endif %}">
+                    Show All
+                </a>
+            </p>
+
+            <div class="tag-group">
+                <strong>Cuisine:</strong>
+                {% for tag in cuisine_tags %}
+                    {% if selected_cuisine_id == tag.id %}
+                        <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                           class="tag-btn active">
+                            {{ tag.name }}
+                        </a>
+                    {% else %}
+                        <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                           class="tag-btn">
+                            {{ tag.name }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="tag-group">
+                <strong>Meal Type:</strong>
+                {% for tag in meal_type_tags %}
+                    {% if selected_meal_id == tag.id %}
+                        <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                           class="tag-btn active">
+                            {{ tag.name }}
+                        </a>
+                    {% else %}
+                        <a href="?meal_type={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                           class="tag-btn">
+                            {{ tag.name }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="tag-group">
+                <strong>Dietary Options:</strong>
+                {% for tag in dietary_tags %}
+                    {% if selected_dietary_id == tag.id %}
+                        <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
+                           class="tag-btn active">
+                            {{ tag.name }}
+                        </a>
+                    {% else %}
+                        <a href="?dietary={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}" 
+                           class="tag-btn">
+                            {{ tag.name }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
 
-        <!-- Meal Type Tag Group -->
-        <div class="tag-group">
-            <strong>Meal Type:</strong>
-            {% for tag in meal_type_tags %}
-                {% if selected_meal_id == tag.id %}
-                    <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
-                       class="tag-btn active">
-                        {{ tag.name }}
-                    </a>
-                {% else %}
-                    <a href="?meal_type={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
-                       class="tag-btn">
-                        {{ tag.name }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-        </div>
+        <!-- Restaurant List -->
+        <ul class="restaurant-list">
+            {% for restaurant in restaurants %}
+                <li class="restaurant-card">
+                    <strong><a href="{% url 'restaurant_detail' restaurant.id %}">{{ restaurant.name }}</a></strong>
+                    {% if restaurant.cuisine %}
+                        ({{ restaurant.cuisine }})
+                    {% endif %}
 
-        <!-- Dietary Options Tag Group -->
-        <div class="tag-group">
-            <strong>Dietary Options:</strong>
-            {% for tag in dietary_tags %}
-                {% if selected_dietary_id == tag.id %}
-                    <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
-                       class="tag-btn active">
-                        {{ tag.name }}
-                    </a>
-                {% else %}
-                    <a href="?dietary={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}" 
-                       class="tag-btn">
-                        {{ tag.name }}
-                    </a>
-                {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'toggle_wishlist' restaurant.id %}" 
+                           class="wishlist-btn {% if restaurant.id in user_wishlist_ids %}active{% endif %}">
+                           {% if restaurant.id in user_wishlist_ids %}
+                               ❤️ Bookmarked
+                           {% else %}
+                               🤍 Add to Wishlist
+                           {% endif %}
+                        </a>
+                    {% endif %}
+
+                    {% if restaurant.tags.all %}
+                        <div style="margin: 10px 0;">
+                            {% for tag in restaurant.tags.all %}
+                                <span class="tag-badge">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if restaurant.hours.all %}
+                        <ul class="restaurant-hours">
+                            {% for hour in restaurant.hours.all %}
+                                <li>
+                                    {{ hour.get_day_display }}:
+                                    {% if hour.is_closed %}
+                                        Closed
+                                    {% else %}
+                                        {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>No restaurants found for the selected filter(s).</li>
             {% endfor %}
-        </div>
+        </ul>
+
     </div>
 
-    <!-- Restaurant List -->
-    <ul>
-        {% for restaurant in restaurants %}
-            <li style="margin-bottom: 15px;">
-                <strong><a href="{% url 'restaurant_detail' restaurant.id %}">{{ restaurant.name }}</a></strong>
-                {% if restaurant.cuisine %}
-                    ({{ restaurant.cuisine }})
-                {% endif %}
-
-                <!-- Wishlist Toggle Button -->
-                {% if user.is_authenticated %}
-                    <a href="{% url 'toggle_wishlist' restaurant.id %}" 
-                       class="wishlist-btn {% if restaurant.id in user_wishlist_ids %}active{% endif %}">
-                       {% if restaurant.id in user_wishlist_ids %}
-                           ❤️ Bookmarked
-                       {% else %}
-                           🤍 Add to Wishlist
-                       {% endif %}
-                    </a>
-                {% endif %}
-
-                <!-- Tags Badges -->
-                {% if restaurant.tags.all %}
-                    <div style="margin: 5px 0;">
-                        {% for tag in restaurant.tags.all %}
-                            <span class="tag-badge">{{ tag.name }}</span>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Opening Hours -->
-                {% if restaurant.hours.all %}
-                    <ul>
-                        {% for hour in restaurant.hours.all %}
-                            <li>
-                                {{ hour.get_day_display }}:
-                                {% if hour.is_closed %}
-                                    Closed
-                                {% else %}
-                                    {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </li>
-        {% empty %}
-            <li>No restaurants found for the selected filter(s).</li>
-        {% endfor %}
-    </ul>
 </body>
 </html>
