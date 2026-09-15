@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('restaurants', '0002_restaurant_added_by_restaurant_is_approved'),
+        ('restaurants', '0002_wishlist'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

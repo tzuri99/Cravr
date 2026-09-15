@@ -1,11 +1,10 @@
 from django.contrib import admin
-from .models import Restaurant, Tag, OpeningHour, Review, OTP, Profile, Follow
+from .models import Restaurant, Tag, OpeningHour, Review, Wishlist
 
-admin.site.register(OTP)
-admin.site.register(Profile)
-admin.site.register(Follow)
 
+admin.site.register(OpeningHour)
 admin.site.register(Review)
+admin.site.register(Wishlist)
 
 class OpeningHourInline(admin.TabularInline):
     model = OpeningHour

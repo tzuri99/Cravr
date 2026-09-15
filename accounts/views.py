@@ -9,6 +9,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from .models import OTP, Profile, Follow
 
 # ==========================================
@@ -434,5 +435,32 @@ def user_profile_view(request, username):
             'followers_count': followers_count,
             'following_count': following_count,
             'is_own_profile': is_own_profile,
+        }
+    )
+
+# ==========================================
+# Search Users
+# ==========================================
+
+@login_required
+def search_users_view(request):
+
+    query = request.GET.get('q', '')
+
+    results = []
+
+    if query:
+        results = User.objects.filter(
+            username__icontains=query
+        ).exclude(
+            id=request.user.id
+        )
+
+    return render(
+        request,
+        'accounts/search_users.html',
+        {
+            'query': query,
+            'results': results,
         }
     )
