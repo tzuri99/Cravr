@@ -1,7 +1,10 @@
 from django.contrib import admin
-from .models import Restaurant, Tag, OpeningHour, Review
+from .models import Restaurant, Tag, OpeningHour, Review, Wishlist
 
+
+admin.site.register(OpeningHour)
 admin.site.register(Review)
+admin.site.register(Wishlist)
 
 class OpeningHourInline(admin.TabularInline):
     model = OpeningHour

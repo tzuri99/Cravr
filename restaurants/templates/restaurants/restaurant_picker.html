@@ -80,6 +80,32 @@
             border-color: #4c6ef5;
         }
 
+        .wishlist-checkbox-section {
+            background-color: #fff0f6;
+            border: 1px solid #ffdeeb;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .wishlist-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #d6336c;
+            cursor: pointer;
+            margin: 0 !important;
+        }
+
+        .wishlist-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #e64980;
+            cursor: pointer;
+        }
+
         .slot-box {
             height: 80px;
             line-height: 80px;
@@ -135,6 +161,16 @@
             text-align: center;
         }
 
+        .tag-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 2px 4px 2px 0;
+        }
+
         .error-box {
             margin-top: 24px;
             padding: 20px;
@@ -160,6 +196,17 @@
     <p class="header-subtitle">Can't decide where to eat? Set your mandatory preferences and spin!</p>
 
     <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form">
+        
+        <!-- Wishlist Filter Checkbox Option (Only visible for authenticated users) -->
+        {% if user.is_authenticated %}
+            <div class="wishlist-checkbox-section">
+                <label class="wishlist-checkbox-label">
+                    <input type="checkbox" name="from_wishlist" value="true" {% if from_wishlist %}checked{% endif %}>
+                    ❤️ Only pick from my Wishlist
+                </label>
+            </div>
+        {% endif %}
+
         <!-- Cuisine Selection -->
         <div class="filter-section">
             <label for="cuisine"><strong>Cuisine:</strong></label>
@@ -215,13 +262,46 @@
     {% if picked_restaurant %}
         <div class="result-box" id="result-box">
             <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
-            <p><strong>Address:</strong> {{ picked_restaurant.address }}</p>
-            <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours|default:"Not specified" }}</p>
+            
+            {% if picked_restaurant.cuisine %}
+                <p><strong>Cuisine:</strong> {{ picked_restaurant.cuisine }}</p>
+            {% endif %}
+
+            <p><strong>Address:</strong> {{ picked_restaurant.address|default:"No address specified" }}</p>
+
+            <!-- Display associated tags badges -->
+            {% if picked_restaurant.tags.all %}
+                <p style="margin-bottom: 8px;"><strong>Tags:</strong></p>
+                <div style="margin-bottom: 12px;">
+                    {% for tag in picked_restaurant.tags.all %}
+                        <span class="tag-badge">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Display structured opening hours -->
+            {% if picked_restaurant.hours.all %}
+                <p style="margin-bottom: 6px;"><strong>Opening Hours:</strong></p>
+                <ul style="margin-top: 0; padding-left: 20px; font-size: 14px;">
+                    {% for hour in picked_restaurant.hours.all %}
+                        <li>
+                            {{ hour.get_day_display }}: 
+                            {% if hour.is_closed %}
+                                Closed
+                            {% else %}
+                                {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% elif picked_restaurant.opening_hours %}
+                <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours }}</p>
+            {% endif %}
         </div>
     {% elif no_matches %}
         <div class="error-box">
             <h3 style="margin-top:0;">⚠️ No Matching Restaurants Found</h3>
-            <p style="margin-bottom:0;">No restaurants match all of your selected filter criteria. Try relaxing some filters!</p>
+            <p style="margin-bottom:0;">No restaurants match all of your selected filter criteria. Try relaxing some filters or adding items to your wishlist!</p>
         </div>
     {% endif %}
 </div>
@@ -232,7 +312,7 @@ document.getElementById('picker-form').addEventListener('submit', function(e) {
     const resultBox = document.getElementById('result-box');
     const spinBtn = document.getElementById('spin-btn');
 
-    // Hide the previous card
+    // Hide the previous card during animation
     if (resultBox) {
         resultBox.style.display = 'none';
     }

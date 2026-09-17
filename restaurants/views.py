@@ -103,8 +103,16 @@ def restaurant_picker(request):
     selected_meal_id = request.GET.get('meal_type')
     selected_dietary_id = request.GET.get('dietary')
 
+    # Wishlist filter: Check if user toggled the Wishlist filter parameter
+    from_wishlist = request.GET.get('from_wishlist') == 'true'
+
     # Start with all restaurants
     restaurants = Restaurant.objects.filter(is_approved=True)
+
+    # Filter by user's wishlist if the checkbox is active and user is logged in
+    if from_wishlist and request.user.is_authenticated:
+        wishlist_restaurant_ids = Wishlist.objects.filter(user=request.user).values_list('restaurant_id', flat=True)
+        restaurants = restaurants.filter(id__in=wishlist_restaurant_ids)
 
     # Apply tag filters (AND logic)
     if selected_cuisine_id and selected_cuisine_id.isdigit():
@@ -137,6 +145,7 @@ def restaurant_picker(request):
         'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
+        'from_wishlist': from_wishlist,  # Pass wishlist state to context
         'picked_restaurant': picked_restaurant,
         'no_matches': no_matches,
     }
