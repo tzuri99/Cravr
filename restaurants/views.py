@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Restaurant, Tag, Review, Wishlist
@@ -106,7 +107,11 @@ def restaurant_picker(request):
     # Wishlist filter: Check if user toggled the Wishlist filter parameter
     from_wishlist = request.GET.get('from_wishlist') == 'true'
 
-    # Start with all restaurants
+    # Open Now and Distance parameters
+    open_now = request.GET.get('open_now') == 'true'
+    max_distance = request.GET.get('max_distance')
+
+    # Start with all approved restaurants
     restaurants = Restaurant.objects.filter(is_approved=True)
 
     # Filter by user's wishlist if the checkbox is active and user is logged in
@@ -125,7 +130,25 @@ def restaurant_picker(request):
     if selected_dietary_id and selected_dietary_id.isdigit():
         restaurants = restaurants.filter(tags__id=int(selected_dietary_id))
 
-    restaurants = restaurants.distinct()
+    # Apply Open-Now filter by matching current server day and time against opening hours
+    if open_now:
+        now = datetime.now()
+        current_day = now.weekday()  # Monday is 0, Sunday is 6
+        current_time = now.time()
+
+        restaurants = restaurants.filter(
+            hours__day=current_day,
+            hours__is_closed=False,
+            hours__opening_time__lte=current_time,
+            hours__closing_time__gte=current_time
+        )
+
+    # Apply Distance filter if distance parameter is provided
+    if max_distance and max_distance.isdigit():
+        limit_km = float(max_distance)
+        restaurants = [r for r in restaurants if hasattr(r, 'distance') and r.distance is not None and r.distance <= limit_km]
+    else:
+        restaurants = restaurants.distinct()
 
     # Random selection logic
     picked_restaurant = None
@@ -133,10 +156,16 @@ def restaurant_picker(request):
 
     # Trigger selection if form is submitted
     if request.GET:
-        if restaurants.exists():
-            picked_restaurant = random.choice(list(restaurants))
+        if isinstance(restaurants, list):
+            if len(restaurants) > 0:
+                picked_restaurant = random.choice(restaurants)
+            else:
+                no_matches = True
         else:
-            no_matches = True
+            if restaurants.exists():
+                picked_restaurant = random.choice(list(restaurants))
+            else:
+                no_matches = True
 
     context = {
         'cuisine_tags': cuisine_tags,
@@ -145,7 +174,9 @@ def restaurant_picker(request):
         'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
-        'from_wishlist': from_wishlist,  # Pass wishlist state to context
+        'from_wishlist': from_wishlist,
+        'open_now': open_now,
+        'max_distance': int(max_distance) if max_distance and max_distance.isdigit() else None,
         'picked_restaurant': picked_restaurant,
         'no_matches': no_matches,
     }
