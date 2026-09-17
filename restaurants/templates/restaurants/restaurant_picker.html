@@ -85,7 +85,7 @@
             border: 1px solid #ffdeeb;
             padding: 12px 14px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .wishlist-checkbox-label {
@@ -103,6 +103,58 @@
             width: 18px;
             height: 18px;
             accent-color: #e64980;
+            cursor: pointer;
+        }
+
+        .open-now-checkbox-section {
+            background-color: #e6fcf5;
+            border: 1px solid #c3fae8;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .open-now-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #0ca678;
+            cursor: pointer;
+            margin: 0 !important;
+        }
+
+        .open-now-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #12b886;
+            cursor: pointer;
+        }
+
+        .exclude-low-checkbox-section {
+            background-color: #fff9db;
+            border: 1px solid #fff3bf;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .exclude-low-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #f59f00;
+            cursor: pointer;
+            margin: 0 !important;
+        }
+
+        .exclude-low-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #f59f00;
             cursor: pointer;
         }
 
@@ -207,6 +259,24 @@
             </div>
         {% endif %}
 
+        <!-- Open Now Filter Checkbox Option -->
+        <div class="open-now-checkbox-section">
+            <label class="open-now-checkbox-label">
+                <input type="checkbox" name="open_now" value="true" {% if open_now %}checked{% endif %}>
+                🕒 Open Now Only
+            </label>
+        </div>
+
+        <!-- Exclude Low Rated Filter Checkbox Option (Only visible for authenticated users) -->
+        {% if user.is_authenticated %}
+            <div class="exclude-low-checkbox-section">
+                <label class="exclude-low-checkbox-label">
+                    <input type="checkbox" name="exclude_low_rated" value="true" {% if exclude_low_rated %}checked{% endif %}>
+                    🚫 Exclude places I rated low (≤ 2 stars)
+                </label>
+            </div>
+        {% endif %}
+
         <!-- Cuisine Selection -->
         <div class="filter-section">
             <label for="cuisine"><strong>Cuisine:</strong></label>
@@ -243,6 +313,18 @@
                         {{ tag.name }}
                     </option>
                 {% endfor %}
+            </select>
+        </div>
+
+        <!-- Distance Filter Selection -->
+        <div class="filter-section">
+            <label for="max_distance"><strong>Max Distance:</strong></label>
+            <select name="max_distance" id="max_distance" class="filter-select">
+                <option value="">Any Distance</option>
+                <option value="1" {% if max_distance == 1 %}selected{% endif %}>Within 1 km</option>
+                <option value="3" {% if max_distance == 3 %}selected{% endif %}>Within 3 km</option>
+                <option value="5" {% if max_distance == 5 %}selected{% endif %}>Within 5 km</option>
+                <option value="10" {% if max_distance == 10 %}selected{% endif %}>Within 10 km</option>
             </select>
         </div>
 
