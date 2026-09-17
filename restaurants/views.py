@@ -1,12 +1,25 @@
+import math
 import random
+from datetime import datetime
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Restaurant, Tag, Review, Wishlist
-from .forms import RestaurantForm, OpeningHourFormSet, ReviewForm
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.db.models import Avg, Count
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import OpeningHourFormSet, RestaurantForm, ReviewForm
+from .models import Restaurant, Review, Tag, Wishlist
 from restaurants.utils import apply_intelligent_tags
+
+
+def calculate_haversine_distance(lat1, lon1, lat2, lon2):
+    # Calculate the great-circle distance between two sets of latitude and longitude coordinates using the haversine formula (unit: kilometers).
+    R = 6371.0  # Earth's average radius (kilometers)
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
 
 
 def restaurant_list(request):
@@ -106,13 +119,30 @@ def restaurant_picker(request):
     # Wishlist filter: Check if user toggled the Wishlist filter parameter
     from_wishlist = request.GET.get('from_wishlist') == 'true'
 
-    # Start with all restaurants
+    # Open Now, Distance, and User Location parameters
+    open_now = request.GET.get('open_now') == 'true'
+    max_distance = request.GET.get('max_distance')
+    user_lat = request.GET.get('user_lat')
+    user_lng = request.GET.get('user_lng')
+
+    # Subtask 2: Exclude Low-Rated filter parameter
+    exclude_low_rated = request.GET.get('exclude_low_rated') == 'true'
+
+    # Start with all approved restaurants
     restaurants = Restaurant.objects.filter(is_approved=True)
 
     # Filter by user's wishlist if the checkbox is active and user is logged in
     if from_wishlist and request.user.is_authenticated:
         wishlist_restaurant_ids = Wishlist.objects.filter(user=request.user).values_list('restaurant_id', flat=True)
         restaurants = restaurants.filter(id__in=wishlist_restaurant_ids)
+
+    # Subtask 2: Exclude restaurants where current authenticated user left rating <= 2 stars
+    if exclude_low_rated and request.user.is_authenticated:
+        low_rated_restaurant_ids = Review.objects.filter(
+            author=request.user,
+            stars__lte=2
+        ).values_list('restaurant_id', flat=True)
+        restaurants = restaurants.exclude(id__in=low_rated_restaurant_ids)
 
     # Apply tag filters (AND logic)
     if selected_cuisine_id and selected_cuisine_id.isdigit():
@@ -125,7 +155,47 @@ def restaurant_picker(request):
     if selected_dietary_id and selected_dietary_id.isdigit():
         restaurants = restaurants.filter(tags__id=int(selected_dietary_id))
 
+    # Apply Open-Now filter by matching current server day and time against opening hours
+    if open_now:
+        now = datetime.now()
+        current_day = now.weekday()  # Monday is 0, Sunday is 6
+        current_time = now.time()
+
+        restaurants = restaurants.filter(
+            hours__day=current_day,
+            hours__is_closed=False,
+            hours__opening_time__lte=current_time,
+            hours__closing_time__gte=current_time
+        )
+
     restaurants = restaurants.distinct()
+
+    # Convert QuerySet to a list for easier manipulation and binding of the distance attribute
+    restaurant_list = list(restaurants)
+
+    # Dynamically calculate the physical distance from each restaurant to the user.
+    if user_lat and user_lng:
+        try:
+            u_lat = float(user_lat)
+            u_lng = float(user_lng)
+            for r in restaurant_list:
+                if r.latitude is not None and r.longitude is not None:
+                    try:
+                        r_lat = float(r.latitude)
+                        r_lng = float(r.longitude)
+                        # Calculate distance and round to 2 decimal places
+                        r.distance = round(calculate_haversine_distance(u_lat, u_lng, r_lat, r_lng), 2)
+                    except (ValueError, TypeError):
+                        r.distance = None
+                else:
+                    r.distance = None
+        except (ValueError, TypeError):
+            pass
+
+    # Filter restaurants outside the max_distance range
+    if max_distance and max_distance.isdigit():
+        limit_km = float(max_distance)
+        restaurant_list = [r for r in restaurant_list if hasattr(r, 'distance') and r.distance is not None and r.distance <= limit_km]
 
     # Random selection logic
     picked_restaurant = None
@@ -133,8 +203,8 @@ def restaurant_picker(request):
 
     # Trigger selection if form is submitted
     if request.GET:
-        if restaurants.exists():
-            picked_restaurant = random.choice(list(restaurants))
+        if len(restaurant_list) > 0:
+            picked_restaurant = random.choice(restaurant_list)
         else:
             no_matches = True
 
@@ -145,7 +215,12 @@ def restaurant_picker(request):
         'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
-        'from_wishlist': from_wishlist,  # Pass wishlist state to context
+        'from_wishlist': from_wishlist,
+        'open_now': open_now,
+        'max_distance': int(max_distance) if max_distance and max_distance.isdigit() else None,
+        'exclude_low_rated': exclude_low_rated,
+        'user_lat': user_lat,
+        'user_lng': user_lng,
         'picked_restaurant': picked_restaurant,
         'no_matches': no_matches,
     }
@@ -245,6 +320,7 @@ def restaurant_detail(request, pk):
         "average": average,
         "form": form,
     })
+
 
 # Feat: Deleting a review
 @login_required(login_url="login")
