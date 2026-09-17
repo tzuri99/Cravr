@@ -329,6 +329,8 @@
                 <option value="3" {% if max_distance == 3 %}selected{% endif %}>Within 3 km</option>
                 <option value="5" {% if max_distance == 5 %}selected{% endif %}>Within 5 km</option>
                 <option value="10" {% if max_distance == 10 %}selected{% endif %}>Within 10 km</option>
+                <option value="30" {% if max_distance == 30 %}selected{% endif %}>Within 30 km</option>
+                <option value="50" {% if max_distance == 50 %}selected{% endif %}>Within 50 km</option>
             </select>
         </div>
 
@@ -397,7 +399,7 @@
 </div>
 
 <script>
-// 页面加载时自动调取队友地图同款的 geolocation 获取用户实时位置
+// Automatically invoke the geolocation API upon page load to retrieve the user's real-time location.
 if (navigator.geolocation && !document.getElementById('user_lat').value) {
     navigator.geolocation.getCurrentPosition(function (position) {
         document.getElementById('user_lat').value = position.coords.latitude;
