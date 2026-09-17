@@ -111,6 +111,9 @@ def restaurant_picker(request):
     open_now = request.GET.get('open_now') == 'true'
     max_distance = request.GET.get('max_distance')
 
+    # Subtask 2: Exclude Low-Rated filter parameter
+    exclude_low_rated = request.GET.get('exclude_low_rated') == 'true'
+
     # Start with all approved restaurants
     restaurants = Restaurant.objects.filter(is_approved=True)
 
@@ -118,6 +121,14 @@ def restaurant_picker(request):
     if from_wishlist and request.user.is_authenticated:
         wishlist_restaurant_ids = Wishlist.objects.filter(user=request.user).values_list('restaurant_id', flat=True)
         restaurants = restaurants.filter(id__in=wishlist_restaurant_ids)
+
+    # Subtask 2: Exclude restaurants where current authenticated user left rating <= 2 stars
+    if exclude_low_rated and request.user.is_authenticated:
+        low_rated_restaurant_ids = Review.objects.filter(
+            author=request.user,
+            stars__lte=2
+        ).values_list('restaurant_id', flat=True)
+        restaurants = restaurants.exclude(id__in=low_rated_restaurant_ids)
 
     # Apply tag filters (AND logic)
     if selected_cuisine_id and selected_cuisine_id.isdigit():
@@ -177,6 +188,7 @@ def restaurant_picker(request):
         'from_wishlist': from_wishlist,
         'open_now': open_now,
         'max_distance': int(max_distance) if max_distance and max_distance.isdigit() else None,
+        'exclude_low_rated': exclude_low_rated,
         'picked_restaurant': picked_restaurant,
         'no_matches': no_matches,
     }

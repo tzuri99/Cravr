@@ -249,6 +249,10 @@
 
     <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form">
         
+        <!-- 存储用户当前定位的隐藏域 -->
+        <input type="hidden" name="user_lat" id="user_lat" value="{{ user_lat|default:'' }}">
+        <input type="hidden" name="user_lng" id="user_lng" value="{{ user_lng|default:'' }}">
+
         <!-- Wishlist Filter Checkbox Option (Only visible for authenticated users) -->
         {% if user.is_authenticated %}
             <div class="wishlist-checkbox-section">
@@ -345,6 +349,10 @@
         <div class="result-box" id="result-box">
             <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
             
+            {% if picked_restaurant.distance %}
+                <p><strong>📍 Distance:</strong> {{ picked_restaurant.distance }} km away</p>
+            {% endif %}
+
             {% if picked_restaurant.cuisine %}
                 <p><strong>Cuisine:</strong> {{ picked_restaurant.cuisine }}</p>
             {% endif %}
@@ -389,6 +397,16 @@
 </div>
 
 <script>
+// 页面加载时自动调取队友地图同款的 geolocation 获取用户实时位置
+if (navigator.geolocation && !document.getElementById('user_lat').value) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+        document.getElementById('user_lat').value = position.coords.latitude;
+        document.getElementById('user_lng').value = position.coords.longitude;
+    }, function(error) {
+        console.log("Location access denied or unavailable.");
+    });
+}
+
 document.getElementById('picker-form').addEventListener('submit', function(e) {
     const slotDisplay = document.getElementById('slot-display');
     const resultBox = document.getElementById('result-box');
