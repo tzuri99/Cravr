@@ -6,6 +6,8 @@
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <style>
         #map { height: 90vh; }
         body { margin: 0; font-family: sans-serif; }
@@ -24,6 +26,7 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script>
         const map = L.map("map").setView([3.14, 101.70], 13);
 
@@ -31,6 +34,8 @@
             attribution: "© OpenStreetMap France | © OpenStreetMap contributors",
             maxZoom: 20,
         }).addTo(map);
+
+        const markerCluster = L.markerClusterGroup();
 
         let userPosition = null;
 
@@ -65,32 +70,48 @@
 
         const detailUrlBase = "{% url 'restaurant_detail' 0 %}".slice(0, -2);
 
-        fetch("{% url 'restaurants_json' %}")
-            .then(function (response) { return response.json(); })
-            .then(function (restaurants) {
-                restaurants.forEach(function (r) {
-                    const directionsUrl =
-                        "https://www.google.com/maps/dir/?api=1&destination=" +
-                        r.latitude + "," + r.longitude;
+        function loadRestaurants() {
+            markerCluster.clearLayers();
 
-                    const ratingText = r.avg_rating
-                        ? "★ " + r.avg_rating + " (" + r.review_count + " review" + (r.review_count === 1 ? "" : "s") + ")"
-                        : "No reviews yet";
+            const bounds = map.getBounds();
+            const url = "{% url 'restaurants_json' %}" +
+                "?south=" + bounds.getSouth() +
+                "&west=" + bounds.getWest() +
+                "&north=" + bounds.getNorth() +
+                "&east=" + bounds.getEast();
 
-                    const popup =
-                        "<strong>" + r.name + "</strong><br>" +
-                        (r.cuisine || "") + "<br>" +
-                        ratingText + "<br>" +
-                        (r.address || "") + "<br>" +
-                        '<a href="' + detailUrlBase + r.id + '/">See details</a>' +
-                        '<br><a href="' + directionsUrl + '" target="_blank">Get directions</a>';
+            fetch(url)
+                .then(function (response) { return response.json(); })
+                .then(function (restaurants) {
+                    restaurants.forEach(function (r) {
+                        const directionsUrl =
+                            "https://www.google.com/maps/dir/?api=1&destination=" +
+                            r.latitude + "," + r.longitude;
 
-                    const icon = coloredIcon(iconColorFor(r.avg_rating));
-                    L.marker([r.latitude, r.longitude], { icon: icon })
-                        .addTo(map)
-                        .bindPopup(popup);
+                        const ratingText = r.avg_rating
+                            ? "★ " + r.avg_rating + " (" + r.review_count + " review" + (r.review_count === 1 ? "" : "s") + ")"
+                            : "No reviews yet";
+
+                        const popup =
+                            "<strong>" + r.name + "</strong><br>" +
+                            (r.cuisine || "") + "<br>" +
+                            ratingText + "<br>" +
+                            (r.address || "") + "<br>" +
+                            '<a href="' + detailUrlBase + r.id + '/">See details</a>' +
+                            '<br><a href="' + directionsUrl + '" target="_blank">Get directions</a>';
+
+                        const icon = coloredIcon(iconColorFor(r.avg_rating));
+                        const marker = L.marker([r.latitude, r.longitude], { icon: icon });
+                        marker.bindPopup(popup);
+                        markerCluster.addLayer(marker);
+                    });
+
+                    map.addLayer(markerCluster);
                 });
-            });
+        }
+
+        loadRestaurants();
+        map.on("moveend", loadRestaurants);
 
         document.getElementById("find-me").addEventListener("click", function () {
             if (userPosition) {

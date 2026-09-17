@@ -177,10 +177,29 @@ def wishlist_list(request):
 
 
 def restaurants_json(request):
-    restaurants = Restaurant.objects.filter(is_approved=True).annotate(
+    restaurants = Restaurant.objects.filter(is_approved=True)
+
+    south = request.GET.get("south")
+    west = request.GET.get("west")
+    north = request.GET.get("north")
+    east = request.GET.get("east")
+
+    if all([south, west, north, east]):
+        try:
+            restaurants = restaurants.filter(
+                latitude__gte=float(south),
+                latitude__lte=float(north),
+                longitude__gte=float(west),
+                longitude__lte=float(east),
+            )
+        except ValueError:
+            pass
+
+    restaurants = restaurants.annotate(
         avg_rating=Avg("reviews__stars"),
         review_count=Count("reviews"),
-    )
+    )[:500]
+
     data = [
         {
             "id": r.id,
