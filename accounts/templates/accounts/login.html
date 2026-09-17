@@ -33,6 +33,12 @@
 
                 <button type="submit" class="auth-submit">Login</button>
             </form>
+
+            <div class="auth-links" style="margin-top: 16px;">
+               <a href="{% url 'google_login' %}" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid #EFEAE0; border-radius: 12px; text-decoration: none; color: var(--text); font-weight: 500;">
+                  Sign in with Google
+               </a>
+            </div>
  
             <div class="auth-links">
                 <a href="{% url 'password_reset' %}">Forgot password?</a>
