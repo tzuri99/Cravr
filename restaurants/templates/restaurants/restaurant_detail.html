@@ -22,7 +22,7 @@
     {% if user.is_authenticated %}
         <form id="review-form" method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
             {% csrf_token %}
-            <h3>{% if user_review %}Update your review{% else %}Write a review{% endif %}</h3>
+            <h3>Write a review</h3>
             <p>
                 <label>Stars:</label><br>
                 {{ form.stars }}
@@ -31,7 +31,7 @@
                 <label>Your review:</label><br>
                 {{ form.text }}
             </p>
-            <button type="submit">{% if user_review %}Update{% else %}Post review{% endif %}</button>
+            <button type="submit">Post review</button>
         </form>
     {% else %}
         <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
@@ -50,7 +50,7 @@
             <p class="meta">
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
                 {% if user.is_authenticated and review.author == user %}
-                    | <a href="#review-form">Edit</a>
+                    | <a href="{% url 'edit_review' review.pk %}">Edit</a>
                     | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
                 {% endif %}
             </p>
