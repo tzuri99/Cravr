@@ -60,12 +60,6 @@ def register_view(request):
             # Create user
             user = form.save()
 
-            # Create profile
-            Profile.objects.create(
-                user=user,
-                is_verified=False
-            )
-
             # Generate OTP
             code = OTP.generate_code()
 
