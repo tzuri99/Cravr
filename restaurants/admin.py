@@ -10,7 +10,6 @@ class OpeningHourInline(admin.TabularInline):
     model = OpeningHour
     extra = 7  # 7 for seven days
 
-
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     inlines = [OpeningHourInline]
