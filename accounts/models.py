@@ -24,6 +24,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    cover_photo = models.ImageField(upload_to='cover_photos/', null=True, blank=True)
     bio = models.TextField(max_length=300, blank=True)
     privacy = models.CharField(
         max_length=10,

@@ -11,6 +11,7 @@ from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from .models import OTP, Profile, Follow
+from django.contrib import messages
 
 # ==========================================
 # Custom Registration Form
@@ -294,6 +295,9 @@ def profile_view(request):
 
     profile = request.user.profile
 
+    followers_count = request.user.followers.count()
+    following_count = request.user.following.count()
+
     if request.method == 'POST':
 
         bio = request.POST.get('bio', '')
@@ -305,16 +309,24 @@ def profile_view(request):
         if 'profile_picture' in request.FILES:
             profile.profile_picture = request.FILES['profile_picture']
 
+        if 'cover_photo' in request.FILES:
+            profile.cover_photo = request.FILES['cover_photo']
+
         profile.save()
+
+        messages.success(request, 'Your profile has been updated!')
 
         return redirect('profile')
 
     return render(
         request,
         'accounts/profile.html',
-        {'profile': profile}
+        {
+            'profile': profile,
+            'followers_count': followers_count,
+            'following_count': following_count,
+        }
     )
-
 # ==========================================
 # Admin Dashboard (Review Restaurant Submissions)
 # ==========================================
@@ -376,7 +388,6 @@ def unfollow_view(request, username):
     return redirect('user_profile', username=username)
 
 
-@login_required
 @login_required
 def user_profile_view(request, username):
 
