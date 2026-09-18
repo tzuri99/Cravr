@@ -22,9 +22,23 @@
         <div class="auth-card">
 
             {% if blocked %}
-                <h1>{{ profile_user.username }}</h1>
-                <p class="auth-subtitle">This account is private.</p>
-            {% else %}
+    <h1>{{ profile_user.username }}</h1>
+    <p class="auth-subtitle">This account is private.</p>
+
+    {% if is_following %}
+        <p class="auth-subtitle">You're following them. Waiting for them to follow you back.</p>
+        <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
+            {% csrf_token %}
+            <button type="submit" class="auth-submit">Unfollow</button>
+        </form>
+    {% else %}
+        <form method="POST" action="{% url 'follow_user' username=profile_user.username %}">
+            {% csrf_token %}
+            <button type="submit" class="auth-submit">Follow</button>
+        </form>
+    {% endif %}
+
+{% else %}
 
                 {% if profile.profile_picture %}
                     <img src="{{ profile.profile_picture.url }}" width="140" height="140" style="border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px;">

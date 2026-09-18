@@ -422,6 +422,7 @@ def user_profile_view(request, username):
             {
                 'profile_user': target_user,
                 'blocked': True,
+                'is_following': is_following,
             }
         )
 
