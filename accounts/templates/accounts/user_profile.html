@@ -21,16 +21,40 @@
     <div class="auth-wrapper">
         <div class="auth-card">
 
-            {% if blocked %}
+         {% if is_blocking_me %}
+
+    <h1>{{ profile_user.username }}</h1>
+    <p class="auth-subtitle">
+        You cannot view this profile.
+    </p>
+
+{% elif is_blocked_by_me %}
+
+    <h1>{{ profile_user.username }}</h1>
+    <p class="auth-subtitle">
+        You have blocked this user.
+    </p>
+
+    <form method="POST" action="{% url 'unblock_user' username=profile_user.username %}">
+        {% csrf_token %}
+        <button type="submit" class="auth-submit">Unblock</button>
+    </form>
+
+{% elif blocked %}
+
     <h1>{{ profile_user.username }}</h1>
     <p class="auth-subtitle">This account is private.</p>
 
     {% if is_following %}
-        <p class="auth-subtitle">You're following them. Waiting for them to follow you back.</p>
+        <p class="auth-subtitle">
+            You're following them. Waiting for them to follow you back.
+        </p>
+
         <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
             {% csrf_token %}
             <button type="submit" class="auth-submit">Unfollow</button>
         </form>
+
     {% else %}
         <form method="POST" action="{% url 'follow_user' username=profile_user.username %}">
             {% csrf_token %}
@@ -39,6 +63,7 @@
     {% endif %}
 
 {% else %}
+
 <div style="position: relative; margin: -40px -40px 0;">
     {% if profile.cover_photo %}
         <img src="{{ profile.cover_photo.url }}" style="width: 100%; height: 140px; object-fit: cover; display: block; border-radius: 24px 24px 0 0;">
@@ -64,19 +89,47 @@
                     <strong>{{ following_count }}</strong> Following
                 </p>
 
-                {% if is_own_profile %}
-                    <a href="{% url 'profile' %}" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">Edit Profile</a>
-                {% elif is_following %}
-                    <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
-                        {% csrf_token %}
-                        <button type="submit" class="auth-submit">Unfollow</button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="{% url 'follow_user' username=profile_user.username %}">
-                        {% csrf_token %}
-                        <button type="submit" class="auth-submit">Follow</button>
-                    </form>
+                {% if not is_own_profile and mutual_friends_count > 0 %}
+                    <p style="text-align:center; color: var(--muted); font-size: 13px; margin-bottom: 16px;">
+                           You have {{ mutual_friends_count }} mutual friend{{ mutual_friends_count|pluralize }}
+                    </p>
                 {% endif %}
+
+                {% if is_own_profile %}
+    <a href="{% url 'profile' %}" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">Edit Profile</a>
+
+{% elif is_blocking_me %}
+    <p class="auth-subtitle" style="text-align:center;">
+        You cannot interact with this user.
+    </p>
+
+{% elif is_blocked_by_me %}
+    <form method="POST" action="{% url 'unblock_user' username=profile_user.username %}">
+        {% csrf_token %}
+        <button type="submit" class="auth-submit">Unblock</button>
+    </form>
+
+{% elif is_following %}
+    <form method="POST" action="{% url 'unfollow_user' username=profile_user.username %}">
+        {% csrf_token %}
+        <button type="submit" class="auth-submit">Unfollow</button>
+    </form>
+
+{% else %}
+    <form method="POST" action="{% url 'follow_user' username=profile_user.username %}">
+        {% csrf_token %}
+        <button type="submit" class="auth-submit">Follow</button>
+    </form>
+{% endif %}
+
+{% if not is_own_profile and not is_blocking_me and not is_blocked_by_me %}
+    <form method="POST" action="{% url 'block_user' username=profile_user.username %}" style="margin-top: 10px;">
+        {% csrf_token %}
+        <button type="submit" class="auth-submit">
+            Block User
+        </button>
+    </form>
+{% endif %}
 
             {% endif %}
 
