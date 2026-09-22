@@ -61,12 +61,6 @@ def register_view(request):
             # Create user
             user = form.save()
 
-            # Create profile
-            Profile.objects.create(
-                user=user,
-                is_verified=False
-            )
-
             # Generate OTP
             code = OTP.generate_code()
 
@@ -108,6 +102,26 @@ def login_view(request):
 
     if request.method == 'POST':
 
+        username = request.POST.get('username')
+
+        # 先检查账号是否存在，是否被锁定
+        try:
+            existing_user = User.objects.get(username=username)
+            profile = existing_user.profile
+
+            if profile.locked_until and timezone.now() < profile.locked_until:
+                minutes_left = int((profile.locked_until - timezone.now()).total_seconds() / 60) + 1
+                return render(
+                    request,
+                    'accounts/login.html',
+                    {
+                        'form': AuthenticationForm(),
+                        'error': f'Account locked due to too many failed attempts. Try again in {minutes_left} minute(s).'
+                    }
+                )
+        except User.DoesNotExist:
+            existing_user = None
+
         form = AuthenticationForm(
             request,
             data=request.POST
@@ -116,6 +130,11 @@ def login_view(request):
         if form.is_valid():
 
             user = form.get_user()
+
+            # 登录成功，重置失败次数
+            user.profile.failed_login_attempts = 0
+            user.profile.locked_until = None
+            user.profile.save()
 
             # Check email verification
             if not user.profile.is_verified:
@@ -132,12 +151,30 @@ def login_view(request):
 
             # Login
             login(request, user)
-#help system to differentiate whether the acc is user acc or admin acc
-            if user.is_staff:
 
-              return redirect('admin_dashboard')
+            # Remember Me logic
+            remember_me = request.POST.get('remember_me')
+
+            if remember_me:
+                request.session.set_expiry(1209600)  # 14 days
+            else:
+                request.session.set_expiry(0)
+
+            if user.is_staff:
+                return redirect('admin_dashboard')
 
             return redirect('home')
+
+        else:
+            # 登录失败（密码错误），增加失败次数
+            if existing_user:
+                profile = existing_user.profile
+                profile.failed_login_attempts += 1
+
+                if profile.failed_login_attempts >= 5:
+                    profile.locked_until = timezone.now() + timedelta(minutes=15)
+
+                profile.save()
 
     else:
         form = AuthenticationForm()
