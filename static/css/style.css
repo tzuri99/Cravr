@@ -333,3 +333,8 @@ a {
 .auth-links a:hover {
     text-decoration: underline;
 }
+
+.auth-success {
+    position: relative;
+    z-index: 9999;
+}
