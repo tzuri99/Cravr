@@ -6,9 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-
 from .forms import OpeningHourFormSet, RestaurantForm, ReviewForm
-from .models import Restaurant, Review, Tag, Wishlist
+from .models import Restaurant, Review, ReviewPhoto, Tag, Wishlist
 from restaurants.utils import apply_intelligent_tags
 
 
@@ -303,12 +302,17 @@ def restaurant_detail(request, pk):
     average = reviews.aggregate(Avg("stars"))["stars__avg"]
 
     if request.method == "POST":
-        form = ReviewForm(request.POST, request.FILES)
+        form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
             review.restaurant = restaurant
             review.author = request.user
             review.save()
+
+            photos = request.FILES.getlist("photos")[:5]
+            for photo in photos:
+                ReviewPhoto.objects.create(review=review, image=photo)
+
             messages.success(request, "Review posted.")
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:

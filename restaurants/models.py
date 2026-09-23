@@ -75,6 +75,14 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.stars}\u2605 {self.restaurant.name}"
 
+class ReviewPhoto(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="photos")
+    image = models.ImageField(upload_to="review_photos/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Photo for review {self.review_id}"
+
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='wishlisted_by')
