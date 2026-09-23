@@ -50,14 +50,16 @@
         <div class="review">
             <p><span class="stars">{{ review.stars }} / 5</span></p>
             <p>{{ review.text|linebreaksbr }}</p>
+
+            {% if review.photo %}
+                <p><img src="{{ review.photo.url }}" alt="Review photo" style="max-width: 100%; border-radius: 6px;"></p>
+            {% endif %}
+
             <p class="meta">
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
                 {% if user.is_authenticated and review.author == user %}
                     | <a href="{% url 'edit_review' review.pk %}">Edit</a>
                     | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
-                {% endif %}
-                {% if review.photo %}
-                    <p><img src="{{ review.photo.url }}" alt="Review photo" style="max-width: 100%; border-radius: 6px;"></p>
                 {% endif %}
             </p>
         </div>

@@ -303,7 +303,7 @@ def restaurant_detail(request, pk):
     average = reviews.aggregate(Avg("stars"))["stars__avg"]
 
     if request.method == "POST":
-        form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             review = form.save(commit=False)
             review.restaurant = restaurant
@@ -312,7 +312,7 @@ def restaurant_detail(request, pk):
             messages.success(request, "Review posted.")
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:
-        form = ReviewForm(request.POST, request.FILES)
+        form = ReviewForm()
 
     return render(request, "restaurants/restaurant_detail.html", {
         "restaurant": restaurant,
