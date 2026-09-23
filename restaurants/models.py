@@ -67,6 +67,7 @@ class Review(models.Model):
     text = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    photo = models.ImageField(upload_to="review_photos/", blank=True, null=True)
 
     class Meta:
         ordering = ["-created_at"]

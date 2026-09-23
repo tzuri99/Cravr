@@ -218,7 +218,7 @@ def restaurant_detail(request, pk):
             messages.success(request, "Review posted.")
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:
-        form = ReviewForm()
+        form = ReviewForm(request.POST, request.FILES)
 
     return render(request, "restaurants/restaurant_detail.html", {
         "restaurant": restaurant,
@@ -243,7 +243,7 @@ def delete_review(request, pk):
 def edit_review(request, pk):
     review = get_object_or_404(Review, pk=pk, author=request.user)
     if request.method == "POST":
-        form = ReviewForm(request.POST, instance=review)
+        form = ReviewForm(request.POST, request.FILES, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, "Review updated.")

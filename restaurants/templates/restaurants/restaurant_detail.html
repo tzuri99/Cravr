@@ -20,8 +20,7 @@
     <h2>Reviews</h2>
 
     {% if user.is_authenticated %}
-        <form id="review-form" method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
-            {% csrf_token %}
+        <form id="review-form" method="post" enctype="multipart/form-data" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">            {% csrf_token %}
             <h3>Write a review</h3>
             <p>
                 <label>Stars:</label><br>
@@ -30,6 +29,10 @@
             <p>
                 <label>Your review:</label><br>
                 {{ form.text }}
+            </p>
+            <p>
+                <label>Photo (optional):</label><br>
+                {{ form.photo }}
             </p>
             <button type="submit">Post review</button>
         </form>
@@ -52,6 +55,9 @@
                 {% if user.is_authenticated and review.author == user %}
                     | <a href="{% url 'edit_review' review.pk %}">Edit</a>
                     | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
+                {% endif %}
+                {% if review.photo %}
+                    <p><img src="{{ review.photo.url }}" alt="Review photo" style="max-width: 100%; border-radius: 6px;"></p>
                 {% endif %}
             </p>
         </div>
