@@ -10,7 +10,8 @@ from datetime import timedelta
 from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from .models import OTP, Profile, Follow
+from .models import OTP, Profile, Follow , Block
+from django.contrib import messages
 
 # ==========================================
 # Custom Registration Form
@@ -60,12 +61,6 @@ def register_view(request):
             # Create user
             user = form.save()
 
-            # Create profile
-            Profile.objects.create(
-                user=user,
-                is_verified=False
-            )
-
             # Generate OTP
             code = OTP.generate_code()
 
@@ -107,6 +102,26 @@ def login_view(request):
 
     if request.method == 'POST':
 
+        username = request.POST.get('username')
+
+        # 先检查账号是否存在，是否被锁定
+        try:
+            existing_user = User.objects.get(username=username)
+            profile = existing_user.profile
+
+            if profile.locked_until and timezone.now() < profile.locked_until:
+                minutes_left = int((profile.locked_until - timezone.now()).total_seconds() / 60) + 1
+                return render(
+                    request,
+                    'accounts/login.html',
+                    {
+                        'form': AuthenticationForm(),
+                        'error': f'Account locked due to too many failed attempts. Try again in {minutes_left} minute(s).'
+                    }
+                )
+        except User.DoesNotExist:
+            existing_user = None
+
         form = AuthenticationForm(
             request,
             data=request.POST
@@ -115,6 +130,11 @@ def login_view(request):
         if form.is_valid():
 
             user = form.get_user()
+
+            # 登录成功，重置失败次数
+            user.profile.failed_login_attempts = 0
+            user.profile.locked_until = None
+            user.profile.save()
 
             # Check email verification
             if not user.profile.is_verified:
@@ -131,12 +151,30 @@ def login_view(request):
 
             # Login
             login(request, user)
-#help system to differentiate whether the acc is user acc or admin acc
-            if user.is_staff:
 
-              return redirect('admin_dashboard')
+            # Remember Me logic
+            remember_me = request.POST.get('remember_me')
+
+            if remember_me:
+                request.session.set_expiry(1209600)  # 14 days
+            else:
+                request.session.set_expiry(0)
+
+            if user.is_staff:
+                return redirect('admin_dashboard')
 
             return redirect('home')
+
+        else:
+            # 登录失败（密码错误），增加失败次数
+            if existing_user:
+                profile = existing_user.profile
+                profile.failed_login_attempts += 1
+
+                if profile.failed_login_attempts >= 5:
+                    profile.locked_until = timezone.now() + timedelta(minutes=15)
+
+                profile.save()
 
     else:
         form = AuthenticationForm()
@@ -294,6 +332,9 @@ def profile_view(request):
 
     profile = request.user.profile
 
+    followers_count = request.user.followers.count()
+    following_count = request.user.following.count()
+
     if request.method == 'POST':
 
         bio = request.POST.get('bio', '')
@@ -305,16 +346,24 @@ def profile_view(request):
         if 'profile_picture' in request.FILES:
             profile.profile_picture = request.FILES['profile_picture']
 
+        if 'cover_photo' in request.FILES:
+            profile.cover_photo = request.FILES['cover_photo']
+
         profile.save()
+
+        messages.success(request, 'Your profile has been updated!')
 
         return redirect('profile')
 
     return render(
         request,
         'accounts/profile.html',
-        {'profile': profile}
+        {
+            'profile': profile,
+            'followers_count': followers_count,
+            'following_count': following_count,
+        }
     )
-
 # ==========================================
 # Admin Dashboard (Review Restaurant Submissions)
 # ==========================================
@@ -375,8 +424,44 @@ def unfollow_view(request, username):
 
     return redirect('user_profile', username=username)
 
+@login_required
+def block_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    if target_user != request.user:
+        Block.objects.get_or_create(
+            blocker=request.user,
+            blocked=target_user
+        )
+
+        # Remove both follow relationships
+        Follow.objects.filter(
+            follower=request.user,
+            following=target_user
+        ).delete()
+
+        Follow.objects.filter(
+            follower=target_user,
+            following=request.user
+        ).delete()
+
+    return redirect('user_profile', username=username)
+
 
 @login_required
+def unblock_view(request, username):
+
+    target_user = User.objects.get(username=username)
+
+    Block.objects.filter(
+        blocker=request.user,
+        blocked=target_user
+    ).delete()
+
+    return redirect('user_profile', username=username)
+
+
 @login_required
 def user_profile_view(request, username):
 
@@ -390,8 +475,73 @@ def user_profile_view(request, username):
         following=target_user
     ).exists()
 
+    is_followed_by = Follow.objects.filter(
+        follower=target_user,
+        following=request.user
+    ).exists()
+
     followers_count = target_user.followers.count()
     following_count = target_user.following.count()
+
+    mutual_friends_count = Follow.objects.filter(
+        follower=request.user,
+        following__in=Follow.objects.filter(
+            follower=target_user
+        ).values('following')
+    ).count()
+
+    # Check blocking status
+    is_blocked_by_me = Block.objects.filter(
+        blocker=request.user,
+        blocked=target_user
+    ).exists()
+
+    is_blocking_me = Block.objects.filter(
+        blocker=target_user,
+        blocked=request.user
+    ).exists()
+
+        # Determine whether the profile should be hidden
+    blocked = False
+
+    if not is_own_profile:
+
+        # If the other user blocked me, I cannot view their profile
+        if is_blocking_me:
+            blocked = True
+
+        # If I blocked the other user, I can still view their profile
+        # so that I can unblock them
+        elif is_blocked_by_me:
+            blocked = False
+
+        # User's privacy settings
+        elif profile.privacy == 'private':
+            blocked = True
+
+        elif profile.privacy == 'friends':
+            if not (is_following and is_followed_by):
+                blocked = True
+
+    return render(
+        request,
+        'accounts/user_profile.html',
+        {
+            'profile_user': target_user,
+            'profile': profile,
+            'is_own_profile': is_own_profile,
+            'is_following': is_following,
+            'is_followed_by': is_followed_by,
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'mutual_friends_count': mutual_friends_count,
+            'blocked': blocked,
+            'is_blocked_by_me': is_blocked_by_me,
+            'is_blocking_me': is_blocking_me,
+        }
+    )
+
+        
 
     # ===========================
     # Visibility check
@@ -422,6 +572,7 @@ def user_profile_view(request, username):
             {
                 'profile_user': target_user,
                 'blocked': True,
+                'is_following': is_following,
             }
         )
 
@@ -435,6 +586,7 @@ def user_profile_view(request, username):
             'followers_count': followers_count,
             'following_count': following_count,
             'is_own_profile': is_own_profile,
+            'mutual_friends_count': mutual_friends_count,
         }
     )
 
