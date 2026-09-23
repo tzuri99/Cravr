@@ -13,11 +13,11 @@ HEADERS = {"User-Agent": "Cravr-student-project/1.0"}
 # Currently covers Cyberjaya
 QUERY = """
 [out:json][timeout:180];
-node["amenity"="restaurant"](3.10,101.68,3.18,101.73);
+node["amenity"="restaurant"](3.15,101.62,3.20,101.67);
 out body;
 """
 
-MAX_ROWS = 50
+MAX_ROWS = 800
 COLUMNS = ["name", "latitude", "longitude", "address", "cuisine", "opening_time", "closing_time"]
 
 def parse_hours(text):

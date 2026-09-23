@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In via Google - Cravr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">Cravr</a>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1>Sign In via Google</h1>
+            <p class="auth-subtitle">You're about to sign in to Cravr using your Google account.</p>
+
+            <form method="POST" class="auth-form">
+                {% csrf_token %}
+                <button type="submit" class="auth-submit">Continue</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
