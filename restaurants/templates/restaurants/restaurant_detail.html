@@ -61,18 +61,23 @@
             display: block;
         }
     </style>
+      {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <p><a href="{% url 'restaurant_list' %}">Back to list</a></p>
+    <p><a href="{% url 'restaurant_list' %}" class="back-to-list">Back to list</a></p>
 
-    <h1>{{ restaurant.name }}</h1>
+    <h1 class="restaurant-detail-title">{{ restaurant.name }}</h1>
+
+<div class="restaurant-info">
     <p><strong>Cuisine:</strong> {{ restaurant.cuisine }}</p>
     <p><strong>Address:</strong> {{ restaurant.address }}</p>
+</div>
 
-    <h2>Reviews</h2>
+    <h2 class="restaurant-section-title">Reviews</h2>
 
     {% if user.is_authenticated %}
-        <form id="review-form" method="post" enctype="multipart/form-data" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+        <form id="review-form" method="post" enctype="multipart/form-data" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;" class="review-form">
             {% csrf_token %}
             <h3>Write a review</h3>
             <p>
@@ -91,10 +96,12 @@
             <div id="photo-preview" class="photo-strip"></div>
             <div id="photo-note"></div>
 
-            <button type="submit" style="margin-top: 12px;">Post review</button>
+            <button type="submit" class="review-submit">Post review</button>
         </form>
     {% else %}
-        <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+       <p class="login-review-message">
+    <a href="{% url 'login' %}">Log in</a> to write a review.
+       </p>
     {% endif %}
 
     {% if average %}
@@ -120,14 +127,14 @@
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
                 {% if user.is_authenticated and review.author == user %}
                     | <a href="{% url 'edit_review' review.pk %}">Edit</a>
-                    | <a href="{% url 'delete_review' review.pk %}" style="color: #c00;">Delete</a>
+                    | <a href="{% url 'delete_review' review.pk %}" class="delete-review-link">Delete</a>
                 {% endif %}
             </p>
         </div>
     {% endfor %}
 
-    <h2>Opening hours</h2>
-    <ul>
+   <h2 class="restaurant-section-title">Opening hours</h2>
+    <ul class="opening-hours">
         {% for hour in restaurant.hours.all %}
             <li>
                 {{ hour.get_day_display }}:

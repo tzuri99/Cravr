@@ -338,3 +338,1098 @@ a {
     position: relative;
     z-index: 9999;
 }
+
+
+
+/* ===========================
+   Add Restaurant
+   =========================== */
+
+.add-restaurant-title {
+    text-align: center;
+    font-size: 32px;
+    margin: 40px 0 24px;
+}
+
+.submission-notice {
+    max-width: 850px;
+    margin: 0 auto 28px;
+    padding: 12px 16px;
+    background-color: #FFF4E5;
+    border-left: 4px solid #F0AD4E;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.restaurant-form {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.restaurant-form p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.restaurant-form input,
+.restaurant-form select,
+.restaurant-form textarea {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #EFEAE0;
+    background-color: #F7F5F0;
+    color: var(--text);
+}
+
+.opening-hours-title {
+    font-size: 22px;
+    margin: 28px 0 16px;
+}
+
+.restaurant-form table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.restaurant-form th,
+.restaurant-form td {
+    padding: 12px;
+    border-bottom: 1px solid #EFEAE0;
+    text-align: left;
+}
+
+.restaurant-form th {
+    font-weight: 600;
+}
+
+.add-restaurant-submit {
+    margin-top: 24px;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 107, 74, 0.25);
+}
+
+.add-restaurant-submit:hover {
+    background-color: #E85A3A;
+}
+
+.back-to-list {
+    display: block;
+    width: fit-content;
+    margin: 20px auto;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.back-to-list:hover {
+    text-decoration: underline;
+}
+
+.form-error {
+    color: #C0392B;
+}
+
+/* ===========================
+   Delete Review
+   =========================== */
+
+.delete-review-title {
+    text-align: center;
+    font-size: 32px;
+    margin: 60px 0 24px;
+}
+
+.review-delete-card {
+    max-width: 600px;
+    margin: 0 auto 24px;
+    padding: 24px;
+    background-color: var(--white);
+    border: 1.5px solid #EFEAE0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.review-delete-card p {
+    margin-bottom: 8px;
+}
+
+.review-delete-card strong {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+}
+
+.delete-review-button {
+    display: block;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+    background-color: #C0392B;
+    color: var(--white);
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.delete-review-button:hover {
+    background-color: #A93226;
+}
+
+.cancel-delete {
+    display: block;
+    width: fit-content;
+    margin: 12px auto;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cancel-delete:hover {
+    text-decoration: underline;
+}
+
+/* ===========================
+   Edit Review
+   =========================== */
+
+.edit-review-title {
+    text-align: center;
+    font-size: 32px;
+    margin: 60px 24px 24px;
+}
+
+.edit-review-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: var(--white);
+    border: 1.5px solid #EFEAE0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.edit-review-form p {
+    margin-bottom: 20px;
+}
+
+.edit-review-form label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.edit-review-form input,
+.edit-review-form textarea,
+.edit-review-form select {
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #EFEAE0;
+    background-color: #F7F5F0;
+    color: var(--text);
+    outline: none;
+}
+
+.edit-review-form input:focus,
+.edit-review-form textarea:focus,
+.edit-review-form select:focus {
+    border-color: var(--accent);
+    background-color: var(--white);
+}
+
+.edit-review-save {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.edit-review-save:hover {
+    background-color: #E85A3A;
+}
+
+.edit-review-cancel {
+    margin-left: 12px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.edit-review-cancel:hover {
+    text-decoration: underline;
+}
+
+/* ===========================
+   Map
+   =========================== */
+
+.map-legend {
+    padding: 12px 48px;
+    font-size: 13px;
+    color: var(--muted);
+    background-color: var(--white);
+}
+
+.legend-green {
+    color: #4A4;
+}
+
+.legend-orange {
+    color: #D80;
+}
+
+.legend-red {
+    color: #C33;
+}
+
+.legend-grey {
+    color: #888;
+}
+
+.find-location-btn {
+    margin: 8px 48px 16px;
+    padding: 10px 18px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    background-color: var(--primary);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.find-location-btn:hover {
+    background-color: #E85A3A;
+}
+
+#map {
+    height: 90vh !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+/* ===========================
+   Restaurant Detail
+   =========================== */
+
+.restaurant-detail {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+.restaurant-detail-title {
+    font-size: 36px;
+    margin: 20px 0 20px;
+}
+
+.restaurant-info {
+    background-color: var(--white);
+    padding: 20px 24px;
+    border-radius: 16px;
+    border: 1.5px solid #EFEAE0;
+    margin-bottom: 32px;
+}
+
+.restaurant-info p {
+    margin-bottom: 8px;
+}
+
+.restaurant-info p:last-child {
+    margin-bottom: 0;
+}
+
+.restaurant-section-title {
+    font-size: 24px;
+    margin: 32px 0 16px;
+}
+
+.review-form {
+    padding: 24px;
+    background-color: var(--white);
+    border: 1.5px solid #EFEAE0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    margin-bottom: 24px;
+}
+
+.review-form h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.review-form p {
+    margin-bottom: 16px;
+}
+
+.review-form label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.review-form input,
+.review-form textarea,
+.review-form select {
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #EFEAE0;
+    background-color: #F7F5F0;
+    color: var(--text);
+    outline: none;
+}
+
+.review-form input:focus,
+.review-form textarea:focus,
+.review-form select:focus {
+    border-color: var(--accent);
+    background-color: var(--white);
+}
+
+.review-submit {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.review-submit:hover {
+    background-color: #E85A3A;
+}
+
+.login-review-message {
+    margin-bottom: 20px;
+}
+
+.login-review-message a {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.review-average {
+    margin-bottom: 20px;
+}
+
+.stars {
+    color: #F5A623;
+    font-weight: 600;
+}
+
+.no-reviews {
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.review {
+    background-color: var(--white);
+    border: 1.5px solid #EFEAE0;
+    padding: 18px 20px;
+    margin: 12px 0;
+    border-radius: 14px;
+}
+
+.review p {
+    margin-bottom: 8px;
+}
+
+.review p:last-child {
+    margin-bottom: 0;
+}
+
+.meta {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.meta a {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.meta .delete-review-link {
+    color: #C0392B;
+}
+
+.opening-hours {
+    list-style: none;
+    background-color: var(--white);
+    border: 1.5px solid #EFEAE0;
+    border-radius: 16px;
+    padding: 8px 20px;
+}
+
+.opening-hours li {
+    padding: 12px 4px;
+    border-bottom: 1px solid #EFEAE0;
+}
+
+.opening-hours li:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 600px) {
+    .restaurant-detail {
+        padding: 28px 20px 48px;
+    }
+
+    .restaurant-detail-title {
+        font-size: 30px;
+    }
+
+    .review-form {
+        padding: 20px;
+    }
+}
+/* ===========================
+   Restaurant List
+   =========================== */
+
+.tag-group { 
+    margin-bottom: 16px; 
+}
+
+.tag-group strong {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.tag-btn { 
+    display: inline-block; 
+    padding: 6px 16px; 
+    margin: 4px; 
+    border: 1.5px solid #efeae0; 
+    border-radius: 20px; 
+    text-decoration: none; 
+    color: var(--text); 
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.tag-btn:hover {
+    border-color: var(--accent);
+}
+
+.tag-btn.active { 
+    background-color: var(--primary); 
+    color: var(--white); 
+    border-color: var(--primary);
+}
+
+.tag-badge {
+    display: inline-block;
+    background: var(--background);
+    border: 1px solid #efeae0;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-right: 4px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text);
+}
+
+.wishlist-btn {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f7f5f0;
+    color: var(--text);
+    border: 1.5px solid #efeae0;
+}
+
+.wishlist-btn.active {
+    background-color: #fdecea;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.page-links {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.page-links a {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.page-links a:hover {
+    text-decoration: underline;
+}
+
+.search-form {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0 28px;
+}
+
+.search-form input[type="text"] {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #efeae0;
+    background-color: #f7f5f0;
+    color: var(--text);
+    outline: none;
+    width: 320px;
+}
+
+.search-form input[type="text"]:focus-visible {
+    border-color: var(--accent);
+    background-color: var(--white);
+}
+
+.search-form button {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 0 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #E85A3A;
+}
+
+.search-form .clear-link {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.filter-box {
+    background-color: var(--white);
+    padding: 20px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    margin-bottom: 28px;
+}
+
+.restaurant-card {
+    background-color: var(--white);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    list-style: none;
+}
+
+.restaurant-card strong a {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    color: var(--text);
+}
+
+.restaurant-list {
+    padding: 0;
+}
+
+.restaurant-hours {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding-left: 16px;
+}
+
+/* ===========================
+   Restaurant Picker
+   =========================== */
+
+.picker-card {
+    max-width: 520px;
+    margin: 40px auto;
+    background-color: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.back-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.header-title {
+    margin: 0 0 8px 0;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 28px;
+    color: var(--text);
+    text-align: center;
+}
+
+.header-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.filter-section {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.filter-section label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.hard-filter {
+    color: var(--primary) !important;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #EFEAE0;
+    background-color: #F7F5F0;
+    color: var(--text);
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
+    box-sizing: border-box;
+}
+
+.filter-select:focus {
+    border-color: var(--accent);
+    background-color: var(--white);
+}
+
+/* Wishlist */
+
+.wishlist-checkbox-section {
+    background-color: #FFF1ED;
+    border: 1.5px solid #FFD8CE;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.wishlist-checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--primary);
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+.wishlist-checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* Open Now */
+
+.open-now-checkbox-section {
+    background-color: #ECFAF8;
+    border: 1.5px solid #CDEDEA;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.open-now-checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #269B94;
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+.open-now-checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* Exclude Low Rated */
+
+.exclude-low-checkbox-section {
+    background-color: #FFF8E8;
+    border: 1.5px solid #F5E3B5;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.exclude-low-checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #C88716;
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+.exclude-low-checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: #D99A22;
+    cursor: pointer;
+}
+
+/* Slot Machine */
+
+.slot-box {
+    height: 80px;
+    line-height: 80px;
+    background-color: #FFF3EE;
+    border: 2px dashed #FFB9A8;
+    border-radius: 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 24px 0;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0 16px;
+}
+
+/* Pick Button */
+
+.btn-submit {
+    width: 100%;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-submit:hover {
+    background-color: #E85A3A;
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Result */
+
+.result-box {
+    margin-top: 24px;
+    padding: 20px;
+    background-color: #EDF9F7;
+    border: 1.5px solid #BFE7E3;
+    border-radius: 14px;
+    text-align: left;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.result-box h2 {
+    margin: 0 0 12px 0;
+    color: #238C86;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 20px;
+    text-align: center;
+}
+
+.result-box p {
+    margin-bottom: 8px;
+}
+
+/* Result Tags */
+
+.result-tags-title {
+    margin-bottom: 8px;
+}
+
+.result-tags {
+    margin-bottom: 12px;
+}
+
+.result-box .tag-badge {
+    display: inline-block;
+    background-color: var(--background);
+    color: var(--text);
+    border: 1px solid #EFEAE0;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    margin: 2px 4px 2px 0;
+}
+
+/* Opening Hours */
+
+.opening-hours-title {
+    margin-bottom: 6px;
+}
+
+.picker-opening-hours {
+    margin-top: 0;
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.picker-opening-hours li {
+    margin-bottom: 4px;
+}
+
+/* Error */
+
+.error-box {
+    margin-top: 24px;
+    padding: 20px;
+    background-color: #FFF3F1;
+    border: 1.5px solid #FFD1C8;
+    border-radius: 14px;
+    text-align: center;
+    color: #C94A38;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.error-title {
+    margin-top: 0;
+    font-family: 'Fredoka', sans-serif;
+}
+
+.error-message {
+    margin-bottom: 0;
+}
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    .picker-card {
+        margin: 24px 16px;
+        padding: 24px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    .slot-box {
+        font-size: 19px;
+    }
+}
+
+/* ===========================
+   Wishlist
+   =========================== */
+
+.wishlist-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.wishlist-back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.wishlist-back-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.wishlist-title {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 28px;
+    color: var(--text);
+}
+
+.wishlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1.5px solid #EFEAE0;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background-color: var(--white);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.wishlist-item:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.wishlist-restaurant-name {
+    display: block;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.wishlist-address {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-remove {
+    flex-shrink: 0;
+    color: #C0392B;
+    background-color: #FFF1ED;
+    border: 1.5px solid #FFD8CE;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-remove:hover {
+    background-color: #FFE3DC;
+    border-color: var(--primary);
+}
+
+.wishlist-empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 0;
+}
+
+.wishlist-empty-state p {
+    margin-bottom: 16px;
+}
+
+.wishlist-empty-state a {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.wishlist-empty-state a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .wishlist-container {
+        margin: 24px 16px;
+        padding: 24px;
+    }
+
+    .wishlist-item {
+        align-items: flex-start;
+    }
+
+    .wishlist-title {
+        font-size: 24px;
+    }
+
+    .btn-remove {
+        padding: 7px 11px;
+    }
+}
