@@ -96,6 +96,17 @@ urlpatterns = [
         name='unfollow_user'
     ),
 
+    path(
+        'user/<str:username>/block/',
+        views.block_view,
+        name='block_user'
+),
+    path(
+        'user/<str:username>/unblock/',
+        views.unblock_view,
+        name='unblock_user'
+),
+
     # =========================
     # Search
     # =========================

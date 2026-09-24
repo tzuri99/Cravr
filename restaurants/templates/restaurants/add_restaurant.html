@@ -4,17 +4,21 @@
     <title>Add a restaurant</title>
 </head>
 <body>
-    <h1>Add a restaurant</h1>
+    <<h1 class="add-restaurant-title">Add a restaurant</h1>
 
-    <p style="padding: 10px; background: #fff4e5; border-left: 4px solid #f0ad4e;">
-        Your submission will be reviewed by an admin before it appears in the app.
-    </p>
+{% load static %}
 
-    <form method="post">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <p class="submission-notice">
+    Your submission will be reviewed by an admin before it appears in the app.
+  </p>
+
+    <form method="post" class="restaurant-form">
         {% csrf_token %}
         {{ form.as_p }}
 
-        <h2>Opening hours</h2>
+        <h2 class="opening-hours-title">Opening hours</h2>
         {{ formset.management_form }}
 
         <table>
@@ -32,16 +36,16 @@
                     <td>{{ hour_form.is_closed }}</td>
                     {{ hour_form.id }}
                     {% if hour_form.errors %}
-                        <td style="color: red;">{{ hour_form.non_field_errors }}</td>
+                        <td class="form-error">{{ hour_form.non_field_errors }}</td>
                     {% endif %}
                 </tr>
             {% endfor %}
         </table>
 
-        <button type="submit">Save</button>
+        <button type="submit" class="add-restaurant-submit">Save</button>
     </form>
 
-    <a href="{% url 'restaurant_list' %}">Back to list</a>
+    <a href="{% url 'restaurant_list' %}" class="back-to-list">Back to list</a>
 
     <script>
         document.querySelectorAll(".hour-row").forEach(function (row) {

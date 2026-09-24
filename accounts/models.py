@@ -27,6 +27,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    cover_photo = models.ImageField(upload_to='cover_photos/', null=True, blank=True)
     bio = models.TextField(max_length=300, blank=True)
     privacy = models.CharField(
         max_length=10,
@@ -60,6 +61,25 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.follower.username} follows {self.following.username}"
 
+class Block(models.Model):
+    blocker = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='blocking'
+    )
+    blocked = models.ForeignKey(
+      User,
+      on_delete=models.CASCADE,
+      related_name='blocked_by'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blocker', 'blocked')
+
+    def __str__(self):
+        return f"{self.blocker.username} blocked {self.blocked.username}"
+
 
     
 @receiver(post_save, sender=User)
@@ -80,3 +100,4 @@ def mark_verified_on_social_account_creation(sender, instance, created, **kwargs
         profile.is_verified = True
         profile.save()
         print(f"[DEBUG] Profile marked as verified for {instance.user.username}")
+

@@ -4,240 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Restaurant Picker</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            margin: 0;
-            padding: 40px 20px;
-        }
-
-        .picker-card {
-            max-width: 520px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .header-title {
-            margin: 0 0 8px 0;
-            font-size: 26px;
-            text-align: center;
-        }
-
-        .header-subtitle {
-            color: #868e96;
-            font-size: 14px;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .filter-section {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .filter-section label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #495057;
-        }
-
-        .hard-filter {
-            color: #d9534f !important;
-        }
-
-        .filter-select {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #ced4da;
-            background-color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
-        }
-
-        .filter-select:focus {
-            border-color: #4c6ef5;
-        }
-
-        .wishlist-checkbox-section {
-            background-color: #fff0f6;
-            border: 1px solid #ffdeeb;
-            padding: 12px 14px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .wishlist-checkbox-label {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #d6336c;
-            cursor: pointer;
-            margin: 0 !important;
-        }
-
-        .wishlist-checkbox-label input[type="checkbox"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            accent-color: #e64980;
-            cursor: pointer;
-        }
-
-        .open-now-checkbox-section {
-            background-color: #e6fcf5;
-            border: 1px solid #c3fae8;
-            padding: 12px 14px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .open-now-checkbox-label {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #0ca678;
-            cursor: pointer;
-            margin: 0 !important;
-        }
-
-        .open-now-checkbox-label input[type="checkbox"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            accent-color: #12b886;
-            cursor: pointer;
-        }
-
-        .exclude-low-checkbox-section {
-            background-color: #fff9db;
-            border: 1px solid #fff3bf;
-            padding: 12px 14px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .exclude-low-checkbox-label {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #f59f00;
-            cursor: pointer;
-            margin: 0 !important;
-        }
-
-        .exclude-low-checkbox-label input[type="checkbox"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            accent-color: #f59f00;
-            cursor: pointer;
-        }
-
-        .slot-box {
-            height: 80px;
-            line-height: 80px;
-            background: #edf2ff;
-            border: 2px dashed #bac8ff;
-            border-radius: 12px;
-            font-size: 22px;
-            font-weight: 700;
-            color: #364fc7;
-            margin: 24px 0;
-            text-align: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            padding: 0 16px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: #4c6ef5;
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn-submit:hover {
-            background: #3b5bdb;
-        }
-
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-
-        .result-box {
-            margin-top: 24px;
-            padding: 20px;
-            background: #ebfbee;
-            border: 1px solid #b2f2bb;
-            border-radius: 12px;
-            text-align: left;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        .result-box h2 {
-            margin: 0 0 12px 0;
-            color: #2b8a3e;
-            font-size: 20px;
-            text-align: center;
-        }
-
-        .tag-badge {
-            display: inline-block;
-            background: #e9ecef;
-            color: #495057;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin: 2px 4px 2px 0;
-        }
-
-        .error-box {
-            margin-top: 24px;
-            padding: 20px;
-            background: #fff5f5;
-            border: 1px solid #ffc9c9;
-            border-radius: 12px;
-            text-align: center;
-            color: #c92a2a;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
@@ -363,8 +131,8 @@
 
             <!-- Display associated tags badges -->
             {% if picked_restaurant.tags.all %}
-                <p style="margin-bottom: 8px;"><strong>Tags:</strong></p>
-                <div style="margin-bottom: 12px;">
+                <p class="result-tags-title"><strong>Tags:</strong></p>
+                <div class="result-tags">
                     {% for tag in picked_restaurant.tags.all %}
                         <span class="tag-badge">{{ tag.name }}</span>
                     {% endfor %}
@@ -373,8 +141,8 @@
 
             <!-- Display structured opening hours -->
             {% if picked_restaurant.hours.all %}
-                <p style="margin-bottom: 6px;"><strong>Opening Hours:</strong></p>
-                <ul style="margin-top: 0; padding-left: 20px; font-size: 14px;">
+                <p class="opening-hours-title"><strong>Opening Hours:</strong></p>
+                <ul class="picker-opening-hours">
                     {% for hour in picked_restaurant.hours.all %}
                         <li>
                             {{ hour.get_day_display }}: 
@@ -392,8 +160,8 @@
         </div>
     {% elif no_matches %}
         <div class="error-box">
-            <h3 style="margin-top:0;">⚠️ No Matching Restaurants Found</h3>
-            <p style="margin-bottom:0;">No restaurants match all of your selected filter criteria. Try relaxing some filters or adding items to your wishlist!</p>
+            <h3 class="error-title">⚠️ No Matching Restaurants Found</h3>
+            <p class="error-message">No restaurants match all of your selected filter criteria. Try relaxing some filters or adding items to your wishlist!</p>
         </div>
     {% endif %}
 </div>
