@@ -6,9 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-
 from .forms import OpeningHourFormSet, RestaurantForm, ReviewForm
-from .models import Restaurant, Review, Tag, Wishlist
+from .models import Restaurant, Review, ReviewPhoto, Tag, Wishlist
 from restaurants.utils import apply_intelligent_tags
 
 
@@ -273,7 +272,7 @@ def restaurants_json(request):
     restaurants = restaurants.annotate(
         avg_rating=Avg("reviews__stars"),
         review_count=Count("reviews"),
-    )[:500]
+    )[:1500]
 
     data = [
         {
@@ -309,6 +308,11 @@ def restaurant_detail(request, pk):
             review.restaurant = restaurant
             review.author = request.user
             review.save()
+
+            photos = request.FILES.getlist("photos")[:5]
+            for photo in photos:
+                ReviewPhoto.objects.create(review=review, image=photo)
+
             messages.success(request, "Review posted.")
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:
@@ -338,7 +342,7 @@ def delete_review(request, pk):
 def edit_review(request, pk):
     review = get_object_or_404(Review, pk=pk, author=request.user)
     if request.method == "POST":
-        form = ReviewForm(request.POST, instance=review)
+        form = ReviewForm(request.POST, request.FILES, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, "Review updated.")

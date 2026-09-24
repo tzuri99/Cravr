@@ -9,7 +9,9 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "django>=6.1",
+    "django-allauth>=65.19.4",
     "pillow>=12.3.0",
+    "python-decouple>=3.8",
     "requests>=2.34.2",
 ]
 

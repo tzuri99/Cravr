@@ -2,6 +2,65 @@
 <html>
 <head>
     <title>{{ restaurant.name }}</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        .review { border: 1px solid #ddd; padding: 12px; margin: 12px 0; border-radius: 6px; }
+        .stars { color: #f5a623; font-weight: bold; }
+        .meta { color: #888; font-size: 13px; }
+        .no-reviews { color: #666; font-style: italic; }
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2d3748;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .upload-btn:hover { background: #4a5568; }
+        .photo-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            padding-bottom: 4px;
+        }
+        .photo-strip img {
+            height: 140px;
+            width: 140px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .preview-item {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .remove-photo {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0;
+        }
+        .remove-photo:hover { background: rgba(0, 0, 0, 0.9); }
+        #photo-preview .preview-item img {
+            height: 90px;
+            width: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+        }
+    </style>
       {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
@@ -10,16 +69,15 @@
 
     <h1 class="restaurant-detail-title">{{ restaurant.name }}</h1>
 
-</div class="restaurant-info">
+<div class="restaurant-info">
     <p><strong>Cuisine:</strong> {{ restaurant.cuisine }}</p>
     <p><strong>Address:</strong> {{ restaurant.address }}</p>
-
-    <div>
+</div>
 
     <h2 class="restaurant-section-title">Reviews</h2>
 
     {% if user.is_authenticated %}
-        <form id="review-form" method="post" class="review-form">
+        <form id="review-form" method="post" enctype="multipart/form-data" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;" class="review-form">
             {% csrf_token %}
             <h3>Write a review</h3>
             <p>
@@ -30,6 +88,14 @@
                 <label>Your review:</label><br>
                 {{ form.text }}
             </p>
+
+            <p>
+                <label for="photos" class="upload-btn">Add photos (up to 5)</label>
+                <input type="file" id="photos" name="photos" accept="image/*" multiple style="display: none;">
+            </p>
+            <div id="photo-preview" class="photo-strip"></div>
+            <div id="photo-note"></div>
+
             <button type="submit" class="review-submit">Post review</button>
         </form>
     {% else %}
@@ -48,6 +114,15 @@
         <div class="review">
             <p><span class="stars">{{ review.stars }} / 5</span></p>
             <p>{{ review.text|linebreaksbr }}</p>
+
+            {% if review.photos.all %}
+                <div class="photo-strip">
+                    {% for photo in review.photos.all %}
+                        <img src="{{ photo.image.url }}" alt="Review photo" onclick="window.open(this.src, '_blank')">
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <p class="meta">
                 by {{ review.author.username }} on {{ review.created_at|date:"j M Y" }}
                 {% if user.is_authenticated and review.author == user %}
@@ -71,5 +146,68 @@
             </li>
         {% endfor %}
     </ul>
+
+    <script>
+        const photoInput = document.getElementById("photos");
+        let selectedFiles = [];
+
+        function renderPreviews() {
+            const preview = document.getElementById("photo-preview");
+            const note = document.getElementById("photo-note");
+            preview.innerHTML = "";
+            note.textContent = selectedFiles.length > 0
+                ? selectedFiles.length + " of 5 photos selected"
+                : "";
+
+            selectedFiles.forEach(function (file, index) {
+                const wrapper = document.createElement("div");
+                wrapper.className = "preview-item";
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    wrapper.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "remove-photo";
+                removeBtn.textContent = "×";
+                removeBtn.addEventListener("click", function () {
+                    selectedFiles.splice(index, 1);
+                    syncInput();
+                    renderPreviews();
+                });
+
+                wrapper.appendChild(removeBtn);
+                preview.appendChild(wrapper);
+            });
+        }
+
+        function syncInput() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(function (file) {
+                dataTransfer.items.add(file);
+            });
+            photoInput.files = dataTransfer.files;
+        }
+
+        if (photoInput) {
+            photoInput.addEventListener("change", function () {
+                const incoming = Array.prototype.slice.call(this.files);
+
+                incoming.forEach(function (file) {
+                    if (selectedFiles.length < 5) {
+                        selectedFiles.push(file);
+                    }
+                });
+
+                syncInput();
+                renderPreviews();
+            });
+        }
+    </script>
 </body>
 </html>

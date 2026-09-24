@@ -5,6 +5,7 @@ __pycache__/
 
 # Database & Local Settings
 db.sqlite3
+media/
 
 # System Files
 .env
