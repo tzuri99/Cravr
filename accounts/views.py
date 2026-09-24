@@ -110,7 +110,10 @@ def login_view(request):
             profile = existing_user.profile
 
             if profile.locked_until and timezone.now() < profile.locked_until:
-                minutes_left = int((profile.locked_until - timezone.now()).total_seconds() / 60) + 1
+                minutes_left = int(
+                    (profile.locked_until - timezone.now()).total_seconds() / 60
+                ) + 1
+
                 return render(
                     request,
                     'accounts/login.html',
@@ -119,6 +122,7 @@ def login_view(request):
                         'error': f'Account locked due to too many failed attempts. Try again in {minutes_left} minute(s).'
                     }
                 )
+
         except User.DoesNotExist:
             existing_user = None
 
@@ -160,9 +164,11 @@ def login_view(request):
             else:
                 request.session.set_expiry(0)
 
+            # Admin → Django Administration
             if user.is_staff:
-                return redirect('admin_dashboard')
+                return redirect('/admin/')
 
+            # Normal User → Home
             return redirect('home')
 
         else:
@@ -364,35 +370,7 @@ def profile_view(request):
             'following_count': following_count,
         }
     )
-# ==========================================
-# Admin Dashboard (Review Restaurant Submissions)
-# ==========================================
 
-@staff_member_required
-def admin_dashboard_view(request):
-
-    # TODO: 等 restaurants app 的 Restaurant model 完成后，
-    # 取消注释下面这段，改去用真实数据
-
-    # from restaurants.models import Restaurant
-    # pending_submissions = Restaurant.objects.filter(status='pending')
-
-    # if request.method == 'POST':
-    #     submission_id = request.POST.get('submission_id')
-    #     action = request.POST.get('action')  # 'approve' 或 'reject'
-    #     submission = Restaurant.objects.get(id=submission_id)
-    #     if action == 'approve':
-    #         submission.status = 'approved'
-    #     elif action == 'reject':
-    #         submission.status = 'rejected'
-    #     submission.save()
-    #     return redirect('admin_dashboard')
-
-    return render(
-        request,
-        'accounts/admin_dashboard.html',
-        {'submissions': []}  # 暂时给空列表，避免报错
-    )
 
 # ==========================================
 # Follow / Unfollow
