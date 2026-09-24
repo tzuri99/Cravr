@@ -272,7 +272,7 @@ def restaurants_json(request):
     restaurants = restaurants.annotate(
         avg_rating=Avg("reviews__stars"),
         review_count=Count("reviews"),
-    )[:500]
+    )[:1500]
 
     data = [
         {
