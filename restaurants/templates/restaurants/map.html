@@ -1,28 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Map</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-    <style>
-        #map { height: 90vh; }
-        body { margin: 0; font-family: sans-serif; }
-        h1 { padding: 8px 16px; margin: 0; }
-    </style>
+
 </head>
 <body>
     <h1>Restaurants</h1>
-    <div style="padding: 8px 16px; font-size: 14px; color: #555;">
-        <span style="color: #4a4;">● 4+ stars</span> ·
-        <span style="color: #d80;">● 3–4 stars</span> ·
-        <span style="color: #c33;">● Below 3</span> ·
-        <span style="color: #888;">● No reviews</span>
+
+    <div class="map-legend">
+        <span class="legend-green">● 4+ stars</span> ·
+        <span class="legend-orange">● 3–4 stars</span> ·
+        <span class="legend-red">● Below 3</span> ·
+        <span class="legend-grey">● No reviews</span>
     </div>
-    <button id="find-me" style="margin: 8px 16px; padding: 6px 12px;">Find my location</button>
+
+    <button id="find-me" class="find-location-btn">Find my location</button>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

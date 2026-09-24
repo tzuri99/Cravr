@@ -2,11 +2,15 @@
 <html>
 <head>
     <title>Edit review</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h1>Edit your review of {{ review.restaurant.name }}</h1>
+    <h1 class="edit-review-title">
+    Edit your review of {{ review.restaurant.name }}
+   </h1>
 
-    <form method="post" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0;">
+    <form method="post" class="edit-review-form">
         {% csrf_token %}
         <p>
             <label>Stars:</label><br>
@@ -16,8 +20,12 @@
             <label>Your review:</label><br>
             {{ form.text }}
         </p>
-        <button type="submit">Save</button>
-        <a href="{% url 'restaurant_detail' review.restaurant.pk %}" style="margin-left: 10px;">Cancel</a>
+        <button type="submit" class="edit-review-save">
+    Save
+       </button>
+        <a href="{% url 'restaurant_detail' review.restaurant.pk %}" class="edit-review-cancel">
+    Cancel
+        </a>
     </form>
 </body>
 </html>
