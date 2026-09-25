@@ -1498,3 +1498,12 @@ a {
         padding: 7px 11px;
     }
 }
+
+.site-footer {
+    text-align: center;
+    padding: 24px 20px;
+    margin-top: 40px;
+    color: var(--muted);
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
