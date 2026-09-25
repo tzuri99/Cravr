@@ -12,7 +12,6 @@
         <a href="/" class="brand">Cravr</a>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="{% url 'restaurant_list' %}">Find Restaurants</a>
             <a href="{% url 'search_users' %}">Search Users</a>
             <a href="{% url 'profile' %}">My Profile</a>
             <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
@@ -26,6 +25,7 @@
         <div class="page-links">
             <a href="{% url 'add_restaurant' %}">Add a restaurant</a>
             <a href="{% url 'map_view' %}">View on map</a>
+            <a href="{% url 'restaurant_picker' %}">Restaurant Picker</a>
             <a href="{% url 'wishlist_list' %}">My Wishlist</a>
         </div>
 
