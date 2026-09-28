@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://cravr-production.up.railway.app"]
 
 
 # Application definition
@@ -168,6 +168,7 @@ SOCIALACCOUNT_PROVIDERS = {}
 SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
 
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
@@ -183,5 +184,5 @@ STORAGES = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.up.railway.app",
+    "https://cravr-production.up.railway.app",
 ]
