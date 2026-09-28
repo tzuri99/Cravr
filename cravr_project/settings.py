@@ -143,7 +143,7 @@ MAILERS = {
             'host': 'smtp.gmail.com',
             'port': 587,
             'use_tls': True,
-            'username': 'zhijie7819@gmail.com',
+            'username': 'EMAIL_HOST_USER',
             'password': config('EMAIL_HOST_PASSWORD'),
         },
     },
