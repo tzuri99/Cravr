@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = ["https://cravr-production.up.railway.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
