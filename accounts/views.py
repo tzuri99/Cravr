@@ -142,15 +142,13 @@ def login_view(request):
             user.profile.save()
 
             # Check email verification
-            if not user.profile.is_verified:
-
+            if not user.profile.is_verified and not user.is_superuser:
                 return render(
                     request,
                     'accounts/login.html',
                     {
                         'form': form,
-                        'error':
-                            'Please verify your email before logging in.'
+                        'error': 'Please verify your email before logging in.'
                     }
                 )
 
