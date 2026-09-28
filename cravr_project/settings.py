@@ -150,7 +150,7 @@ MAILERS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "data" / "media"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 # Session settings (for Remember Me feature)
