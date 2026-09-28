@@ -12,7 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from .models import OTP, Profile, Follow , Block
 from django.contrib import messages
-
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import SetPasswordForm
 # ==========================================
 # Custom Registration Form
 # ==========================================
@@ -202,6 +203,29 @@ def logout_view(request):
 
     return redirect('login')
 
+# ==========================================
+# Set password
+# ==========================================
+
+def google_login_redirect(request):
+    if request.session.pop('google_new_user', False):
+        return redirect('set_password')
+
+    return redirect('home')
+
+@login_required
+def set_password_view(request):
+    form = SetPasswordForm(request.user, request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            return redirect('home')
+
+    return render(request, 'accounts/set_password.html', {
+        'form': form
+    })
 
 # ==========================================
 # Verify OTP
