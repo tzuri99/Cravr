@@ -33,6 +33,20 @@ urlpatterns = [
         views.resend_otp_view,
         name='resend_otp'
     ),
+
+    # Set password
+
+    path(
+        'set-password/', 
+        views.set_password_view, 
+        name='set_password'
+    ),
+
+    path(
+        'google-login-redirect/', 
+        views.google_login_redirect, 
+        name='google_login_redirect'),
+
     # =========================
     # Password Reset
     # =========================
