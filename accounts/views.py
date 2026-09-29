@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+import resend
+from django.conf import settings
 from django import forms
 from django.utils import timezone
 from datetime import timedelta
@@ -14,6 +15,8 @@ from .models import OTP, Profile, Follow , Block
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import SetPasswordForm
+
+resend.api_key = settings.RESEND_API_KEY
 # ==========================================
 # Custom Registration Form
 # ==========================================
@@ -72,13 +75,17 @@ def register_view(request):
             )
 
             # Send OTP email
-            send_mail(
-                subject='Your Cravr Verification Code',
-                message=f'Your OTP verification code is: {code}',
-                from_email=None,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
+            resend.Emails.send({
+                "from": "Cravr <onboarding@resend.dev>",
+                "to": [user.email],
+                "subject": "Your Cravr Verification Code",
+                "html": f"""
+                    <h2>Verify Your Cravr Account</h2>
+                    <p>Your OTP verification code is:</p>
+                    <h1>{code}</h1>
+                    <p>This code will expire in 5 minutes.</p>
+                """,
+            })
 
             # Save user ID in session
             request.session['otp_user_id'] = user.id
@@ -86,6 +93,7 @@ def register_view(request):
             return redirect('verify_otp')
 
     else:
+
         form = CustomUserCreationForm()
 
     return render(
@@ -333,13 +341,17 @@ def resend_otp_view(request):
     )
 
     # Send new OTP
-    send_mail(
-        subject='Your New Cravr Verification Code',
-        message=f'Your new OTP verification code is: {code}',
-        from_email=None,
-        recipient_list=[user.email],
-        fail_silently=False,
-    )
+    resend.Emails.send({
+        "from": "Cravr <onboarding@resend.dev>",
+        "to": [user.email],
+        "subject": "Your New Cravr Verification Code",
+        "html": f"""
+            <h2>Cravr Verification Code</h2>
+            <p>Your new OTP verification code is:</p>
+            <h1>{code}</h1>
+            <p>This code will expire in 5 minutes.</p>
+        """,
+    })
 
     return render(
         request,
