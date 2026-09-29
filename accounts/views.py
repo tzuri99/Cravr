@@ -76,7 +76,7 @@ def register_view(request):
 
             # Send OTP email
             resend.Emails.send({
-                "from": "Cravr <onboarding@resend.dev>",
+                "from": "Cravr <noreply@cravr.com>",
                 "to": [user.email],
                 "subject": "Your Cravr Verification Code",
                 "html": f"""
@@ -342,7 +342,7 @@ def resend_otp_view(request):
 
     # Send new OTP
     resend.Emails.send({
-        "from": "Cravr <onboarding@resend.dev>",
+        "from": "Cravr <noreply@cravr.com>",
         "to": [user.email],
         "subject": "Your New Cravr Verification Code",
         "html": f"""
