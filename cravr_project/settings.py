@@ -143,11 +143,14 @@ MAILERS = {
             'host': 'smtp.gmail.com',
             'port': 587,
             'use_tls': True,
-            'username': 'EMAIL_HOST_USER',
+            'username': config('EMAIL_HOST_USER'),
             'password': config('EMAIL_HOST_PASSWORD'),
+            'timeout': 10,
         },
     },
 }
+
+DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "data" / "media"
