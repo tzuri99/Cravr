@@ -134,23 +134,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-        'OPTIONS': {
-            'host': 'smtp.gmail.com',
-            'port': 587,
-            'use_tls': True,
-            'username': config('EMAIL_HOST_USER'),
-            'password': config('EMAIL_HOST_PASSWORD'),
-            'timeout': 10,
-        },
-    },
-}
-
-DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')
+RESEND_API_KEY = config('RESEND_API_KEY')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "data" / "media"
