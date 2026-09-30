@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Restaurant Picker</title>
-     {% load static %}
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -17,39 +17,32 @@
 
     <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form">
         
-        <!-- 存储用户当前定位的隐藏域 -->
+        <!-- Hidden field to store the user's current location -->
         <input type="hidden" name="user_lat" id="user_lat" value="{{ user_lat|default:'' }}">
         <input type="hidden" name="user_lng" id="user_lng" value="{{ user_lng|default:'' }}">
 
-        <!-- Wishlist Filter Checkbox Option (Only visible for authenticated users) -->
-        {% if user.is_authenticated %}
-            <div class="wishlist-checkbox-section">
-                <label class="wishlist-checkbox-label">
-                    <input type="checkbox" name="from_wishlist" value="true" {% if from_wishlist %}checked{% endif %}>
-                    ❤️ Only pick from my Wishlist
+        <!-- TOP SECTION: Wishlist & Open Now Toggles -->
+        <div class="top-toggles-group" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+            {% if user.is_authenticated %}
+                <!-- Wishlist Filter Checkbox -->
+                <div class="wishlist-checkbox-section">
+                    <label class="wishlist-checkbox-label">
+                        <input type="checkbox" name="from_wishlist" value="true" {% if from_wishlist %}checked{% endif %}>
+                        ❤️ Only pick from my Wishlist
+                    </label>
+                </div>
+            {% endif %}
+
+            <!-- Open Now Filter Checkbox -->
+            <div class="open-now-checkbox-section">
+                <label class="open-now-checkbox-label">
+                    <input type="checkbox" name="open_now" value="true" {% if open_now %}checked{% endif %}>
+                    🕒 Open Now Only
                 </label>
             </div>
-        {% endif %}
-
-        <!-- Open Now Filter Checkbox Option -->
-        <div class="open-now-checkbox-section">
-            <label class="open-now-checkbox-label">
-                <input type="checkbox" name="open_now" value="true" {% if open_now %}checked{% endif %}>
-                🕒 Open Now Only
-            </label>
         </div>
 
-        <!-- Exclude Low Rated Filter Checkbox Option (Only visible for authenticated users) -->
-        {% if user.is_authenticated %}
-            <div class="exclude-low-checkbox-section">
-                <label class="exclude-low-checkbox-label">
-                    <input type="checkbox" name="exclude_low_rated" value="true" {% if exclude_low_rated %}checked{% endif %}>
-                    🚫 Exclude places I rated low (≤ 2 stars)
-                </label>
-            </div>
-        {% endif %}
-
-        <!-- Cuisine Selection -->
+        <!-- MIDDLE SECTION: General Selection Dropdowns -->
         <div class="filter-section">
             <label for="cuisine"><strong>Cuisine:</strong></label>
             <select name="cuisine" id="cuisine" class="filter-select">
@@ -62,7 +55,6 @@
             </select>
         </div>
 
-        <!-- Meal Type Selection -->
         <div class="filter-section">
             <label for="meal_type"><strong>Meal Type:</strong></label>
             <select name="meal_type" id="meal_type" class="filter-select">
@@ -75,7 +67,6 @@
             </select>
         </div>
 
-        <!-- Dietary Restrictions (Hard Filter) -->
         <div class="filter-section">
             <label for="dietary" class="hard-filter"><strong>Dietary Restriction (Mandatory):</strong></label>
             <select name="dietary" id="dietary" class="filter-select">
@@ -88,7 +79,6 @@
             </select>
         </div>
 
-        <!-- Distance Filter Selection -->
         <div class="filter-section">
             <label for="max_distance"><strong>Max Distance:</strong></label>
             <select name="max_distance" id="max_distance" class="filter-select">
@@ -101,6 +91,31 @@
                 <option value="50" {% if max_distance == 50 %}selected{% endif %}>Within 50 km</option>
             </select>
         </div>
+
+        <!-- BOTTOM SECTION: Grouped Personal Review & Rating Filters -->
+        {% if user.is_authenticated %}
+            <div class="my-reviews-block" style="border: 1.5px dashed #d0d0d0; padding: 14px; border-radius: 12px; background-color: #fafafa; margin-top: 14px; margin-bottom: 16px;">
+                <div style="font-weight: bold; margin-bottom: 10px; font-size: 0.95em; color: #444;">
+                    📝 My Reviews & Ratings
+                </div>
+
+                <div class="filter-section" style="margin-bottom: 10px;">
+                    <label for="review_filter" style="font-size: 0.88em; color: #555;"><strong>Review Status:</strong></label>
+                    <select name="review_filter" id="review_filter" class="filter-select">
+                        <option value="reviewed" {% if review_filter == 'reviewed' %}selected{% endif %}>Have Reviewed</option>
+                        <option value="not_reviewed" {% if review_filter == 'not_reviewed' %}selected{% endif %}>Have Not Reviewed</option>
+                        <option value="all" {% if review_filter == 'all' or not review_filter %}selected{% endif %}>All of the Above</option>
+                    </select>
+                </div>
+
+                <div class="exclude-low-checkbox-section">
+                    <label class="exclude-low-checkbox-label">
+                        <input type="checkbox" name="exclude_low_rated" value="true" {% if exclude_low_rated %}checked{% endif %}>
+                        🚫 Skip places I didn't like (1 & 2 stars)
+                    </label>
+                </div>
+            </div>
+        {% endif %}
 
         <!-- Slot Machine Wheel -->
         <div class="slot-box" id="slot-display">
@@ -177,6 +192,35 @@ if (navigator.geolocation && !document.getElementById('user_lat').value) {
     });
 }
 
+// Logic conflict control: When "Have Not Reviewed" is selected, "Hide places I rated 1 star" is automatically disabled.
+document.addEventListener('DOMContentLoaded', function() {
+    const reviewFilterSelect = document.getElementById('review_filter');
+    const excludeLowCheckbox = document.querySelector('input[name="exclude_low_rated"]');
+    const excludeLowContainer = document.querySelector('.exclude-low-checkbox-section');
+
+    function updateCheckboxState() {
+        if (!reviewFilterSelect || !excludeLowCheckbox || !excludeLowContainer) return;
+
+        if (reviewFilterSelect.value === 'not_reviewed') {
+            excludeLowCheckbox.checked = false; // Uncheck
+            excludeLowCheckbox.disabled = true; // Disable click
+            excludeLowContainer.style.opacity = '0.4'; // Gray out
+            excludeLowContainer.style.pointerEvents = 'none'; // Disable mouse events
+            excludeLowContainer.style.cursor = 'not-allowed';
+        } else {
+            excludeLowCheckbox.disabled = false; // Restore clickability
+            excludeLowContainer.style.opacity = '1'; // Restore transparency
+            excludeLowContainer.style.pointerEvents = 'auto'; // Restore interaction
+            excludeLowContainer.style.cursor = 'pointer';
+        }
+    }
+
+    if (reviewFilterSelect) {
+        reviewFilterSelect.addEventListener('change', updateCheckboxState);
+        updateCheckboxState(); // Initialize check once
+    }
+});
+
 document.getElementById('picker-form').addEventListener('submit', function(e) {
     const slotDisplay = document.getElementById('slot-display');
     const resultBox = document.getElementById('result-box');
@@ -194,7 +238,7 @@ document.getElementById('picker-form').addEventListener('submit', function(e) {
     // Get the text from the dropdown boxes as the spinning wheel pool
     const options = Array.from(document.querySelectorAll('.filter-select option'))
         .map(opt => opt.text.trim())
-        .filter(text => !text.startsWith("Any") && !text.startsWith("No Strict"));
+        .filter(text => !text.startsWith("Any") && !text.startsWith("No Strict") && !text.startsWith("All of"));
 
     const fallbackList = ["Mee Bandung House", "Super Mamak", "Tokyo Sushi", "Al-Farooj Arab Grill", "Restoran Banana Leaf"];
     const spinPool = options.length > 0 ? options : fallbackList;
