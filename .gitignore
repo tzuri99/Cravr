@@ -6,7 +6,10 @@ __pycache__/
 # Database & Local Settings
 db.sqlite3
 media/
+*.csv
+!seed_data/restaurants.csv
 
 # System Files
 .env
 .DS_Store
+data/

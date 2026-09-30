@@ -1,17 +1,19 @@
 import csv
 from pathlib import Path
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from restaurants.models import Restaurant, OpeningHour, Tag
 from restaurants.utils import apply_intelligent_tags, MEAL_TYPES, DIETARY_OPTIONS
 
+
 class Command(BaseCommand):
-    help = "Load restaurants from data/restaurants.csv and generate intelligent tags"
+    help = "Load restaurants from seed_data/restaurants.csv and generate intelligent tags"
 
     def handle(self, *args, **options):
         # ---------------------------------------------------------
         # Part 1: Original seed_restaurants logic (UNCHANGED)
         # ---------------------------------------------------------
-        csv_path = Path("data/restaurants.csv")
+        csv_path = settings.BASE_DIR / "seed_data" / "restaurants.csv"
         created = 0
 
         with open(csv_path, newline="", encoding="utf-8") as f:
@@ -31,6 +33,7 @@ class Command(BaseCommand):
                     created += 1
                     opening = row.get("opening_time") or None
                     closing = row.get("closing_time") or None
+
                     for day in range(7):
                         OpeningHour.objects.create(
                             restaurant=restaurant,
@@ -39,7 +42,9 @@ class Command(BaseCommand):
                             closing_time=closing,
                         )
 
-        self.stdout.write(self.style.SUCCESS(f"Added {created} restaurants"))
+        self.stdout.write(
+            self.style.SUCCESS(f"Added {created} restaurants")
+        )
 
         # ---------------------------------------------------------
         # Part 2: Intelligent Tag Generation Logic
@@ -48,16 +53,32 @@ class Command(BaseCommand):
 
         # 预创建基础 Tag 种类
         for name in MEAL_TYPES:
-            Tag.objects.get_or_create(name=name, tag_type='meal_type')
+            Tag.objects.get_or_create(
+                name=name,
+                tag_type='meal_type'
+            )
+
         for name in DIETARY_OPTIONS:
-            Tag.objects.get_or_create(name=name, tag_type='dietary')
+            Tag.objects.get_or_create(
+                name=name,
+                tag_type='dietary'
+            )
 
         restaurants = Restaurant.objects.all()
+
         if not restaurants.exists():
-            self.stdout.write(self.style.WARNING("No restaurants found! Please run seed_restaurants first."))
+            self.stdout.write(
+                self.style.WARNING(
+                    "No restaurants found! Please run seed_restaurants first."
+                )
+            )
             return
 
         for restaurant in restaurants:
             apply_intelligent_tags(restaurant)
 
-        self.stdout.write(self.style.SUCCESS(f"Successfully tagged all {restaurants.count()} restaurants!"))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Successfully tagged all {restaurants.count()} restaurants!"
+            )
+        )
