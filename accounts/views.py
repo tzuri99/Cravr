@@ -3,8 +3,12 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-import resend
 from django.conf import settings
+import base64
+from email.message import EmailMessage
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
 from django import forms
 from django.utils import timezone
 from datetime import timedelta
@@ -16,7 +20,64 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import SetPasswordForm
 
-resend.api_key = settings.RESEND_API_KEY
+# ==========================================
+# Gmail API over HTTPS
+# ==========================================
+GMAIL_SCOPES = [
+    'https://www.googleapis.com/auth/gmail.send'
+]
+
+
+def send_otp_email(email, code, subject='Your Cravr Verification Code'):
+
+    credentials = Credentials(
+        token=None,
+        refresh_token=settings.GMAIL_REFRESH_TOKEN,
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=settings.GMAIL_CLIENT_ID,
+        client_secret=settings.GMAIL_CLIENT_SECRET,
+        scopes=GMAIL_SCOPES,
+    )
+
+    # Get a fresh access token using the refresh token
+    credentials.refresh(Request())
+
+    service = build(
+        'gmail',
+        'v1',
+        credentials=credentials,
+        cache_discovery=False
+    )
+
+    message = EmailMessage()
+
+    message.set_content(
+        f'''
+Welcome to Cravr!
+
+Your OTP verification code is:
+
+{code}
+
+This code will expire in 5 minutes.
+'''
+    )
+
+    message['To'] = email
+    message['From'] = settings.GMAIL_SENDER_EMAIL
+    message['Subject'] = subject
+
+    encoded_message = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+    service.users().messages().send(
+        userId='me',
+        body={
+            'raw': encoded_message
+        }
+    ).execute()
+
 # ==========================================
 # Custom Registration Form
 # ==========================================
@@ -75,17 +136,10 @@ def register_view(request):
             )
 
             # Send OTP email
-            resend.Emails.send({
-                "from": "Cravr <onboarding@resend.dev>",
-                "to": [user.email],
-                "subject": "Your Cravr Verification Code",
-                "html": f"""
-                    <h2>Verify Your Cravr Account</h2>
-                    <p>Your OTP verification code is:</p>
-                    <h1>{code}</h1>
-                    <p>This code will expire in 5 minutes.</p>
-                """,
-            })
+            send_otp_email(
+                user.email,
+                code
+            )
 
             # Save user ID in session
             request.session['otp_user_id'] = user.id
@@ -341,17 +395,11 @@ def resend_otp_view(request):
     )
 
     # Send new OTP
-    resend.Emails.send({
-        "from": "Cravr <onboarding@resend.dev>",
-        "to": [user.email],
-        "subject": "Your New Cravr Verification Code",
-        "html": f"""
-            <h2>Cravr Verification Code</h2>
-            <p>Your new OTP verification code is:</p>
-            <h1>{code}</h1>
-            <p>This code will expire in 5 minutes.</p>
-        """,
-    })
+    send_otp_email(
+        user.email,
+        code,
+        subject='Your New Cravr Verification Code'
+    )
 
     return render(
         request,

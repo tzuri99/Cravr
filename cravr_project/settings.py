@@ -134,7 +134,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-RESEND_API_KEY = config('RESEND_API_KEY')
+GMAIL_CLIENT_ID = config('GMAIL_CLIENT_ID')
+GMAIL_CLIENT_SECRET = config('GMAIL_CLIENT_SECRET')
+GMAIL_REFRESH_TOKEN = config('GMAIL_REFRESH_TOKEN')
+GMAIL_SENDER_EMAIL = config('GMAIL_SENDER_EMAIL')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "data" / "media"
