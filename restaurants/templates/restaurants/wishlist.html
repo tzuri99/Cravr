@@ -21,7 +21,9 @@
             <div class="wishlist-item">
                 <div class="restaurant-info">
                     <strong class="wishlist-restaurant-name">
-                        {{ item.restaurant.name }}
+                        <a href="{% url 'restaurant_detail' item.restaurant.id %}">
+                            {{ item.restaurant.name }}
+                        </a>
                     </strong>
                     <span class="wishlist-address">
                         📍 {{ item.restaurant.address|default:"No address provided" }}
