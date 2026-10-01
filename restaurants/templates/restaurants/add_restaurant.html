@@ -2,65 +2,85 @@
 <html>
 <head>
     <title>Add a restaurant</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <<h1 class="add-restaurant-title">Add a restaurant</h1>
 
-{% load static %}
+<div class="add-restaurant-page">
+    <div class="add-restaurant-card">
 
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <a href="{% url 'restaurant_list' %}" class="back-link">
+            ← Back to Restaurants
+        </a>
 
-  <p class="submission-notice">
-    Your submission will be reviewed by an admin before it appears in the app.
-  </p>
+        <div class="add-restaurant-heading">
+            <h1 class="add-restaurant-title">Add a restaurant</h1>
 
-    <form method="post" class="restaurant-form">
-        {% csrf_token %}
-        {{ form.as_p }}
+            <p class="submission-notice">
+                Your submission will be reviewed by an admin before it appears in the app.
+            </p>
+        </div>
 
-        <h2 class="opening-hours-title">Opening hours</h2>
-        {{ formset.management_form }}
+        <form method="post" class="restaurant-form">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-        <table>
-            <tr>
-                <th>Day</th>
-                <th>Opens</th>
-                <th>Closes</th>
-                <th>Closed all day</th>
-            </tr>
-            {% for hour_form in formset %}
-                <tr class="hour-row">
-                    <td>{{ hour_form.day }}</td>
-                    <td>{{ hour_form.opening_time }}</td>
-                    <td>{{ hour_form.closing_time }}</td>
-                    <td>{{ hour_form.is_closed }}</td>
-                    {{ hour_form.id }}
-                    {% if hour_form.errors %}
-                        <td class="form-error">{{ hour_form.non_field_errors }}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </table>
+            <h2 class="opening-hours-title">Opening hours</h2>
+            {{ formset.management_form }}
 
-        <button type="submit" class="add-restaurant-submit">Save</button>
-    </form>
+            <div class="opening-hours-table-wrapper">
+                <table>
+                    <tr>
+                        <th>Day</th>
+                        <th>Opens</th>
+                        <th>Closes</th>
+                        <th>Closed all day</th>
+                    </tr>
 
-    <a href="{% url 'restaurant_list' %}" class="back-to-list">Back to list</a>
+                    {% for hour_form in formset %}
+                        <tr class="hour-row">
+                            <td>{{ hour_form.day }}</td>
+                            <td>{{ hour_form.opening_time }}</td>
+                            <td>{{ hour_form.closing_time }}</td>
+                            <td>{{ hour_form.is_closed }}</td>
 
-    <script>
-        document.querySelectorAll(".hour-row").forEach(function (row) {
-            const checkbox = row.querySelector('input[type="checkbox"]');
-            const timeInputs = row.querySelectorAll('input[type="time"]');
+                            {{ hour_form.id }}
 
-            function updateFields() {
-                timeInputs.forEach(function (input) {
-                    input.disabled = checkbox.checked;
-                });
-            }
+                            {% if hour_form.errors %}
+                                <td class="form-error">
+                                    {{ hour_form.non_field_errors }}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
 
-            checkbox.addEventListener("change", updateFields);
-            updateFields();
-        });
-    </script>
+            <button type="submit" class="add-restaurant-submit">
+                Save
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".hour-row").forEach(function (row) {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const timeInputs = row.querySelectorAll('input[type="time"]');
+
+        function updateFields() {
+            timeInputs.forEach(function (input) {
+                input.disabled = checkbox.checked;
+            });
+        }
+
+        checkbox.addEventListener("change", updateFields);
+        updateFields();
+    });
+</script>
+
 </body>
 </html>
