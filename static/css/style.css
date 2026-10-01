@@ -339,26 +339,44 @@ a {
     z-index: 9999;
 }
 
-
-
 /* ===========================
    Add Restaurant
    =========================== */
+
+.add-restaurant-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+.add-restaurant-card {
+    background: white;
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.add-restaurant-heading {
+    margin-bottom: 24px;
+}
 
 .add-restaurant-title {
     text-align: center;
     font-size: 32px;
     margin: 40px 0 24px;
+    color: #2d2d2d;
 }
 
 .submission-notice {
     max-width: 850px;
     margin: 0 auto 28px;
     padding: 12px 16px;
+    color: #777;
     background-color: #FFF4E5;
     border-left: 4px solid #F0AD4E;
     border-radius: 8px;
     font-size: 13px;
+    line-height: 1.5;
 }
 
 .restaurant-form {
@@ -373,9 +391,17 @@ a {
     margin-bottom: 16px;
 }
 
+.restaurant-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
 .restaurant-form input,
 .restaurant-form select,
 .restaurant-form textarea {
+    width: 100%;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
     padding: 12px 14px;
@@ -385,14 +411,24 @@ a {
     color: var(--text);
 }
 
+.restaurant-form textarea {
+    resize: vertical;
+}
+
 .opening-hours-title {
     font-size: 22px;
     margin: 28px 0 16px;
+    color: #2d2d2d;
+}
+
+.opening-hours-table-wrapper {
+    overflow-x: auto;
 }
 
 .restaurant-form table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 24px;
     background-color: var(--white);
     border-radius: 12px;
     overflow: hidden;
@@ -406,7 +442,29 @@ a {
 }
 
 .restaurant-form th {
+    background: #faf7f2;
+    font-size: 14px;
     font-weight: 600;
+}
+
+.restaurant-form td {
+    border-top: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.restaurant-form td input[type="time"],
+.restaurant-form td select {
+    width: 100%;
+    min-width: 110px;
+}
+
+.restaurant-form input[type="checkbox"] {
+    width: auto;
+}
+
+.form-error {
+    color: #C0392B;
+    font-size: 13px;
 }
 
 .add-restaurant-submit {
@@ -440,11 +498,8 @@ a {
     text-decoration: underline;
 }
 
-.form-error {
-    color: #C0392B;
-}
-
 /* Review photo upload */
+
 .review-form .upload-btn {
     display: inline-block;
     padding: 10px 20px;
@@ -507,6 +562,21 @@ a {
     object-fit: cover;
     border-radius: 6px;
     display: block;
+}
+
+@media (max-width: 700px) {
+    .add-restaurant-page {
+        padding: 14px;
+    }
+
+    .add-restaurant-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .add-restaurant-submit {
+        width: 100%;
+    }
 }
 
 /* ===========================
@@ -652,50 +722,173 @@ a {
    Map
    =========================== */
 
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #fff8ef;
+}
+
+.map-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+.map-card {
+    background: white;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.back-to-restaurants {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #27b5ad;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.back-to-restaurants:hover {
+    text-decoration: underline;
+}
+
+.map-heading {
+    margin-bottom: 20px;
+}
+
+.map-heading h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #2d2d2d;
+}
+
+.map-heading p {
+    margin: 8px 0 0;
+    color: #777;
+    font-size: 15px;
+}
+
+.map-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 24px 0 18px;
+}
+
 .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     padding: 12px 48px;
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 14px;
+    color: #666;
     background-color: var(--white);
 }
 
 .legend-green {
-    color: #4A4;
+    color: #45b649;
 }
 
 .legend-orange {
-    color: #D80;
+    color: #f4a62a;
 }
 
 .legend-red {
-    color: #C33;
+    color: #e95454;
 }
 
 .legend-grey {
-    color: #888;
+    color: #999;
+}
+
+.legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.green {
+    background: #45b649;
+}
+
+.orange {
+    background: #f4a62a;
+}
+
+.red {
+    background: #e95454;
+}
+
+.gray {
+    background: #aaa;
 }
 
 .find-location-btn {
     margin: 8px 48px 16px;
-    padding: 10px 18px;
+    padding: 11px 18px;
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: var(--white);
-    background-color: var(--primary);
+    color: white;
+    background: #ff6b57;
     border: none;
     border-radius: 12px;
     cursor: pointer;
 }
 
 .find-location-btn:hover {
-    background-color: #E85A3A;
+    background: #f35c49;
 }
 
 #map {
     height: 90vh !important;
     width: 100% !important;
     display: block !important;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.view-map-link {
+    display: inline-block;
+    margin-top: 6px;
+    color: #4ecdc4;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.view-map-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    .map-page {
+        padding: 14px;
+    }
+
+    .map-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .map-controls {
+        align-items: stretch;
+    }
+
+    .find-location-btn {
+        width: 100%;
+    }
+
+    #map {
+        height: 500px;
+    }
 }
 
 /* ===========================
@@ -1064,7 +1257,7 @@ a {
 .back-link {
     display: inline-block;
     margin-bottom: 20px;
-    color: var(--muted);
+    color: #4ecdc4;
     text-decoration: none;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
@@ -1390,7 +1583,7 @@ a {
 .wishlist-back-link {
     display: inline-block;
     margin-bottom: 20px;
-    color: var(--muted);
+    color: #4ecdc4;
     text-decoration: none;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
