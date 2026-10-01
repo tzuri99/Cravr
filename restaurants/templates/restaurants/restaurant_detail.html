@@ -71,7 +71,14 @@
 
 <div class="restaurant-info">
     <p><strong>Cuisine:</strong> {{ restaurant.cuisine }}</p>
-    <p><strong>Address:</strong> {{ restaurant.address }}</p>
+    <p><strong>Address:</strong>
+        {% if restaurant.address %}
+            {{ restaurant.address }}
+        {% else %}
+            Address not available
+        {% endif %}
+    </p>
+    <a href="{% url 'map_view' %}" class="view-map-link">View on map</a>
 </div>
 
     <h2 class="restaurant-section-title">Reviews</h2>
