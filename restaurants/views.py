@@ -115,6 +115,9 @@ def restaurant_picker(request):
     selected_meal_id = request.GET.get('meal_type')
     selected_dietary_id = request.GET.get('dietary')
 
+    # Filter option for user's own reviews: 'reviewed', 'not_reviewed', or 'all'
+    review_filter = request.GET.get('review_filter', 'all')
+
     # Wishlist filter: Check if user toggled the Wishlist filter parameter
     from_wishlist = request.GET.get('from_wishlist') == 'true'
 
@@ -129,6 +132,17 @@ def restaurant_picker(request):
 
     # Start with all approved restaurants
     restaurants = Restaurant.objects.filter(is_approved=True)
+
+    # Filter based on whether the authenticated user has reviewed the restaurant
+    if request.user.is_authenticated:
+        user_reviewed_ids = Review.objects.filter(author=request.user).values_list('restaurant_id', flat=True)
+        
+        if review_filter == 'reviewed':
+            # Include only restaurants reviewed by the current user
+            restaurants = restaurants.filter(id__in=user_reviewed_ids)
+        elif review_filter == 'not_reviewed':
+            # Exclude restaurants reviewed by the current user
+            restaurants = restaurants.exclude(id__in=user_reviewed_ids)
 
     # Filter by user's wishlist if the checkbox is active and user is logged in
     if from_wishlist and request.user.is_authenticated:
@@ -214,6 +228,7 @@ def restaurant_picker(request):
         'selected_cuisine_id': int(selected_cuisine_id) if selected_cuisine_id and selected_cuisine_id.isdigit() else None,
         'selected_meal_id': int(selected_meal_id) if selected_meal_id and selected_meal_id.isdigit() else None,
         'selected_dietary_id': int(selected_dietary_id) if selected_dietary_id and selected_dietary_id.isdigit() else None,
+        'review_filter': review_filter,
         'from_wishlist': from_wishlist,
         'open_now': open_now,
         'max_distance': int(max_distance) if max_distance and max_distance.isdigit() else None,
@@ -229,16 +244,39 @@ def restaurant_picker(request):
 
 @login_required
 def toggle_wishlist(request, restaurant_id):
-    """Add or remove restaurant from user's wishlist."""
+    """Add or remove restaurant from user's wishlist seamlessly via AJAX or standard GET/POST request."""
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     wishlist_item = Wishlist.objects.filter(user=request.user, restaurant=restaurant).first()
 
     if wishlist_item:
         wishlist_item.delete()
-        messages.info(request, f"Removed {restaurant.name} from your wishlist.")
+        is_in_wishlist = False
+        message_text = f"Removed {restaurant.name} from your wishlist."
     else:
         Wishlist.objects.get_or_create(user=request.user, restaurant=restaurant)
-        messages.success(request, f"Added {restaurant.name} to your wishlist!")
+        is_in_wishlist = True
+        message_text = f"Added {restaurant.name} to your wishlist!"
+
+    # Check if request was sent asynchronously (AJAX / Fetch API)
+    is_ajax = (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+        request.content_type == 'application/json' or
+        request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    )
+
+    if is_ajax:
+        return JsonResponse({
+            'status': 'success',
+            'is_in_wishlist': is_in_wishlist,
+            'restaurant_id': restaurant_id,
+            'message': message_text
+        })
+
+    # Standard non-AJAX fallback redirection
+    if is_in_wishlist:
+        messages.success(request, message_text)
+    else:
+        messages.info(request, message_text)
 
     return redirect(request.META.get('HTTP_REFERER', 'restaurant_list'))
 
