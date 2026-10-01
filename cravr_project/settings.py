@@ -1,6 +1,8 @@
+from pathlib import Path
 from decouple import config
 import os
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 """
 
 Django settings for cravr_project project.
@@ -13,12 +15,6 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
-from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -139,6 +135,8 @@ GMAIL_CLIENT_SECRET = config('GMAIL_CLIENT_SECRET')
 GMAIL_REFRESH_TOKEN = config('GMAIL_REFRESH_TOKEN')
 GMAIL_SENDER_EMAIL = config('GMAIL_SENDER_EMAIL')
 
+DEFAULT_FROM_EMAIL = config('GMAIL_SENDER_EMAIL')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "data" / "media"
 STATIC_URL = '/static/'
@@ -147,6 +145,12 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 SESSION_COOKIE_AGE = 1209600  # 默认是两个星期，之后会依Remember Me动态调整，1209600是两个星期的秒数
 
 SITE_ID = 1
+
+MAILERS = {
+    "default": {
+        "BACKEND": "accounts.gmail_email_backend.GmailAPIEmailBackend",
+    },
+}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
