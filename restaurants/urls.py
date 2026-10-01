@@ -9,11 +9,11 @@ urlpatterns = [
     path('picker/', views.restaurant_picker, name='restaurant_picker'),
     path("map/", views.map_view, name="map_view"),
     path("api/restaurants/", views.restaurants_json, name="restaurants_json"),
-    path("<int:pk>/", views.restaurant_detail, name="restaurant_detail"),
+    path('wishlist/', views.wishlist_list, name='wishlist_list'),
+    path('<int:restaurant_id>/wishlist/toggle/', views.toggle_wishlist, name='toggle_wishlist'),
     path("reviews/<int:pk>/delete/", views.delete_review, name="delete_review"),
     path("reviews/<int:pk>/edit/", views.edit_review, name="edit_review"),
-    path('wishlist/', views.wishlist_list, name='wishlist_list'),
-    path('wishlist/toggle/<int:restaurant_id>/', views.toggle_wishlist, name='toggle_wishlist'),
+    path("<int:pk>/", views.restaurant_detail, name="restaurant_detail"),
 ]
 
 if settings.DEBUG:
