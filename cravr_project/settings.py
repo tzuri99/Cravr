@@ -28,6 +28,13 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#Gmail Details
+
+GMAIL_CLIENT_ID = config('GMAIL_CLIENT_ID')
+GMAIL_CLIENT_SECRET = config('GMAIL_CLIENT_SECRET')
+GMAIL_REFRESH_TOKEN = config('GMAIL_REFRESH_TOKEN')
+GMAIL_SENDER_EMAIL = config('GMAIL_SENDER_EMAIL')
+
 ALLOWED_HOSTS = []
 
 
