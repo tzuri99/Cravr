@@ -6,6 +6,17 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+
+    <nav class="navbar">
+        <a href="/" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="{% url 'search_users' %}">Search User</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
+
     <h1 class="delete-review-title">Delete this review?</h1>
 
     <div class="review-delete-card">
