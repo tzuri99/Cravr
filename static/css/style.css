@@ -1176,6 +1176,51 @@ body {
    Restaurant List
    =========================== */
 
+/* Filter Accordion Drawer Styles */
+.filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-toggle-btn:hover {
+    background-color: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+.filter-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+}
+
+/* Smooth expansion collapse animation */
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    opacity: 0;
+}
+
+.collapsible-content.open {
+    max-height: 800px; /* High enough to allow full expansion */
+    opacity: 1;
+    margin-top: 10px;
+}
+
+.filter-arrow.rotated {
+    transform: rotate(180deg);
+}
+
 .tag-group { 
     margin-bottom: 16px; 
 }
