@@ -56,18 +56,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -110,11 +105,8 @@ WSGI_APPLICATION = 'cravr_project.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE":
-            "django.db.backends.sqlite3",
-
-        "NAME":
-            BASE_DIR / "data" / "db.sqlite3",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "data" / "db.sqlite3",
     }
 }
 
@@ -268,7 +260,7 @@ LOGIN_REDIRECT_URL = (
 
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
 
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 
 # ==========================================
