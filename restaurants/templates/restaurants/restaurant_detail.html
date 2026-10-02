@@ -78,7 +78,10 @@
                 </p>
 
                 <div id="photo-preview" class="photo-strip"></div>
+
                 <div id="photo-note"></div>
+
+                <div id="photo-error" class="photo-error"></div>
 
                 <button type="submit" class="review-submit">
                     Post review
@@ -180,24 +183,37 @@
 
 <script>
     const photoInput = document.getElementById("photos");
+    const photoNote = document.getElementById("photo-note");
+    const photoError = document.getElementById("photo-error");
+
     let selectedFiles = [];
+
+    function showPhotoError(message) {
+        photoError.textContent = message;
+    }
+
+    function clearPhotoError() {
+        photoError.textContent = "";
+    }
+
+    function updatePhotoNote() {
+        photoNote.textContent = selectedFiles.length > 0
+            ? selectedFiles.length + " of 5 photos selected"
+            : "";
+    }
 
     function renderPreviews() {
         const preview = document.getElementById("photo-preview");
-        const note = document.getElementById("photo-note");
+
         preview.innerHTML = "";
 
-        note.textContent = selectedFiles.length > 0
-            ? selectedFiles.length + " of 5 photos selected"
-            : "";
-
-        selectedFiles.forEach(function (file, index) {
+        selectedFiles.forEach(function(file, index) {
             const wrapper = document.createElement("div");
             wrapper.className = "preview-item";
 
             const reader = new FileReader();
 
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 const img = document.createElement("img");
                 img.src = e.target.result;
                 wrapper.appendChild(img);
@@ -210,10 +226,14 @@
             removeBtn.className = "remove-photo";
             removeBtn.textContent = "×";
 
-            removeBtn.addEventListener("click", function () {
+            removeBtn.addEventListener("click", function() {
                 selectedFiles.splice(index, 1);
+
                 syncInput();
                 renderPreviews();
+                updatePhotoNote();
+
+                clearPhotoError();
             });
 
             wrapper.appendChild(removeBtn);
@@ -224,7 +244,7 @@
     function syncInput() {
         const dataTransfer = new DataTransfer();
 
-        selectedFiles.forEach(function (file) {
+        selectedFiles.forEach(function(file) {
             dataTransfer.items.add(file);
         });
 
@@ -232,19 +252,44 @@
     }
 
     if (photoInput) {
-        photoInput.addEventListener("change", function () {
-            const incoming = Array.prototype.slice.call(this.files);
+        photoInput.addEventListener("change", function() {
+            clearPhotoError();
 
-            incoming.forEach(function (file) {
-                if (selectedFiles.length < 5) {
+            const incoming = Array.from(this.files);
+            const availableSlots = 5 - selectedFiles.length;
+
+            if (availableSlots <= 0) {
+                showPhotoError(
+                    "You can upload a maximum of 5 photos."
+                );
+
+                this.value = "";
+                return;
+            }
+
+            if (incoming.length > availableSlots) {
+                showPhotoError(
+                    "You can upload a maximum of 5 photos. Only the first " +
+                    availableSlots +
+                    " photo" +
+                    (availableSlots === 1 ? "" : "s") +
+                    " were added."
+                );
+            }
+
+            incoming
+                .slice(0, availableSlots)
+                .forEach(function(file) {
                     selectedFiles.push(file);
-                }
-            });
+                });
 
             syncInput();
             renderPreviews();
+            updatePhotoNote();
         });
     }
+
+    updatePhotoNote();
 </script>
 
 </body>

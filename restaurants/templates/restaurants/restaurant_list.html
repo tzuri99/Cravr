@@ -257,26 +257,27 @@
     </script>
 
     <!-- 1. Collapsible drawer control script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleBtn = document.getElementById('toggle-filter-btn');
-            const drawer = document.getElementById('filter-drawer');
-            const arrow = document.getElementById('filter-arrow');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggle-filter-btn');
+        const drawer = document.getElementById('filter-drawer');
+        const arrow = document.getElementById('filter-arrow');
 
-            const hasActiveFilter = {% if selected_cuisine_id or selected_meal_id or selected_dietary_id or selected_tag_id %}true{% else %}false{% endif %};
+        const hasActiveFilter =
+            document.body.dataset.hasActiveFilter === 'true';
 
-            if (hasActiveFilter && drawer && arrow) {
-                drawer.classList.add('open');
-                arrow.classList.add('rotated');
-            }
+        if (hasActiveFilter && drawer && arrow) {
+            drawer.classList.add('open');
+            arrow.classList.add('rotated');
+        }
 
-            if (toggleBtn && drawer && arrow) {
-                toggleBtn.addEventListener('click', function() {
-                    drawer.classList.toggle('open');
-                    arrow.classList.toggle('rotated');
-                });
-            }
-        });
-    </script>
+        if (toggleBtn && drawer && arrow) {
+            toggleBtn.addEventListener('click', function() {
+                drawer.classList.toggle('open');
+                arrow.classList.toggle('rotated');
+            });
+        }
+    });
+</script>
 </body>
 </html>
