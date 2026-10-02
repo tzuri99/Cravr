@@ -241,7 +241,6 @@ def restaurant_picker(request):
 
     return render(request, 'restaurants/restaurant_picker.html', context)
 
-
 @login_required
 def toggle_wishlist(request, restaurant_id):
     """Add or remove restaurant from user's wishlist seamlessly via AJAX or standard GET/POST request."""
@@ -378,13 +377,73 @@ def delete_review(request, pk):
 # Feat: Editing a review
 @login_required(login_url="login")
 def edit_review(request, pk):
-    review = get_object_or_404(Review, pk=pk, author=request.user)
+    review = get_object_or_404(
+        Review,
+        pk=pk,
+        author=request.user
+    )
+
     if request.method == "POST":
-        form = ReviewForm(request.POST, request.FILES, instance=review)
+        form = ReviewForm(
+            request.POST,
+            request.FILES,
+            instance=review
+        )
+
         if form.is_valid():
             form.save()
-            messages.success(request, "Review updated.")
-            return redirect("restaurant_detail", pk=review.restaurant.pk)
+
+            # Delete selected existing photos
+            delete_photo_ids = request.POST.getlist("delete_photos")
+
+            photos_to_delete = review.photos.filter(
+                id__in=delete_photo_ids
+            )
+
+            for photo in photos_to_delete:
+                if photo.image:
+                    photo.image.delete(save=False)
+
+                photo.delete()
+
+            # Add new photos, keeping maximum total at 5
+            existing_count = review.photos.count()
+
+            available_slots = max(
+                0,
+                5 - existing_count
+            )
+
+            new_photos = request.FILES.getlist(
+                "photos"
+            )
+
+            for photo in new_photos[:available_slots]:
+                ReviewPhoto.objects.create(
+                    review=review,
+                    image=photo
+                )
+
+            messages.success(
+                request,
+                "Review updated."
+            )
+
+            return redirect(
+                "restaurant_detail",
+                pk=review.restaurant.pk
+            )
+
     else:
-        form = ReviewForm(instance=review)
-    return render(request, "restaurants/edit_review.html", {"form": form, "review": review})
+        form = ReviewForm(
+            instance=review
+        )
+
+    return render(
+        request,
+        "restaurants/edit_review.html",
+        {
+            "form": form,
+            "review": review
+        }
+    )

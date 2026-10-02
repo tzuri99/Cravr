@@ -2,24 +2,70 @@
 <html>
 <head>
     <title>Delete review</title>
+
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
-    <h1 class="delete-review-title">Delete this review?</h1>
+
+    <h1 class="delete-review-title">
+        Delete this review?
+    </h1>
 
     <div class="review-delete-card">
-        <p><strong>{{ review.restaurant.name }}</strong></p>
-        <p>{{ review.stars }} / 5</p>
-        <p>{{ review.text|linebreaksbr }}</p>
+
+        <p>
+            <strong>
+                {{ review.restaurant.name }}
+            </strong>
+        </p>
+
+        <p class="stars">
+            {{ review.stars }} / 5
+        </p>
+
+        <p>
+            {{ review.text|linebreaksbr }}
+        </p>
+
+        {% if review.photos.all %}
+            <div class="delete-review-photos">
+
+                <h3>Attached photos</h3>
+
+                <div class="photo-strip">
+                    {% for photo in review.photos.all %}
+                        <img
+                            src="{{ photo.image.url }}"
+                            alt="Review photo"
+                        >
+                    {% endfor %}
+                </div>
+
+            </div>
+        {% endif %}
+
     </div>
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="delete-review-button">
+
+        <button
+            type="submit"
+            class="delete-review-button"
+        >
             Yes, delete
         </button>
-        <a href="{% url 'restaurant_detail' review.restaurant.pk %}" class="cancel-delete">
+
+        <a
+            href="{% url 'restaurant_detail' review.restaurant.pk %}"
+            class="cancel-delete"
+        >
+            Cancel
+        </a>
+
     </form>
+
 </body>
 </html>
