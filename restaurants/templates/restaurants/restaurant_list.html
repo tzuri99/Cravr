@@ -58,66 +58,84 @@
             {% endif %}
         </form>
 
-        <!-- Tag Filtering Area -->
-        <div class="filter-box">
-            <p>
-                <a href="?" class="tag-btn {% if not selected_cuisine_id and not selected_meal_id and not selected_dietary_id and not selected_tag_id %}active{% endif %}">
-                    Show All
-                </a>
-            </p>
+        <!-- Collapsible Tag Filtering Area -->
+        <div class="filter-container" style="margin-bottom: 20px;">
+            <!-- Filter Toggle Button -->
+            <button type="button" id="toggle-filter-btn" class="filter-toggle-btn">
+                <span>🔍 Filter by Tags</span>
+                <span id="filter-arrow" class="filter-arrow">▼</span>
+            </button>
 
-            <div class="tag-group">
-                <strong>Cuisine:</strong>
-                {% for tag in cuisine_tags %}
-                    {% if selected_cuisine_id == tag.id %}
-                        <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
-                           class="tag-btn active">
-                            {{ tag.name }}
-                        </a>
-                    {% else %}
-                        <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
-                           class="tag-btn">
-                            {{ tag.name }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
+            <!-- Collapsible Drawer Container -->
+            <div id="filter-drawer" class="filter-box collapsible-content">
+                <p style="margin-top: 10px;">
+                    <a href="?" class="tag-btn {% if not selected_cuisine_id and not selected_meal_id and not selected_dietary_id %}active{% endif %}">
+                        Show All
+                    </a>
+                </p>
 
-            <div class="tag-group">
-                <strong>Meal Type:</strong>
-                {% for tag in meal_type_tags %}
-                    {% if selected_meal_id == tag.id %}
-                        <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
-                           class="tag-btn active">
-                            {{ tag.name }}
-                        </a>
-                    {% else %}
-                        <a href="?meal_type={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
-                           class="tag-btn">
-                            {{ tag.name }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
+                <!-- Cuisine Group -->
+                <div class="tag-group">
+                    <strong>Cuisine:</strong>
+                    {% for tag in cuisine_tags %}
+                        {% if selected_cuisine_id|slugify == tag.id|slugify %}
+                            {# Deselect Cuisine: Keep meal_type and dietary if present #}
+                            <a href="?{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}{% if selected_meal_id and selected_dietary_id %}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                               class="tag-btn active">
+                                {{ tag.name }}
+                            </a>
+                        {% else %}
+                            {# Select Cuisine: Add cuisine and preserve other filters #}
+                            <a href="?cuisine={{ tag.id }}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                               class="tag-btn">
+                                {{ tag.name }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
 
-            <div class="tag-group">
-                <strong>Dietary Options:</strong>
-                {% for tag in dietary_tags %}
-                    {% if selected_dietary_id == tag.id %}
-                        <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
-                           class="tag-btn active">
-                            {{ tag.name }}
-                        </a>
-                    {% else %}
-                        <a href="?dietary={{ tag.id }}{% if selected_cuisine_id %}&cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_meal_id %}&meal_type={{ selected_meal_id }}{% endif %}" 
-                           class="tag-btn">
-                            {{ tag.name }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
+                <!-- Meal Type Group -->
+                <div class="tag-group">
+                    <strong>Meal Type:</strong>
+                    {% for tag in meal_type_tags %}
+                        {% if selected_meal_id|slugify == tag.id|slugify %}
+                            {# Deselect Meal Type: Keep cuisine and dietary if present #}
+                            <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_cuisine_id and selected_dietary_id %}&{% endif %}{% if selected_dietary_id %}dietary={{ selected_dietary_id }}{% endif %}" 
+                               class="tag-btn active">
+                                {{ tag.name }}
+                            </a>
+                        {% else %}
+                            {# Select Meal Type: Add meal_type and preserve other filters #}
+                            <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}meal_type={{ tag.id }}{% if selected_dietary_id %}&dietary={{ selected_dietary_id }}{% endif %}" 
+                               class="tag-btn">
+                                {{ tag.name }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Dietary Options Group -->
+                <div class="tag-group">
+                    <strong>Dietary Options:</strong>
+                    {% for tag in dietary_tags %}
+                        {% if selected_dietary_id|slugify == tag.id|slugify %}
+                            {# Deselect Dietary: Keep cuisine and meal_type if present #}
+                            <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}{% endif %}{% if selected_cuisine_id and selected_meal_id %}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}{% endif %}" 
+                               class="tag-btn active">
+                                {{ tag.name }}
+                            </a>
+                        {% else %}
+                            {# Select Dietary: Add dietary and preserve other filters #}
+                            <a href="?{% if selected_cuisine_id %}cuisine={{ selected_cuisine_id }}&{% endif %}{% if selected_meal_id %}meal_type={{ selected_meal_id }}&{% endif %}dietary={{ tag.id }}" 
+                               class="tag-btn">
+                                {{ tag.name }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-
+        
         <!-- Restaurant List -->
         <ul class="restaurant-list">
             {% for restaurant in restaurants %}
@@ -235,6 +253,29 @@
                     });
                 });
             });
+        });
+    </script>
+
+    <!-- 1. Collapsible drawer control script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggle-filter-btn');
+            const drawer = document.getElementById('filter-drawer');
+            const arrow = document.getElementById('filter-arrow');
+
+            const hasActiveFilter = {% if selected_cuisine_id or selected_meal_id or selected_dietary_id or selected_tag_id %}true{% else %}false{% endif %};
+
+            if (hasActiveFilter && drawer && arrow) {
+                drawer.classList.add('open');
+                arrow.classList.add('rotated');
+            }
+
+            if (toggleBtn && drawer && arrow) {
+                toggleBtn.addEventListener('click', function() {
+                    drawer.classList.toggle('open');
+                    arrow.classList.toggle('rotated');
+                });
+            }
         });
     </script>
 </body>
