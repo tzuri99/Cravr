@@ -14,6 +14,7 @@ from .models import OTP, Profile, Follow , Block
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import SetPasswordForm
+
 # ==========================================
 # Custom Registration Form
 # ==========================================
@@ -71,15 +72,15 @@ def register_view(request):
                 code=code
             )
 
-            # Send OTP email
+           # Send OTP email
             send_mail(
                 subject='Your Cravr Verification Code',
                 message=f'Your OTP verification code is: {code}',
                 from_email=None,
                 recipient_list=[user.email],
                 fail_silently=False,
-            )
 
+            )
             # Save user ID in session
             request.session['otp_user_id'] = user.id
 
@@ -341,7 +342,7 @@ def resend_otp_view(request):
         from_email=None,
         recipient_list=[user.email],
         fail_silently=False,
-    )
+)
 
     return render(
         request,
