@@ -21,20 +21,20 @@ urlpatterns = [
         views.logout_view,
         name='logout'
     ),
-    # OTP verification
+    
     path(
         'verify-otp/',
         views.verify_otp_view,
         name='verify_otp'
     ),
-    # Resend OTP
+  
     path(
         'resend-otp/',
         views.resend_otp_view,
         name='resend_otp'
     ),
 
-    # Set password
+   
 
     path(
         'set-password/', 
@@ -92,7 +92,7 @@ urlpatterns = [
  
 
     # =========================
-    # Follow / Unfollow
+    # Follow / Unfollow/ Block
     # =========================
     path(
         'user/<str:username>/',

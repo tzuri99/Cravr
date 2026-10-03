@@ -153,7 +153,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 # Session settings (for Remember Me feature)
-SESSION_COOKIE_AGE = 1209600  # 默认是两个星期，之后会依Remember Me动态调整，1209600是两个星期的秒数
+SESSION_COOKIE_AGE = 1209600 # The default is two weeks, and afterwards it will adjust dynamically based on Remember Me. 1209600 is the number of seconds in two weeks.
 
 SITE_ID = 1
 
