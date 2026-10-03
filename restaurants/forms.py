@@ -40,17 +40,27 @@ OpeningHourFormSet = inlineformset_factory(
 )
 
 class ReviewForm(forms.ModelForm):
+    stars = forms.TypedChoiceField(
+        choices=[
+            (1, "★"),
+            (2, "★"),
+            (3, "★"),
+            (4, "★"),
+            (5, "★"),
+        ],
+        widget=forms.RadioSelect,
+        coerce=int,
+        required=True,
+    )
+
     class Meta:
         model = Review
         fields = ["stars", "text"]
         widgets = {
-            "text": forms.Textarea(attrs={"rows": 4, "placeholder": "Share your thoughts..."}),
+            "text": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Share your thoughts..."
+                }
+            ),
         }
-ReviewPhotoFormSet = inlineformset_factory(
-    Review,
-    ReviewPhoto,
-    fields=["image"],
-    extra=3,
-    max_num=5,
-    can_delete=True,
-)

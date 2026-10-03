@@ -257,20 +257,26 @@
     </script>
 
     <!-- 1. Collapsible drawer control script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleBtn = document.getElementById('toggle-filter-btn');
-            const drawer = document.getElementById('filter-drawer');
-            const arrow = document.getElementById('filter-arrow');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggle-filter-btn');
+        const drawer = document.getElementById('filter-drawer');
+        const arrow = document.getElementById('filter-arrow');
 
+<<<<<<< HEAD
             const hasActiveFilter =
                 document.body.dataset.hasActiveFilter === 'true';
+=======
+        const hasActiveFilter =
+            document.body.dataset.hasActiveFilter === 'true';
+>>>>>>> main
 
-            if (hasActiveFilter && drawer && arrow) {
-                drawer.classList.add('open');
-                arrow.classList.add('rotated');
-            }
+        if (hasActiveFilter && drawer && arrow) {
+            drawer.classList.add('open');
+            arrow.classList.add('rotated');
+        }
 
+<<<<<<< HEAD
             if (toggleBtn && drawer && arrow) {
                 toggleBtn.addEventListener('click', function() {
                     drawer.classList.toggle('open');
@@ -280,5 +286,15 @@
         });
     </script>
 
+=======
+        if (toggleBtn && drawer && arrow) {
+            toggleBtn.addEventListener('click', function() {
+                drawer.classList.toggle('open');
+                arrow.classList.toggle('rotated');
+            });
+        }
+    });
+</script>
+>>>>>>> main
 </body>
 </html>
