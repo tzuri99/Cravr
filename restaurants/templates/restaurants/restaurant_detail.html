@@ -45,7 +45,7 @@
                 {% endif %}
             </p>
 
-            <a href="{% url 'map_view' %}" class="view-map-link">
+            <a href="{% url 'map_view' %}?restaurant={{ restaurant.id }}" class="view-map-link">
                 View on map
             </a>
         </div>
