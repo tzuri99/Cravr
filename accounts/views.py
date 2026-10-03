@@ -7,9 +7,7 @@ from django.core.mail import send_mail
 from django import forms
 from django.utils import timezone
 from datetime import timedelta
-from .models import OTP, Profile
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
 from .models import OTP, Profile, Follow , Block
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -106,7 +104,7 @@ def login_view(request):
 
         username = request.POST.get('username')
 
-        # 先检查账号是否存在，是否被锁定
+        #First, check if the account exists and if it's locked. 
         try:
             existing_user = User.objects.get(username=username)
             profile = existing_user.profile
@@ -137,7 +135,7 @@ def login_view(request):
 
             user = form.get_user()
 
-            # 登录成功，重置失败次数
+            # Login successful, failed attempts reset
             user.profile.failed_login_attempts = 0
             user.profile.locked_until = None
             user.profile.save()
@@ -174,11 +172,12 @@ def login_view(request):
             return redirect('home')
 
         else:
-            # 登录失败（密码错误），增加失败次数
+            # Login failed (wrong password), failed attempts increased
             if existing_user:
                 profile = existing_user.profile
                 profile.failed_login_attempts += 1
 
+            # Lock the account for 15 minutes after 5 failed attempts
                 if profile.failed_login_attempts >= 5:
                     profile.locked_until = timezone.now() + timedelta(minutes=15)
 
@@ -209,9 +208,12 @@ def logout_view(request):
 # ==========================================
 
 def google_login_redirect(request):
+
+     # New Google users are redirected to set a password
     if request.session.pop('google_new_user', False):
         return redirect('set_password')
 
+    # Existing Google users go directly to the home page
     return redirect('home')
 
 @login_required
@@ -253,14 +255,14 @@ def verify_otp_view(request):
 
         try:
 
-            # Get latest unused OTP
+            # Get the latest unused OTP matching the entered code
             otp = OTP.objects.filter(
                 user=user,
                 code=entered_code,
                 is_used=False
             ).latest('created_at')
 
-            # Check if OTP expired
+            # Check whether the OTP has expired after 5 minutes
             if timezone.now() > otp.created_at + timedelta(minutes=5):
 
                 return render(
@@ -276,11 +278,11 @@ def verify_otp_view(request):
             otp.is_used = True
             otp.save()
 
-            # Verify user
+            # Verify the user's email
             user.profile.is_verified = True
             user.profile.save()
 
-            # Remove session
+            # Remove the OTP user ID from the session
             del request.session['otp_user_id']
 
             # Go to login
@@ -535,10 +537,11 @@ def user_profile_view(request, username):
         elif is_blocked_by_me:
             blocked = False
 
-        # User's privacy settings
+        # Private profiles are only visible to the profile owner
         elif profile.privacy == 'private':
             blocked = True
 
+        # Friends-only profiles require a mutual follow relationship
         elif profile.privacy == 'friends':
             if not (is_following and is_followed_by):
                 blocked = True
@@ -563,52 +566,6 @@ def user_profile_view(request, username):
 
         
 
-    # ===========================
-    # Visibility check
-    # ===========================
-    can_view = False
-
-    if is_own_profile:
-        can_view = True
-
-    elif profile.privacy == 'public':
-        can_view = True
-
-    elif profile.privacy == 'friends':
-        # Friends & Family = follow each other
-        they_follow_you = Follow.objects.filter(
-            follower=target_user,
-            following=request.user
-        ).exists()
-        can_view = is_following and they_follow_you
-
-    elif profile.privacy == 'private':
-        can_view = False
-
-    if not can_view:
-        return render(
-            request,
-            'accounts/user_profile.html',
-            {
-                'profile_user': target_user,
-                'blocked': True,
-                'is_following': is_following,
-            }
-        )
-
-    return render(
-        request,
-        'accounts/user_profile.html',
-        {
-            'profile_user': target_user,
-            'profile': profile,
-            'is_following': is_following,
-            'followers_count': followers_count,
-            'following_count': following_count,
-            'is_own_profile': is_own_profile,
-            'mutual_friends_count': mutual_friends_count,
-        }
-    )
 
 # ==========================================
 # Search Users
