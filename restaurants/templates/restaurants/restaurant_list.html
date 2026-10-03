@@ -257,19 +257,19 @@
     </script>
 
     <!-- 1. Collapsible drawer control script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleBtn = document.getElementById('toggle-filter-btn');
-            const drawer = document.getElementById('filter-drawer');
-            const arrow = document.getElementById('filter-arrow');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggle-filter-btn');
+        const drawer = document.getElementById('filter-drawer');
+        const arrow = document.getElementById('filter-arrow');
 
             const hasActiveFilter =
                 document.body.dataset.hasActiveFilter === 'true';
 
-            if (hasActiveFilter && drawer && arrow) {
-                drawer.classList.add('open');
-                arrow.classList.add('rotated');
-            }
+        if (hasActiveFilter && drawer && arrow) {
+            drawer.classList.add('open');
+            arrow.classList.add('rotated');
+        }
 
             if (toggleBtn && drawer && arrow) {
                 toggleBtn.addEventListener('click', function() {

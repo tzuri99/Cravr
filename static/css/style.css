@@ -498,6 +498,121 @@ a {
     text-decoration: underline;
 }
 
+/* ===========================
+   Review Star Rating
+   =========================== */
+
+.review-form #id_stars,
+.edit-review-form #id_stars {
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    margin: 8px 0 4px;
+}
+
+.review-form #id_stars > div,
+.edit-review-form #id_stars > div {
+    margin: 0;
+}
+
+.review-form #id_stars label,
+.edit-review-form #id_stars label {
+    display: block;
+    cursor: pointer;
+}
+
+.review-form #id_stars input,
+.edit-review-form #id_stars input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.review-form #id_stars label,
+.edit-review-form #id_stars label {
+    padding: 8px 12px;
+    border: 1.5px solid #efeae0;
+    border-radius: 12px;
+    background: #f7f5f0;
+    color: #c8c3bb;
+    font-size: 20px;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+
+.review-form #id_stars label:hover,
+.edit-review-form #id_stars label:hover {
+    border-color: #f5a623;
+    color: #f5a623;
+    background: #fffaf0;
+}
+
+.review-form #id_stars label:has(input:checked),
+.edit-review-form #id_stars label:has(input:checked) {
+    background: #fff4dc;
+    border-color: #f5a623;
+    color: #f5a623;
+    box-shadow: 0 2px 6px rgba(245, 166, 35, 0.18);
+}
+
+/* ===========================
+   Interactive Star Rating
+   =========================== */
+
+.review-form #id_stars,
+.edit-review-form #id_stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 0;
+    margin: 8px 0 4px;
+}
+
+.review-form #id_stars > div,
+.edit-review-form #id_stars > div {
+    margin: 0;
+}
+
+.review-form #id_stars input,
+.edit-review-form #id_stars input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.review-form #id_stars label,
+.edit-review-form #id_stars label {
+    cursor: pointer;
+    font-size: 34px;
+    line-height: 1;
+    color: #d8d2c9;
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+/* Hovered star + all stars before it visually */
+.review-form #id_stars label:hover,
+.review-form #id_stars label:hover ~ div label,
+.edit-review-form #id_stars label:hover,
+.edit-review-form #id_stars label:hover ~ div label {
+    color: #f5a623;
+}
+
+/* Selected star + all previous stars */
+.review-form #id_stars div:has(input:checked) label,
+.review-form #id_stars div:has(input:checked) ~ div label,
+.edit-review-form #id_stars div:has(input:checked) label,
+.edit-review-form #id_stars div:has(input:checked) ~ div label {
+    color: #f5a623;
+}
+
+.review-form #id_stars label:hover,
+.edit-review-form #id_stars label:hover {
+    transform: scale(1.12);
+}
+
 /* Review photo upload */
 
 .review-form .upload-btn {
@@ -577,6 +692,48 @@ a {
     .add-restaurant-submit {
         width: 100%;
     }
+}
+
+.photo-error {
+    min-height: 20px;
+    margin: 6px 0 12px;
+    color: #c0392b;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Edit review photo upload */
+
+.edit-review-form .upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #2d3748;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-review-form .upload-btn:hover {
+    background: #4a5568;
+}
+
+.existing-photos-block {
+    margin-bottom: 16px;
+}
+
+.existing-photo-item.marked-for-removal {
+    opacity: 0.45;
+}
+
+.existing-photo-item.marked-for-removal img {
+    filter: grayscale(100%);
+}
+
+#photo-note {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 12px;
 }
 
 /* ===========================

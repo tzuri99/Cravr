@@ -18,25 +18,256 @@
     </nav>
 
     <h1 class="edit-review-title">
-    Edit your review of {{ review.restaurant.name }}
-   </h1>
+        Edit your review of {{ review.restaurant.name }}
+    </h1>
 
-    <form method="post" class="edit-review-form">
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        class="edit-review-form"
+    >
         {% csrf_token %}
+
         <p>
             <label>Stars:</label><br>
             {{ form.stars }}
         </p>
+
         <p>
             <label>Your review:</label><br>
             {{ form.text }}
         </p>
+
+        {% if review.photos.all %}
+            <div class="existing-photos-block">
+                <p><strong>Current photos:</strong></p>
+
+                <div id="existing-photo-preview" class="photo-strip">
+                    {% for photo in review.photos.all %}
+                        <div class="preview-item existing-photo-item" data-photo-id="{{ photo.id }}">
+                            <img src="{{ photo.image.url }}" alt="Review photo">
+
+                            <button
+                                type="button"
+                                class="remove-photo existing-remove-btn"
+                                data-photo-id="{{ photo.id }}"
+                                aria-label="Remove photo"
+                            >
+                                ×
+                            </button>
+
+                            <input
+                                type="checkbox"
+                                name="delete_photos"
+                                value="{{ photo.id }}"
+                                class="delete-photo-checkbox"
+                                data-photo-id="{{ photo.id }}"
+                                hidden
+                            >
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <p>
+            <label for="photos" class="upload-btn">
+                Add photos (up to 5)
+            </label>
+
+            <input
+                type="file"
+                id="photos"
+                name="photos"
+                accept="image/*"
+                multiple
+                style="display: none;"
+            >
+        </p>
+
+        <div id="photo-preview" class="photo-strip"></div>
+        <div id="photo-note"></div>
+        <div id="photo-error" class="photo-error"></div>
+
         <button type="submit" class="edit-review-save">
-    Save
-       </button>
+            Save
+        </button>
+
         <a href="{% url 'restaurant_detail' review.restaurant.pk %}" class="edit-review-cancel">
-    Cancel
+            Cancel
         </a>
     </form>
+
+    <script>
+        const photoInput = document.getElementById("photos");
+        const photoNote = document.getElementById("photo-note");
+        const photoError = document.getElementById("photo-error");
+
+        let selectedFiles = [];
+
+        function getExistingKeptCount() {
+            return document.querySelectorAll(
+                ".existing-photo-item:not(.marked-for-removal)"
+            ).length;
+        }
+
+        function getTotalPhotoCount() {
+            return getExistingKeptCount() + selectedFiles.length;
+        }
+
+        function showPhotoError(message) {
+            photoError.textContent = message;
+        }
+
+        function clearPhotoError() {
+            photoError.textContent = "";
+        }
+
+        function updatePhotoNote() {
+            const total = getTotalPhotoCount();
+
+            photoNote.textContent = total > 0
+                ? total + " of 5 photos selected"
+                : "";
+        }
+
+        function syncInput() {
+            const dataTransfer = new DataTransfer();
+
+            selectedFiles.forEach(function(file) {
+                dataTransfer.items.add(file);
+            });
+
+            photoInput.files = dataTransfer.files;
+        }
+
+        function renderPreviews() {
+            const preview = document.getElementById("photo-preview");
+
+            preview.innerHTML = "";
+
+            selectedFiles.forEach(function(file, index) {
+                const wrapper = document.createElement("div");
+                wrapper.className = "preview-item";
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    wrapper.appendChild(img);
+                };
+
+                reader.readAsDataURL(file);
+
+                const removeBtn = document.createElement("button");
+
+                removeBtn.type = "button";
+                removeBtn.className = "remove-photo";
+                removeBtn.textContent = "×";
+
+                removeBtn.addEventListener("click", function() {
+                    selectedFiles.splice(index, 1);
+
+                    syncInput();
+                    renderPreviews();
+                    updatePhotoNote();
+
+                    clearPhotoError();
+                });
+
+                wrapper.appendChild(removeBtn);
+                preview.appendChild(wrapper);
+            });
+        }
+
+        if (photoInput) {
+            photoInput.addEventListener("change", function() {
+                clearPhotoError();
+
+                const incoming = Array.from(this.files);
+
+                const availableSlots =
+                    5 - getExistingKeptCount() - selectedFiles.length;
+
+                if (availableSlots <= 0) {
+                    showPhotoError(
+                        "You already have the maximum of 5 photos. Remove a photo before adding another."
+                    );
+
+                    this.value = "";
+                    return;
+                }
+
+                if (incoming.length > availableSlots) {
+                    showPhotoError(
+                        "You can upload a maximum of 5 photos. Only the first " +
+                        availableSlots +
+                        " photo" +
+                        (availableSlots === 1 ? "" : "s") +
+                        " were added."
+                    );
+                }
+
+                incoming
+                    .slice(0, availableSlots)
+                    .forEach(function(file) {
+                        selectedFiles.push(file);
+                    });
+
+                syncInput();
+                renderPreviews();
+                updatePhotoNote();
+            });
+        }
+
+        document.querySelectorAll(
+            ".existing-remove-btn"
+        ).forEach(function(button) {
+
+            button.addEventListener("click", function() {
+                const photoId = this.dataset.photoId;
+
+                const item = document.querySelector(
+                    '.existing-photo-item[data-photo-id="' +
+                    photoId +
+                    '"]'
+                );
+
+                const checkbox = document.querySelector(
+                    '.delete-photo-checkbox[data-photo-id="' +
+                    photoId +
+                    '"]'
+                );
+
+                if (!item || !checkbox) {
+                    return;
+                }
+
+                if (
+                    item.classList.contains(
+                        "marked-for-removal"
+                    )
+                ) {
+                    item.classList.remove(
+                        "marked-for-removal"
+                    );
+
+                    checkbox.checked = false;
+                } else {
+                    item.classList.add(
+                        "marked-for-removal"
+                    );
+
+                    checkbox.checked = true;
+                }
+
+                clearPhotoError();
+                updatePhotoNote();
+            });
+        });
+
+        updatePhotoNote();
+    </script>
 </body>
 </html>
