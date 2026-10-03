@@ -315,6 +315,81 @@
 
     </form>
 
+    <section class="my-reviews-section">
+
+        <h2>My Reviews</h2>
+
+        {% if my_reviews %}
+
+            <div class="my-reviews-list">
+
+                {% for review in my_reviews %}
+
+                    <div class="my-review-card">
+
+                        <div class="my-review-header">
+                            <h3>
+                                <a href="{% url 'restaurant_detail' review.restaurant.pk %}">
+                                    {{ review.restaurant.name }}
+                                </a>
+                            </h3>
+
+                            <span class="stars">
+                                {{ review.stars }} / 5 ★
+                            </span>
+                        </div>
+
+                        {% if review.text %}
+                            <p class="my-review-text">
+                                {{ review.text|linebreaksbr }}
+                            </p>
+                        {% endif %}
+
+                        {% if review.photos.all %}
+                            <div class="photo-strip">
+                                {% for photo in review.photos.all %}
+                                    <img
+                                        src="{{ photo.image.url }}"
+                                        alt="Review photo"
+                                        onclick="window.open(this.src, '_blank')"
+                                    >
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <p class="meta">
+                            Reviewed on {{ review.created_at|date:"j M Y" }}
+                        </p>
+
+                        <div class="my-review-actions">
+                            <a href="{% url 'edit_review' review.pk %}">
+                                Edit
+                            </a>
+
+                            <a
+                                href="{% url 'delete_review' review.pk %}"
+                                class="delete-review-link"
+                            >
+                                Delete
+                            </a>
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="no-reviews">
+                You haven't written any reviews yet.
+            </p>
+
+        {% endif %}
+
+    </section>
+
 </div>
 
 
