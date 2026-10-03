@@ -2,38 +2,36 @@ from django.conf import settings
 from django.db import models
 
 class Restaurant(models.Model):
+    # Basic restaurant information
     name = models.CharField(max_length=200)
+
+    # Geographic coordinates used by the map
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    # Optional descriptive information
     address = models.CharField(max_length=300, blank=True)
     cuisine = models.CharField(max_length=100, blank=True)
+
+    # Optional OpenStreetMap ID used to prevent duplicate imported restaurants
     osm_id = models.BigIntegerField(unique=True, null=True, blank=True)
 
+    # Store the user who submitted the restaurant
+    # SET_NULL keeps the restaurant if that user account is deleted
     added_by = models.ForeignKey(
         "auth.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="restaurants_added"
     )
+
+    # New restaurants must be approved before appearing publicly
     is_approved = models.BooleanField(default=False)
-    
+
     def __str__(self):
+        # Display the restaurant name in Django Admin and the shell
         return self.name
 
 
-class Tag(models.Model):
-    TAG_TYPES = (
-        ('cuisine', 'Cuisine'),
-        ('meal_type', 'Meal Type'),
-        ('dietary', 'Dietary Info'),
-    )
-
-    name = models.CharField(max_length=50)
-    tag_type = models.CharField(max_length=20, choices=TAG_TYPES, default='cuisine')
-    restaurants = models.ManyToManyField(Restaurant, related_name='tags', blank=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.get_tag_type_display()})"
-
-
 class OpeningHour(models.Model):
+    # Store weekdays as numbers while showing readable names in forms/templates
     DAYS = [
         (0, "Monday"),
         (1, "Tuesday"),
@@ -44,43 +42,76 @@ class OpeningHour(models.Model):
         (6, "Sunday"),
     ]
 
+    # Each opening-hour record belongs to one restaurant
+    # Deleting the restaurant also deletes its opening hours
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="hours")
+
+    # Day of the week based on the DAYS choices above
     day = models.IntegerField(choices=DAYS)
+
+    # Opening and closing times are optional for days marked as closed
     opening_time = models.TimeField(null=True, blank=True)
     closing_time = models.TimeField(null=True, blank=True)
+
+    # Indicates whether the restaurant is closed for this day
     is_closed = models.BooleanField(default=False)
 
     class Meta:
+        # Always order opening hours from Monday to Sunday
         ordering = ["day"]
 
     def __str__(self):
+        # Example: "Restaurant Name Monday"
         return f"{self.restaurant.name} {self.get_day_display()}"
 
+
 class Review(models.Model):
+    # Restaurant being reviewed
+    # Deleting the restaurant also deletes its reviews
     restaurant = models.ForeignKey(
         Restaurant, on_delete=models.CASCADE, related_name="reviews"
     )
+
+    # User who wrote the review
+    # Deleting the user also deletes their reviews
     author = models.ForeignKey(
         "auth.User", on_delete=models.CASCADE, related_name="reviews"
     )
+
+    # Restrict rating values to integers from 1 to 5
     stars = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+
+    # Written review text is optional
     text = models.TextField(blank=True)
+
+    # Automatically store creation and last-edit timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Legacy single-photo field
+    # Multiple review images are handled using ReviewPhoto
     photo = models.ImageField(upload_to="review_photos/", blank=True, null=True)
 
     class Meta:
+        # Show newest reviews first
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.stars}\u2605 {self.restaurant.name}"
+        # Example: "5★ Restaurant Name"
+        return f"{self.stars}★ {self.restaurant.name}"
+
 
 class ReviewPhoto(models.Model):
+    # Each uploaded image belongs to one review
+    # Deleting the review also deletes the related database records
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="photos")
+    # Store uploaded images in MEDIA_ROOT/review_photos/
     image = models.ImageField(upload_to="review_photos/")
+    # Automatically record when the photo was uploaded
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        # Display which review this photo belongs to
         return f"Photo for review {self.review_id}"
 
 class Wishlist(models.Model):

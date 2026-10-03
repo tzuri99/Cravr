@@ -82,28 +82,42 @@ def restaurant_list(request):
     return render(request, "restaurants/restaurant_list.html", context)
 
 
+# Require the user to be logged in before submitting a restaurant
 @login_required
 def add_restaurant(request):
+    # Handle submitted restaurant and opening-hour data
     if request.method == "POST":
         form = RestaurantForm(request.POST)
         formset = OpeningHourFormSet(request.POST)
 
+        # Continue only if both the restaurant form and opening-hour formset are valid
         if form.is_valid() and formset.is_valid():
+            # Create the Restaurant object without saving yet so extra fields can be assigned
             restaurant = form.save(commit=False)
+            # Record the user who submitted the restaurant
             restaurant.added_by = request.user
+            # New user-submitted restaurants require admin approval
             restaurant.is_approved = False
+            # Save the restaurant before linking opening hours to it
             restaurant.save()
+            # Link the opening-hour formset to this restaurant
             formset.instance = restaurant
             formset.save()
+            # Automatically assign relevant tags to the restaurant
             apply_intelligent_tags(restaurant)
+            # Show a confirmation message after submission
             messages.success(request, "Restaurant submitted. It will be visible once approved.")
+            # Return to the restaurant list page
             return redirect("restaurant_list")
     else:
+        # Show an empty restaurant form for a normal GET request
         form = RestaurantForm()
+
+        # Pre-create one opening-hour row for each day of the week
         formset = OpeningHourFormSet(initial=[{"day": day} for day in range(7)])
 
+    # Render the restaurant submission page
     return render(request, "restaurants/add_restaurant.html", {"form": form, "formset": formset})
-
 
 def restaurant_picker(request):
     # Branch feature: Random restaurant selection logic
@@ -288,13 +302,16 @@ def wishlist_list(request):
 
 
 def restaurants_json(request):
+    # Only approved restaurants should appear on the map
     restaurants = Restaurant.objects.filter(is_approved=True)
 
+    # Read the current visible map boundaries from the query string
     south = request.GET.get("south")
     west = request.GET.get("west")
     north = request.GET.get("north")
     east = request.GET.get("east")
 
+    # Filter restaurants to the currently visible map area if all bounds are provided
     if all([south, west, north, east]):
         try:
             restaurants = restaurants.filter(
@@ -303,14 +320,17 @@ def restaurants_json(request):
                 longitude__gte=float(west),
                 longitude__lte=float(east),
             )
+        # Ignore invalid coordinate values instead of causing the request to fail
         except ValueError:
             pass
 
+    # Add calculated review information to each restaurant and limit the response size for map performance
     restaurants = restaurants.annotate(
         avg_rating=Avg("reviews__stars"),
         review_count=Count("reviews"),
     )[:1500]
 
+    # Convert restaurant objects into JSON-friendly dictionaries
     data = [
         {
             "id": r.id,
@@ -324,37 +344,57 @@ def restaurants_json(request):
         }
         for r in restaurants
     ]
+
+    # safe=False allows JsonResponse to return a list directly
     return JsonResponse(data, safe=False)
 
 
 def map_view(request):
+    # Render the page containing the interactive restaurant map
     return render(request, "restaurants/map.html")
 
 
 # Feat: Adding a review
 @login_required(login_url="login")
 def restaurant_detail(request, pk):
+    # Retrieve the approved restaurant or return a 404 if it does not exist
     restaurant = get_object_or_404(Restaurant, pk=pk, is_approved=True)
+
+    # Get all reviews belonging to this restaurant
     reviews = restaurant.reviews.all()
+
+    # Calculate the restaurant's average star rating
     average = reviews.aggregate(Avg("stars"))["stars__avg"]
 
+    # Handle review submission
     if request.method == "POST":
         form = ReviewForm(request.POST)
+
+        # Save the review only when the submitted form is valid
         if form.is_valid():
+            # Create the review without saving so restaurant and author can be assigned first
             review = form.save(commit=False)
             review.restaurant = restaurant
             review.author = request.user
             review.save()
 
+            # Get up to 5 uploaded review photos
             photos = request.FILES.getlist("photos")[:5]
+
+            # Save each uploaded photo as a separate ReviewPhoto record
             for photo in photos:
                 ReviewPhoto.objects.create(review=review, image=photo)
 
+            # Show confirmation after the review is created
             messages.success(request, "Review posted.")
+
+            # Reload the restaurant detail page
             return redirect("restaurant_detail", pk=restaurant.pk)
     else:
+        # Display an empty review form for normal page loads
         form = ReviewForm()
 
+    # Pass restaurant, review, rating, and form data to the template
     return render(request, "restaurants/restaurant_detail.html", {
         "restaurant": restaurant,
         "reviews": reviews,
@@ -366,23 +406,37 @@ def restaurant_detail(request, pk):
 # Feat: Deleting a review
 @login_required(login_url="login")
 def delete_review(request, pk):
+    # Only allow the original author to delete the review
     review = get_object_or_404(Review, pk=pk, author=request.user)
+
+    # Store the restaurant ID before the review is deleted
     restaurant_pk = review.restaurant.pk
+
+    # Delete only after the confirmation form is submitted
     if request.method == "POST":
         review.delete()
+
+        # Show a success message after deletion
         messages.success(request, "Review deleted.")
+
+        # Return to the restaurant detail page
         return redirect("restaurant_detail", pk=restaurant_pk)
+
+    # Show the delete confirmation page first
     return render(request, "restaurants/delete_review.html", {"review": review})
+
 
 # Feat: Editing a review
 @login_required(login_url="login")
 def edit_review(request, pk):
+    # Only allow the original author to edit the review
     review = get_object_or_404(
         Review,
         pk=pk,
         author=request.user
     )
 
+    # Handle submitted review edits
     if request.method == "POST":
         form = ReviewForm(
             request.POST,
@@ -391,54 +445,64 @@ def edit_review(request, pk):
         )
 
         if form.is_valid():
+            # Save updated rating and review text
             form.save()
 
-            # Delete selected existing photos
+            # Get IDs of existing photos selected for deletion
             delete_photo_ids = request.POST.getlist("delete_photos")
 
+            # Only retrieve selected photos belonging to this review
             photos_to_delete = review.photos.filter(
                 id__in=delete_photo_ids
             )
 
+            # Delete both the stored image file and its database record
             for photo in photos_to_delete:
                 if photo.image:
                     photo.image.delete(save=False)
 
                 photo.delete()
 
-            # Add new photos, keeping maximum total at 5
+            # Count how many photos remain after deletion
             existing_count = review.photos.count()
 
+            # Calculate how many additional photos can still be added
             available_slots = max(
                 0,
                 5 - existing_count
             )
 
+            # Get newly uploaded photos
             new_photos = request.FILES.getlist(
                 "photos"
             )
 
+            # Save only enough photos to keep the total at 5 or fewer
             for photo in new_photos[:available_slots]:
                 ReviewPhoto.objects.create(
                     review=review,
                     image=photo
                 )
 
+            # Show confirmation after saving the updated review
             messages.success(
                 request,
                 "Review updated."
             )
 
+            # Return to the related restaurant detail page
             return redirect(
                 "restaurant_detail",
                 pk=review.restaurant.pk
             )
 
     else:
+        # Pre-fill the form with the review's existing values
         form = ReviewForm(
             instance=review
         )
 
+    # Display the review editing page
     return render(
         request,
         "restaurants/edit_review.html",

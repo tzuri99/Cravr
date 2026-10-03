@@ -28,3 +28,4 @@ tzdata==2026.3 ; sys_platform == 'win32'
     # via django
 urllib3==2.7.0
     # via requests
+PyJWT==2.15.1
