@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <html>
+
+    <nav class="navbar">
+        <a href="/" class="brand">Cravr</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="{% url 'search_users' %}">Search Users</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <a href="{% url 'logout' %}" class="nav-cta">Logout</a>
+        </div>
+    </nav>
+
 <head>
     <title>Delete review</title>
 
