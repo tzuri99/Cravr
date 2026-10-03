@@ -4,14 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Restaurant Picker</title>
+    <meta name="description" content="Cravr Random Restaurant Picker - Algorithmic dining recommendation engine for decision fatigue.">
+    <title>Random Restaurant Picker | Cravr Application</title>
+
     {% load static %}
+    <!-- Global Application Stylesheet -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="/" class="brand">Cravr</a>
+    <!-- ========================================================================= -->
+    <!-- SECTION 1: GLOBAL NAVIGATION BAR COMPONENT                                -->
+    <!-- ========================================================================= -->
+    <nav class="navbar" role="navigation" aria-label="Main Navigation">
+        <a href="/" class="brand" title="Cravr Home">Cravr</a>
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="{% url 'search_users' %}">Search Users</a>
@@ -20,255 +26,404 @@
         </div>
     </nav>
 
-<div class="picker-card">
-    <a href="{% url 'restaurant_list' %}" class="back-link">← Back to Restaurants</a>
-    
-    <h1 class="header-title">🎰 Random Restaurant Picker</h1>
-    <p class="header-subtitle">Can't decide where to eat? Set your mandatory preferences and spin!</p>
-
-    <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form">
+    <!-- ========================================================================= -->
+    <!-- SECTION 2: RECOMMENDATION PICKER CARD CONTAINER                           -->
+    <!-- ========================================================================= -->
+    <div class="picker-card">
+        <!-- Navigation Back-Link Interface -->
+        <a href="{% url 'restaurant_list' %}" class="back-link" title="Return to complete restaurant listing">
+            ← Back to Restaurants
+        </a>
         
-        <!-- Hidden field to store the user's current location -->
-        <input type="hidden" name="user_lat" id="user_lat" value="{{ user_lat|default:'' }}">
-        <input type="hidden" name="user_lng" id="user_lng" value="{{ user_lng|default:'' }}">
+        <!-- Interactive Header & Guidance Block -->
+        <h1 class="header-title">🎰 Random Restaurant Picker</h1>
+        <p class="header-subtitle">
+            Can't decide where to eat? Set your mandatory preferences and spin!
+        </p>
 
-        <!-- TOP SECTION: Wishlist & Open Now Toggles -->
-        <div class="top-toggles-group" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
-            {% if user.is_authenticated %}
-                <!-- Wishlist Filter Checkbox -->
-                <div class="wishlist-checkbox-section">
-                    <label class="wishlist-checkbox-label">
-                        <input type="checkbox" name="from_wishlist" value="true" {% if from_wishlist %}checked{% endif %}>
-                        ❤️ Only pick from my Wishlist
+        <!-- ===================================================================== -->
+        <!-- FORM INTERFACE: RECOMMENDATION PARAMETER SELECTION ENGINE             -->
+        <!-- ===================================================================== -->
+        <form method="GET" action="{% url 'restaurant_picker' %}" id="picker-form" class="picker-form-container">
+            
+            <!-- Hidden State Input Payload: HTML5 Geolocation Coordinates -->
+            <!-- These coordinates feed directly into the backend Haversine distance algorithm -->
+            <input type="hidden" name="user_lat" id="user_lat" value="{{ user_lat|default:'' }}">
+            <input type="hidden" name="user_lng" id="user_lng" value="{{ user_lng|default:'' }}">
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- TOGGLE GROUP: WISHLIST & REAL-TIME OPERATIONAL HOURS              -->
+            <!-- ----------------------------------------------------------------- -->
+            <div class="top-toggles-group" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                {% if user.is_authenticated %}
+                    <!-- User Wishlist Constraint Toggle -->
+                    <div class="wishlist-checkbox-section">
+                        <label class="wishlist-checkbox-label" for="from_wishlist_input">
+                            <input type="checkbox" id="from_wishlist_input" name="from_wishlist" value="true" {% if from_wishlist %}checked{% endif %}>
+                            ❤️ Only pick from my Wishlist
+                        </label>
+                    </div>
+                {% endif %}
+
+                <!-- Operational Hours Active Status Toggle -->
+                <div class="open-now-checkbox-section">
+                    <label class="open-now-checkbox-label" for="open_now_input">
+                        <input type="checkbox" id="open_now_input" name="open_now" value="true" {% if open_now %}checked{% endif %}>
+                        🕒 Open Now Only
                     </label>
+                </div>
+            </div>
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- DROPDOWN GROUP: TAXONOMICAL CATEGORIES & SPATIAL RADIUS           -->
+            <!-- ----------------------------------------------------------------- -->
+            
+            <!-- Category 1: Cuisine Tag Selection -->
+            <div class="filter-section">
+                <label for="cuisine"><strong>Cuisine:</strong></label>
+                <select name="cuisine" id="cuisine" class="filter-select" aria-label="Select Cuisine Tag">
+                    <option value="">Any Cuisine</option>
+                    {% for tag in cuisine_tags %}
+                        <option value="{{ tag.id }}" {% if selected_cuisine_id == tag.id|stringformat:"s" or selected_cuisine_id == tag.id %}selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category 2: Meal Type Schedule Selection -->
+            <div class="filter-section">
+                <label for="meal_type"><strong>Meal Type:</strong></label>
+                <select name="meal_type" id="meal_type" class="filter-select" aria-label="Select Meal Type Category">
+                    <option value="">Any Meal Type</option>
+                    {% for tag in meal_type_tags %}
+                        <option value="{{ tag.id }}" {% if selected_meal_id == tag.id|stringformat:"s" or selected_meal_id == tag.id %}selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category 3: Mandatory Dietary Restriction -->
+            <div class="filter-section">
+                <label for="dietary" class="hard-filter"><strong>Dietary Restriction (Mandatory):</strong></label>
+                <select name="dietary" id="dietary" class="filter-select" aria-label="Select Dietary Compliance Option">
+                    <option value="">No Strict Restriction</option>
+                    {% for tag in dietary_tags %}
+                        <option value="{{ tag.id }}" {% if selected_dietary_id == tag.id|stringformat:"s" or selected_dietary_id == tag.id %}selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category 4: Maximum Geographical Search Radius -->
+            <div class="filter-section">
+                <label for="max_distance"><strong>Max Distance:</strong></label>
+                <select name="max_distance" id="max_distance" class="filter-select" aria-label="Select Maximum Distance Radius">
+                    <option value="">Any Distance</option>
+                    <option value="1" {% if max_distance == 1 %}selected{% endif %}>Within 1 km</option>
+                    <option value="3" {% if max_distance == 3 %}selected{% endif %}>Within 3 km</option>
+                    <option value="5" {% if max_distance == 5 %}selected{% endif %}>Within 5 km</option>
+                    <option value="10" {% if max_distance == 10 %}selected{% endif %}>Within 10 km</option>
+                    <option value="30" {% if max_distance == 30 %}selected{% endif %}>Within 30 km</option>
+                    <option value="50" {% if max_distance == 50 %}selected{% endif %}>Within 50 km</option>
+                </select>
+            </div>
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- PERSONALIZED BLOCK: USER REVIEWS & EXCLUSION PREFERENCES         -->
+            <!-- ----------------------------------------------------------------- -->
+            {% if user.is_authenticated %}
+                <div class="my-reviews-block" style="border: 1.5px dashed #d0d0d0; padding: 14px; border-radius: 12px; background-color: #fafafa; margin-top: 14px; margin-bottom: 16px;">
+                    <div style="font-weight: bold; margin-bottom: 10px; font-size: 0.95em; color: #444;">
+                        📝 My Reviews & Ratings
+                    </div>
+
+                    <!-- Personal Review Status Filter -->
+                    <div class="filter-section" style="margin-bottom: 10px;">
+                        <label for="review_filter" style="font-size: 0.88em; color: #555;"><strong>Review Status:</strong></label>
+                        <select name="review_filter" id="review_filter" class="filter-select">
+                            <option value="reviewed" {% if review_filter == 'reviewed' %}selected{% endif %}>Have Reviewed</option>
+                            <option value="not_reviewed" {% if review_filter == 'not_reviewed' %}selected{% endif %}>Have Not Reviewed</option>
+                            <option value="all" {% if review_filter == 'all' or not review_filter %}selected{% endif %}>All of the Above</option>
+                        </select>
+                    </div>
+
+                    <!-- Low-Rating Automatic Exclusion Filter -->
+                    <div class="exclude-low-checkbox-section">
+                        <label class="exclude-low-checkbox-label" for="exclude_low_rated_input">
+                            <input type="checkbox" id="exclude_low_rated_input" name="exclude_low_rated" value="true" {% if exclude_low_rated %}checked{% endif %}>
+                            🚫 Skip places I didn't like (1 & 2 stars)
+                        </label>
+                    </div>
                 </div>
             {% endif %}
 
-            <!-- Open Now Filter Checkbox -->
-            <div class="open-now-checkbox-section">
-                <label class="open-now-checkbox-label">
-                    <input type="checkbox" name="open_now" value="true" {% if open_now %}checked{% endif %}>
-                    🕒 Open Now Only
-                </label>
+            <!-- Slot Machine Visual Screen Display -->
+            <div class="slot-box" id="slot-display" aria-live="polite">
+                {% if picked_restaurant %}
+                    🎉 {{ picked_restaurant.name }}
+                {% else %}
+                    Ready to Spin?
+                {% endif %}
             </div>
-        </div>
 
-        <!-- MIDDLE SECTION: General Selection Dropdowns -->
-        <div class="filter-section">
-            <label for="cuisine"><strong>Cuisine:</strong></label>
-            <select name="cuisine" id="cuisine" class="filter-select">
-                <option value="">Any Cuisine</option>
-                {% for tag in cuisine_tags %}
-                    <option value="{{ tag.id }}" {% if selected_cuisine_id == tag.id|stringformat:"s" or selected_cuisine_id == tag.id %}selected{% endif %}>
-                        {{ tag.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Form Submission Action Button -->
+            <button type="submit" class="btn-submit" id="spin-btn">
+                Pick For Me!
+            </button>
+        </form>
 
-        <div class="filter-section">
-            <label for="meal_type"><strong>Meal Type:</strong></label>
-            <select name="meal_type" id="meal_type" class="filter-select">
-                <option value="">Any Meal Type</option>
-                {% for tag in meal_type_tags %}
-                    <option value="{{ tag.id }}" {% if selected_meal_id == tag.id|stringformat:"s" or selected_meal_id == tag.id %}selected{% endif %}>
-                        {{ tag.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+        <!-- ===================================================================== -->
+        <!-- SECTION 3: RESULT PRESENTATION BLOCK                                  -->
+        <!-- ===================================================================== -->
+        {% if picked_restaurant %}
+            <div class="result-box" id="result-box">
+                <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
+                
+                {% if picked_restaurant.distance %}
+                    <p><strong>📍 Distance:</strong> {{ picked_restaurant.distance }} km away</p>
+                {% endif %}
 
-        <div class="filter-section">
-            <label for="dietary" class="hard-filter"><strong>Dietary Restriction (Mandatory):</strong></label>
-            <select name="dietary" id="dietary" class="filter-select">
-                <option value="">No Strict Restriction</option>
-                {% for tag in dietary_tags %}
-                    <option value="{{ tag.id }}" {% if selected_dietary_id == tag.id|stringformat:"s" or selected_dietary_id == tag.id %}selected{% endif %}>
-                        {{ tag.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+                {% if picked_restaurant.cuisine %}
+                    <p><strong>Cuisine:</strong> {{ picked_restaurant.cuisine }}</p>
+                {% endif %}
 
-        <div class="filter-section">
-            <label for="max_distance"><strong>Max Distance:</strong></label>
-            <select name="max_distance" id="max_distance" class="filter-select">
-                <option value="">Any Distance</option>
-                <option value="1" {% if max_distance == 1 %}selected{% endif %}>Within 1 km</option>
-                <option value="3" {% if max_distance == 3 %}selected{% endif %}>Within 3 km</option>
-                <option value="5" {% if max_distance == 5 %}selected{% endif %}>Within 5 km</option>
-                <option value="10" {% if max_distance == 10 %}selected{% endif %}>Within 10 km</option>
-                <option value="30" {% if max_distance == 30 %}selected{% endif %}>Within 30 km</option>
-                <option value="50" {% if max_distance == 50 %}selected{% endif %}>Within 50 km</option>
-            </select>
-        </div>
+                <p><strong>Address:</strong> {{ picked_restaurant.address|default:"No address specified" }}</p>
 
-        <!-- BOTTOM SECTION: Grouped Personal Review & Rating Filters -->
-        {% if user.is_authenticated %}
-            <div class="my-reviews-block" style="border: 1.5px dashed #d0d0d0; padding: 14px; border-radius: 12px; background-color: #fafafa; margin-top: 14px; margin-bottom: 16px;">
-                <div style="font-weight: bold; margin-bottom: 10px; font-size: 0.95em; color: #444;">
-                    📝 My Reviews & Ratings
-                </div>
+                <!-- Dynamic Relational Tag Display -->
+                {% if picked_restaurant.tags.all %}
+                    <p class="result-tags-title"><strong>Tags:</strong></p>
+                    <div class="result-tags">
+                        {% for tag in picked_restaurant.tags.all %}
+                            <span class="tag-badge">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <div class="filter-section" style="margin-bottom: 10px;">
-                    <label for="review_filter" style="font-size: 0.88em; color: #555;"><strong>Review Status:</strong></label>
-                    <select name="review_filter" id="review_filter" class="filter-select">
-                        <option value="reviewed" {% if review_filter == 'reviewed' %}selected{% endif %}>Have Reviewed</option>
-                        <option value="not_reviewed" {% if review_filter == 'not_reviewed' %}selected{% endif %}>Have Not Reviewed</option>
-                        <option value="all" {% if review_filter == 'all' or not review_filter %}selected{% endif %}>All of the Above</option>
-                    </select>
-                </div>
-
-                <div class="exclude-low-checkbox-section">
-                    <label class="exclude-low-checkbox-label">
-                        <input type="checkbox" name="exclude_low_rated" value="true" {% if exclude_low_rated %}checked{% endif %}>
-                        🚫 Skip places I didn't like (1 & 2 stars)
-                    </label>
-                </div>
+                <!-- Detailed Operating Hours Render Block -->
+                {% if picked_restaurant.hours.all %}
+                    <p class="opening-hours-title"><strong>Opening Hours:</strong></p>
+                    <ul class="picker-opening-hours">
+                        {% for hour in picked_restaurant.hours.all %}
+                            <li>
+                                {{ hour.get_day_display }}: 
+                                {% if hour.is_closed %}
+                                    Closed
+                                {% else %}
+                                    {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elif picked_restaurant.opening_hours %}
+                    <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours }}</p>
+                {% endif %}
+            </div>
+        {% elif no_matches %}
+            <!-- Fallback View: Empty Query Set Feedback -->
+            <div class="error-box">
+                <h3 class="error-title">⚠️ No Matching Restaurants Found</h3>
+                <p class="error-message">
+                    No restaurants match all of your selected filter criteria. Try relaxing some filters or adding items to your wishlist!
+                </p>
             </div>
         {% endif %}
+    </div>
 
-        <!-- Slot Machine Wheel -->
-        <div class="slot-box" id="slot-display">
-            {% if picked_restaurant %}
-                🎉 {{ picked_restaurant.name }}
-            {% else %}
-                Ready to Spin?
-            {% endif %}
-        </div>
+    <!-- ========================================================================= -->
+    <!-- SECTION 4: CLIENT-SIDE CONTROLLER & ANIMATION SCRIPT                     -->
+    <!-- ========================================================================= -->
+    <script>
+    /**
+     * CRAVR FRONTEND INTERACTION & RECOMMENDATION CONTROLLER MODULE
+     * 
+     * Manages client-side state synchronization, HTML5 Geolocation fetching,
+     * UI element inter-dependency validation, and slot-machine visual reel animations.
+     * 
+     * @module PickerController
+     */
+    (function() {
+        'use strict';
 
-        <button type="submit" class="btn-submit" id="spin-btn">Pick For Me!</button>
-    </form>
+        /**
+         * Configuration matrix for slot machine animation.
+         * @type {Object}
+         */
+        const CONFIG = {
+            TOTAL_SLOT_CYCLES: 15,
+            CYCLE_INTERVAL_MS: 80,
+            DEFAULT_FALLBACK_POOL: [
+                "Mee Bandung House", 
+                "Super Mamak", 
+                "Tokyo Sushi", 
+                "Al-Farooj Arab Grill", 
+                "Restoran Banana Leaf",
+                "Nasi Lemak Royale"
+            ]
+        };
 
-    <!-- Result Display Section -->
-    {% if picked_restaurant %}
-        <div class="result-box" id="result-box">
-            <h2>🎉 We Picked For You: {{ picked_restaurant.name }}</h2>
+        /**
+         * DOM Element Selector Registry.
+         * Cache HTML element nodes to reduce DOM query overhead.
+         */
+        const ELEMENTS = {
+            form: document.getElementById('picker-form'),
+            userLatInput: document.getElementById('user_lat'),
+            userLngInput: document.getElementById('user_lng'),
+            reviewFilterSelect: document.getElementById('review_filter'),
+            excludeLowCheckbox: document.querySelector('input[name="exclude_low_rated"]'),
+            excludeLowContainer: document.querySelector('.exclude-low-checkbox-section'),
+            slotDisplay: document.getElementById('slot-display'),
+            resultBox: document.getElementById('result-box'),
+            spinBtn: document.getElementById('spin-btn')
+        };
+
+        /**
+         * Asynchronously retrieves client geolocation via the standard W3C Geolocation API.
+         * Populates hidden inputs with user's current spatial coordinates if unpopulated.
+         * 
+         * @function acquireClientCoordinates
+         * @returns {void}
+         */
+        function acquireClientCoordinates() {
+            if (!navigator.geolocation) {
+                console.warn("[Geolocation Protocol] API not supported by current browser client.");
+                return;
+            }
+
+            if (ELEMENTS.userLatInput && !ELEMENTS.userLatInput.value) {
+                navigator.geolocation.getCurrentPosition(
+                    function onLocationSuccess(position) {
+                        ELEMENTS.userLatInput.value = position.coords.latitude;
+                        ELEMENTS.userLngInput.value = position.coords.longitude;
+                        console.log("[Geolocation Protocol] Coordinates synchronized:", position.coords.latitude, position.coords.longitude);
+                    },
+                    function onLocationError(error) {
+                        console.warn("[Geolocation Protocol] Permission denied or position unavailable:", error.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+                );
+            }
+        }
+
+        /**
+         * Enforces UI logic constraints between review status dropdown and low-rating exclusion checkbox.
+         * When 'Have Not Reviewed' is selected, disables low-rating exclusion to prevent logical conflicts.
+         * 
+         * @function syncReviewFilterState
+         * @returns {void}
+         */
+        function syncReviewFilterState() {
+            if (!ELEMENTS.reviewFilterSelect || !ELEMENTS.excludeLowCheckbox || !ELEMENTS.excludeLowContainer) {
+                return;
+            }
+
+            const isNotReviewedSelected = (ELEMENTS.reviewFilterSelect.value === 'not_reviewed');
+
+            if (isNotReviewedSelected) {
+                ELEMENTS.excludeLowCheckbox.checked = false;
+                ELEMENTS.excludeLowCheckbox.disabled = true;
+                ELEMENTS.excludeLowContainer.style.opacity = '0.4';
+                ELEMENTS.excludeLowContainer.style.pointerEvents = 'none';
+                ELEMENTS.excludeLowContainer.style.cursor = 'not-allowed';
+            } else {
+                ELEMENTS.excludeLowCheckbox.disabled = false;
+                ELEMENTS.excludeLowContainer.style.opacity = '1';
+                ELEMENTS.excludeLowContainer.style.pointerEvents = 'auto';
+                ELEMENTS.excludeLowContainer.style.cursor = 'pointer';
+            }
+        }
+
+        /**
+         * Scrapes valid filter display labels from visible select options to dynamically
+         * construct the candidate display text pool for the roulette animation.
+         * 
+         * @function extractAnimationCandidatePool
+         * @returns {Array<string>} List of candidate string labels for animation display.
+         */
+        function extractAnimationCandidatePool() {
+            const rawOptions = Array.from(document.querySelectorAll('.filter-select option'));
             
-            {% if picked_restaurant.distance %}
-                <p><strong>📍 Distance:</strong> {{ picked_restaurant.distance }} km away</p>
-            {% endif %}
+            const extractedLabels = rawOptions
+                .map(opt => opt.text.trim())
+                .filter(text => {
+                    return !text.startsWith("Any") && 
+                           !text.startsWith("No Strict") && 
+                           !text.startsWith("All of");
+                });
 
-            {% if picked_restaurant.cuisine %}
-                <p><strong>Cuisine:</strong> {{ picked_restaurant.cuisine }}</p>
-            {% endif %}
-
-            <p><strong>Address:</strong> {{ picked_restaurant.address|default:"No address specified" }}</p>
-
-            <!-- Display associated tags badges -->
-            {% if picked_restaurant.tags.all %}
-                <p class="result-tags-title"><strong>Tags:</strong></p>
-                <div class="result-tags">
-                    {% for tag in picked_restaurant.tags.all %}
-                        <span class="tag-badge">{{ tag.name }}</span>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <!-- Display structured opening hours -->
-            {% if picked_restaurant.hours.all %}
-                <p class="opening-hours-title"><strong>Opening Hours:</strong></p>
-                <ul class="picker-opening-hours">
-                    {% for hour in picked_restaurant.hours.all %}
-                        <li>
-                            {{ hour.get_day_display }}: 
-                            {% if hour.is_closed %}
-                                Closed
-                            {% else %}
-                                {{ hour.opening_time|time:"H:i" }} to {{ hour.closing_time|time:"H:i" }}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% elif picked_restaurant.opening_hours %}
-                <p><strong>Opening Hours:</strong> {{ picked_restaurant.opening_hours }}</p>
-            {% endif %}
-        </div>
-    {% elif no_matches %}
-        <div class="error-box">
-            <h3 class="error-title">⚠️ No Matching Restaurants Found</h3>
-            <p class="error-message">No restaurants match all of your selected filter criteria. Try relaxing some filters or adding items to your wishlist!</p>
-        </div>
-    {% endif %}
-</div>
-
-<script>
-// Automatically invoke the geolocation API upon page load to retrieve the user's real-time location.
-if (navigator.geolocation && !document.getElementById('user_lat').value) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-        document.getElementById('user_lat').value = position.coords.latitude;
-        document.getElementById('user_lng').value = position.coords.longitude;
-    }, function(error) {
-        console.log("Location access denied or unavailable.");
-    });
-}
-
-// Logic conflict control: When "Have Not Reviewed" is selected, "Hide places I rated 1 star" is automatically disabled.
-document.addEventListener('DOMContentLoaded', function() {
-    const reviewFilterSelect = document.getElementById('review_filter');
-    const excludeLowCheckbox = document.querySelector('input[name="exclude_low_rated"]');
-    const excludeLowContainer = document.querySelector('.exclude-low-checkbox-section');
-
-    function updateCheckboxState() {
-        if (!reviewFilterSelect || !excludeLowCheckbox || !excludeLowContainer) return;
-
-        if (reviewFilterSelect.value === 'not_reviewed') {
-            excludeLowCheckbox.checked = false; // Uncheck
-            excludeLowCheckbox.disabled = true; // Disable click
-            excludeLowContainer.style.opacity = '0.4'; // Gray out
-            excludeLowContainer.style.pointerEvents = 'none'; // Disable mouse events
-            excludeLowContainer.style.cursor = 'not-allowed';
-        } else {
-            excludeLowCheckbox.disabled = false; // Restore clickability
-            excludeLowContainer.style.opacity = '1'; // Restore transparency
-            excludeLowContainer.style.pointerEvents = 'auto'; // Restore interaction
-            excludeLowContainer.style.cursor = 'pointer';
+            return (extractedLabels.length > 0) ? extractedLabels : CONFIG.DEFAULT_FALLBACK_POOL;
         }
-    }
 
-    if (reviewFilterSelect) {
-        reviewFilterSelect.addEventListener('change', updateCheckboxState);
-        updateCheckboxState(); // Initialize check once
-    }
-});
+        /**
+         * Executes the slot-machine animation loop on form submission before
+         * submitting the request payload to the server backend.
+         * 
+         * @function handleFormSubmission
+         * @param {Event} event - The browser DOM submit event.
+         * @returns {void}
+         */
+        function handleFormSubmission(event) {
+            // Temporarily intercept submission to allow reel animation
+            event.preventDefault();
 
-document.getElementById('picker-form').addEventListener('submit', function(e) {
-    const slotDisplay = document.getElementById('slot-display');
-    const resultBox = document.getElementById('result-box');
-    const spinBtn = document.getElementById('spin-btn');
+            // Hide old result card
+            if (ELEMENTS.resultBox) {
+                ELEMENTS.resultBox.style.display = 'none';
+            }
 
-    // Hide the previous card during animation
-    if (resultBox) {
-        resultBox.style.display = 'none';
-    }
+            // Disable submit button to prevent double submission
+            if (ELEMENTS.spinBtn) {
+                ELEMENTS.spinBtn.disabled = true;
+                ELEMENTS.spinBtn.innerText = "Spinning...";
+            }
 
-    // Disable the submit button to prevent duplicate clicks
-    spinBtn.disabled = true;
-    spinBtn.innerText = "Spinning...";
+            const animationPool = extractAnimationCandidatePool();
+            let cycleCount = 0;
 
-    // Get the text from the dropdown boxes as the spinning wheel pool
-    const options = Array.from(document.querySelectorAll('.filter-select option'))
-        .map(opt => opt.text.trim())
-        .filter(text => !text.startsWith("Any") && !text.startsWith("No Strict") && !text.startsWith("All of"));
+            // Trigger cyclic interval text randomization
+            const intervalId = setInterval(function() {
+                const randomIndex = Math.floor(Math.random() * animationPool.length);
+                if (ELEMENTS.slotDisplay) {
+                    ELEMENTS.slotDisplay.innerText = animationPool[randomIndex];
+                }
+                
+                cycleCount++;
 
-    const fallbackList = ["Mee Bandung House", "Super Mamak", "Tokyo Sushi", "Al-Farooj Arab Grill", "Restoran Banana Leaf"];
-    const spinPool = options.length > 0 ? options : fallbackList;
-
-    let counter = 0;
-    e.preventDefault(); // Temporarily prevent form submission, run animation first
-
-    const interval = setInterval(() => {
-        const randomText = spinPool[Math.floor(Math.random() * spinPool.length)];
-        slotDisplay.innerText = randomText;
-        counter++;
-
-        if (counter > 15) { // Scroll 15 times then submit the form to get real backend data
-            clearInterval(interval);
-            e.target.submit();
+                // Conclude animation and trigger native form submission
+                if (cycleCount >= CONFIG.TOTAL_SLOT_CYCLES) {
+                    clearInterval(intervalId);
+                    event.target.submit();
+                }
+            }, CONFIG.CYCLE_INTERVAL_MS);
         }
-    }, 80);
-});
-</script>
 
+        /**
+         * Module Initialization Entry Point.
+         * Registers event handlers and executes initial state synchronization upon DOM load.
+         */
+        function init() {
+            // Trigger background location retrieval
+            acquireClientCoordinates();
+
+            // Bind dynamic UI validation listener
+            if (ELEMENTS.reviewFilterSelect) {
+                ELEMENTS.reviewFilterSelect.addEventListener('change', syncReviewFilterState);
+                syncReviewFilterState(); // Run initial state check
+            }
+
+            // Bind roulette animation form handler
+            if (ELEMENTS.form) {
+                ELEMENTS.form.addEventListener('submit', handleFormSubmission);
+            }
+        }
+
+        // Run initialization script when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+    })();
+    </script>
 </body>
 </html>
