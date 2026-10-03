@@ -366,23 +366,39 @@ def profile_view(request):
     followers_count = request.user.followers.count()
     following_count = request.user.following.count()
 
+    my_reviews = request.user.reviews.select_related(
+        "restaurant"
+    ).prefetch_related(
+        "photos"
+    )
+
     if request.method == 'POST':
 
         bio = request.POST.get('bio', '')
         profile.bio = bio
 
-        privacy = request.POST.get('privacy', 'public')
+        privacy = request.POST.get(
+            'privacy',
+            'public'
+        )
         profile.privacy = privacy
 
         if 'profile_picture' in request.FILES:
-            profile.profile_picture = request.FILES['profile_picture']
+            profile.profile_picture = (
+                request.FILES['profile_picture']
+            )
 
         if 'cover_photo' in request.FILES:
-            profile.cover_photo = request.FILES['cover_photo']
+            profile.cover_photo = (
+                request.FILES['cover_photo']
+            )
 
         profile.save()
 
-        messages.success(request, 'Your profile has been updated!')
+        messages.success(
+            request,
+            'Your profile has been updated!'
+        )
 
         return redirect('profile')
 
@@ -393,6 +409,7 @@ def profile_view(request):
             'profile': profile,
             'followers_count': followers_count,
             'following_count': following_count,
+            'my_reviews': my_reviews,
         }
     )
 

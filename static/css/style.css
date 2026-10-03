@@ -499,6 +499,76 @@ a {
 }
 
 /* ===========================
+   My Reviews - Profile Page
+   =========================== */
+
+.my-reviews-section {
+    margin-top: 36px;
+}
+
+.my-reviews-section h2 {
+    margin-bottom: 18px;
+    font-size: 24px;
+}
+
+.my-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.my-review-card {
+    background: #fffdf9;
+    border: 1px solid #eee7dc;
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.my-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.my-review-header h3 {
+    margin: 0;
+}
+
+.my-review-header a {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.my-review-header a:hover {
+    color: var(--accent);
+}
+
+.my-review-text {
+    margin: 12px 0;
+}
+
+.my-review-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.my-review-actions a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.my-review-actions a:hover {
+    text-decoration: underline;
+}
+
+.my-review-actions .delete-review-link {
+    color: #e95454;
+}
+
+/* ===========================
    Review Star Rating
    =========================== */
 
